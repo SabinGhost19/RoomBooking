@@ -18,6 +18,7 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     """Schema for user registration/signup."""
     password: str = Field(..., min_length=8, max_length=100)
+    is_manager: bool = Field(default=False, description="Whether the user is a manager")
 
 
 # Schema for user login

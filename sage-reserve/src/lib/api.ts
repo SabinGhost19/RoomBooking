@@ -12,6 +12,7 @@ export interface UserCreate {
   username: string;
   password: string;
   full_name?: string;
+  is_manager?: boolean;
 }
 
 export interface UserLogin {
@@ -32,7 +33,7 @@ export interface UserResponse {
   username: string;
   full_name: string | null;
   is_active: boolean;
-  is_superuser: boolean;
+  is_manager: boolean;
   created_at: string;
   updated_at: string;
 }

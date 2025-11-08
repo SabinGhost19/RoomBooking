@@ -1,4 +1,4 @@
-#!/home/sabinghosty19/Desktop/SMARTHACK_project/SMARTHACK/backend/venv/bin/python3
+#!/Users/gabrielflorea/Desktop/personal/Hackathons/SMARTHACK/RoomBooking/backend/venv/bin/python3.13
 # -*- coding: utf-8 -*-
 import re
 import sys

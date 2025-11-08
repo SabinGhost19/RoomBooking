@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV /home/sabinghosty19/Desktop/SMARTHACK_project/SMARTHACK/backend/venv
+set -gx VIRTUAL_ENV /Users/gabrielflorea/Desktop/personal/Hackathons/SMARTHACK/RoomBooking/backend/venv
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/"bin $PATH

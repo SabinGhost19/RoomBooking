@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Calendar, Home, User, LogOut, Map } from "lucide-react";
+import { Calendar, Home, User, LogOut, Map, Sparkles } from "lucide-react";
 import { BeerMugIcon } from "@/components/BeerMugIcon";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -61,6 +61,19 @@ export const Navbar = () => {
                 Map
               </Button>
             </Link>
+            {isAuthenticated && user && (user as any).is_manager && (
+              <Link to="/suggest-event">
+                <Button
+                  variant="ghost"
+                  className={`transition-all text-white hover:bg-white/10 ${
+                    isActive("/suggest-event") ? "bg-white/10" : ""
+                  }`}
+                >
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Suggest Event
+                </Button>
+              </Link>
+            )}
           </div>
 
           <div className="flex items-center space-x-3">

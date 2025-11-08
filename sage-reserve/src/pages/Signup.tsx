@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BeerMugIcon } from '@/components/BeerMugIcon';
 import { useToast } from "@/hooks/use-toast";
@@ -14,6 +15,7 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isManager, setIsManager] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -48,10 +50,11 @@ const Signup = () => {
         username,
         password,
         full_name: name,
+        is_manager: isManager,
       });
       toast({
         title: "Account created",
-        description: "Welcome to RoomBook!",
+        description: `Welcome to RoomBook${isManager ? ' as a Manager' : ''}!`,
       });
       navigate("/");
     } catch (error: any) {
@@ -139,6 +142,21 @@ const Signup = () => {
                 required
                 className="bg-slate-700/40 text-white placeholder-slate-300 border border-slate-600 focus:ring-2 focus:ring-amber-400 rounded-lg py-3"
               />
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="isManager" 
+                checked={isManager}
+                onCheckedChange={(checked) => setIsManager(checked as boolean)}
+                className="border-slate-600 data-[state=checked]:bg-amber-500 data-[state=checked]:border-amber-500"
+              />
+              <Label 
+                htmlFor="isManager" 
+                className="text-slate-100 font-medium cursor-pointer"
+              >
+                Register as a Manager
+              </Label>
             </div>
 
             <Button 

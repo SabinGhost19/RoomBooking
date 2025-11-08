@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     DB_USER: str = "postgres"
     DB_PASSWORD: str = "postgres"
     DB_NAME: str = "roombooking"
-    DB_HOST: str = "postgres"
+    DB_HOST: str = "localhost"  # Changed from "postgres" to "localhost" for Docker port mapping
     DB_PORT: int = 5432
     DATABASE_URL: Optional[str] = None
     
@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    
+    # OpenAI
+    OPENAI_API_KEY: str = ""
     
     # CORS - Permisive for development
     BACKEND_CORS_ORIGINS: list[str] = [
