@@ -1,0 +1,2530 @@
+[
+  {
+    "name": "DeskSeat 1",
+    "svg_id": "rect1",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 864.14,
+      "y": 411.34
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 2",
+    "svg_id": "rect2",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 865.22,
+      "y": 454.42
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 3",
+    "svg_id": "rect3",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 865.22,
+      "y": 501.8
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 4",
+    "svg_id": "rect4",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 955.13,
+      "y": 410.35
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 5",
+    "svg_id": "rect5",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 955.52,
+      "y": 454.77
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 6",
+    "svg_id": "rect6",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 954.75,
+      "y": 501.14
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 7",
+    "svg_id": "rect7",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 986.7,
+      "y": 409.96
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 8",
+    "svg_id": "rect8",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 987.09,
+      "y": 455.16
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 9",
+    "svg_id": "rect9",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 986.7,
+      "y": 501.53
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 10",
+    "svg_id": "rect10",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1076.33,
+      "y": 410.74
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 11",
+    "svg_id": "rect11",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1075.94,
+      "y": 455.55
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 12",
+    "svg_id": "rect12",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1075.94,
+      "y": 501.14
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 13",
+    "svg_id": "rect13",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1115.3,
+      "y": 409.57
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 14",
+    "svg_id": "rect14",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1115.69,
+      "y": 456.33
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 15",
+    "svg_id": "rect15",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1114.91,
+      "y": 501.14
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 16",
+    "svg_id": "rect16",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1204.54,
+      "y": 411.13
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 17",
+    "svg_id": "rect17",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1204.54,
+      "y": 455.55
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 18",
+    "svg_id": "rect18",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1204.15,
+      "y": 500.36
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 19",
+    "svg_id": "rect19",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1235.71,
+      "y": 409.96
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 20",
+    "svg_id": "rect20",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1236.49,
+      "y": 455.55
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 21",
+    "svg_id": "rect21",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1236.1,
+      "y": 500.75
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 22",
+    "svg_id": "rect22",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1325.34,
+      "y": 409.96
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 23",
+    "svg_id": "rect23",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1325.73,
+      "y": 455.55
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 24",
+    "svg_id": "rect24",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1325.34,
+      "y": 500.75
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 25",
+    "svg_id": "rect25",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1364.31,
+      "y": 410.35
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 26",
+    "svg_id": "rect26",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1365.09,
+      "y": 455.94
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 27",
+    "svg_id": "rect27",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1365.09,
+      "y": 501.14
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 28",
+    "svg_id": "rect28",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1453.94,
+      "y": 409.57
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 29",
+    "svg_id": "rect32",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1453.88,
+      "y": 455.92
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 30",
+    "svg_id": "rect33",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1454.2,
+      "y": 501.83
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 31",
+    "svg_id": "rect34",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1485.22,
+      "y": 409.7
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 32",
+    "svg_id": "rect35",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1485.54,
+      "y": 455.92
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 33",
+    "svg_id": "rect36",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1485.22,
+      "y": 501.51
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 34",
+    "svg_id": "rect37",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1574.51,
+      "y": 410.33
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 35",
+    "svg_id": "rect38",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1574.19,
+      "y": 456.55
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 36",
+    "svg_id": "rect39",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 1574.83,
+      "y": 501.2
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 37",
+    "svg_id": "rect106",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 3088.54,
+      "y": 410.7
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 38",
+    "svg_id": "rect107",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 3089.33,
+      "y": 456.74
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 39",
+    "svg_id": "rect108",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 3121.17,
+      "y": 411.23
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 40",
+    "svg_id": "rect109",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 3120.64,
+      "y": 457.01
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 41",
+    "svg_id": "rect110",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 3090.91,
+      "y": 501.73
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 42",
+    "svg_id": "rect111",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 3121.43,
+      "y": 502.0
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 43",
+    "svg_id": "rect115",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 866.34,
+      "y": 1080.3
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 44",
+    "svg_id": "rect116",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 867.41,
+      "y": 1123.37
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 45",
+    "svg_id": "rect117",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 867.41,
+      "y": 1170.75
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 46",
+    "svg_id": "rect118",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 957.33,
+      "y": 1079.3
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 47",
+    "svg_id": "rect119",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 957.72,
+      "y": 1123.72
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 48",
+    "svg_id": "rect120",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 956.94,
+      "y": 1170.1
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 49",
+    "svg_id": "rect202",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 2841.05,
+      "y": 1079.65
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 50",
+    "svg_id": "rect203",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 2843.16,
+      "y": 1124.91
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 51",
+    "svg_id": "rect204",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 2842.37,
+      "y": 1169.9
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 52",
+    "svg_id": "rect205",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 2873.68,
+      "y": 1079.92
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 53",
+    "svg_id": "rect209",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 2962.34,
+      "y": 1125.96
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 54",
+    "svg_id": "rect210",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 2962.34,
+      "y": 1170.16
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 55",
+    "svg_id": "rect211",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 3002.07,
+      "y": 1079.65
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 56",
+    "svg_id": "rect212",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 3001.81,
+      "y": 1126.49
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 57",
+    "svg_id": "rect214",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 3090.73,
+      "y": 1079.65
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 58",
+    "svg_id": "rect215",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 3091.52,
+      "y": 1125.7
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 59",
+    "svg_id": "rect216",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 3123.36,
+      "y": 1080.18
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 60",
+    "svg_id": "rect217",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 3122.83,
+      "y": 1125.96
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 61",
+    "svg_id": "rect218",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 3093.1,
+      "y": 1170.69
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 62",
+    "svg_id": "rect219",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 3123.62,
+      "y": 1170.95
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 63",
+    "svg_id": "rect220",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 3211.76,
+      "y": 1079.39
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 64",
+    "svg_id": "rect221",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 3212.02,
+      "y": 1124.91
+    },
+    "is_available": true
+  },
+  {
+    "name": "DeskSeat 65",
+    "svg_id": "rect222",
+    "room_type": "DeskSeat",
+    "capacity": 1,
+    "description": "Individual desk seat for focused work",
+    "amenities": [
+      "Desk",
+      "Ergonomic Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 10.0,
+    "coordinates": {
+      "x": 3212.02,
+      "y": 1170.16
+    },
+    "is_available": true
+  },
+  {
+    "name": "TrainingSeat 1",
+    "svg_id": "rect227",
+    "room_type": "TrainingSeat",
+    "capacity": 1,
+    "description": "Training seat for learning and development activities",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 3091.03,
+      "y": 674.21
+    },
+    "is_available": true
+  },
+  {
+    "name": "TrainingSeat 2",
+    "svg_id": "rect228",
+    "room_type": "TrainingSeat",
+    "capacity": 1,
+    "description": "Training seat for learning and development activities",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 3119.35,
+      "y": 675.36
+    },
+    "is_available": true
+  },
+  {
+    "name": "TrainingSeat 3",
+    "svg_id": "rect229",
+    "room_type": "TrainingSeat",
+    "capacity": 1,
+    "description": "Training seat for learning and development activities",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 3141.95,
+      "y": 700.82
+    },
+    "is_available": true
+  },
+  {
+    "name": "TrainingSeat 4",
+    "svg_id": "rect230",
+    "room_type": "TrainingSeat",
+    "capacity": 1,
+    "description": "Training seat for learning and development activities",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 3142.81,
+      "y": 727.42
+    },
+    "is_available": true
+  },
+  {
+    "name": "TrainingSeat 5",
+    "svg_id": "rect231",
+    "room_type": "TrainingSeat",
+    "capacity": 1,
+    "description": "Training seat for learning and development activities",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 3141.66,
+      "y": 754.31
+    },
+    "is_available": true
+  },
+  {
+    "name": "TrainingSeat 6",
+    "svg_id": "rect232",
+    "room_type": "TrainingSeat",
+    "capacity": 1,
+    "description": "Training seat for learning and development activities",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 3141.38,
+      "y": 779.48
+    },
+    "is_available": true
+  },
+  {
+    "name": "TrainingSeat 7",
+    "svg_id": "rect233",
+    "room_type": "TrainingSeat",
+    "capacity": 1,
+    "description": "Training seat for learning and development activities",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 3143.09,
+      "y": 806.65
+    },
+    "is_available": true
+  },
+  {
+    "name": "TrainingSeat 8",
+    "svg_id": "rect245",
+    "room_type": "TrainingSeat",
+    "capacity": 1,
+    "description": "Training seat for learning and development activities",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 3227.76,
+      "y": 699.1
+    },
+    "is_available": true
+  },
+  {
+    "name": "TrainingSeat 9",
+    "svg_id": "rect246",
+    "room_type": "TrainingSeat",
+    "capacity": 1,
+    "description": "Training seat for learning and development activities",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 3253.79,
+      "y": 674.5
+    },
+    "is_available": true
+  },
+  {
+    "name": "TrainingSeat 10",
+    "svg_id": "rect247",
+    "room_type": "TrainingSeat",
+    "capacity": 1,
+    "description": "Training seat for learning and development activities",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 3282.4,
+      "y": 674.21
+    },
+    "is_available": true
+  },
+  {
+    "name": "TrainingSeat 11",
+    "svg_id": "rect248",
+    "room_type": "TrainingSeat",
+    "capacity": 1,
+    "description": "Training seat for learning and development activities",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 3307.0,
+      "y": 674.79
+    },
+    "is_available": true
+  },
+  {
+    "name": "TrainingSeat 12",
+    "svg_id": "rect249",
+    "room_type": "TrainingSeat",
+    "capacity": 1,
+    "description": "Training seat for learning and development activities",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 3332.17,
+      "y": 702.82
+    },
+    "is_available": true
+  },
+  {
+    "name": "TrainingSeat 13",
+    "svg_id": "rect250",
+    "room_type": "TrainingSeat",
+    "capacity": 1,
+    "description": "Training seat for learning and development activities",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 3330.45,
+      "y": 726.85
+    },
+    "is_available": true
+  },
+  {
+    "name": "TrainingSeat 14",
+    "svg_id": "rect251",
+    "room_type": "TrainingSeat",
+    "capacity": 1,
+    "description": "Training seat for learning and development activities",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 3331.31,
+      "y": 754.88
+    },
+    "is_available": true
+  },
+  {
+    "name": "TrainingSeat 15",
+    "svg_id": "rect262",
+    "room_type": "TrainingSeat",
+    "capacity": 1,
+    "description": "Training seat for learning and development activities",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 3228.05,
+      "y": 752.02
+    },
+    "is_available": true
+  },
+  {
+    "name": "TrainingSeat 16",
+    "svg_id": "rect263",
+    "room_type": "TrainingSeat",
+    "capacity": 1,
+    "description": "Training seat for learning and development activities",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 3228.91,
+      "y": 727.13
+    },
+    "is_available": true
+  },
+  {
+    "name": "BeerPoint 1",
+    "svg_id": "path266",
+    "room_type": "BeerPoint",
+    "capacity": 8,
+    "description": "Social area for informal gatherings and team bonding",
+    "amenities": [
+      "Bar Area",
+      "Seating",
+      "Refrigerator",
+      "WiFi"
+    ],
+    "price": 40.0,
+    "coordinates": {
+      "x": 25.0,
+      "y": 25.0
+    },
+    "is_available": true
+  },
+  {
+    "name": "MeetingRoom 1",
+    "svg_id": "rect268",
+    "room_type": "MeetingRoom",
+    "capacity": 4,
+    "description": "Meeting room perfect for small team discussions and collaborative work",
+    "amenities": [
+      "Whiteboard",
+      "Video Conference",
+      "WiFi",
+      "Projector"
+    ],
+    "price": 45.0,
+    "coordinates": {
+      "x": 661.28,
+      "y": 374.04
+    },
+    "is_available": true
+  },
+  {
+    "name": "MeetingRoom 2",
+    "svg_id": "rect269",
+    "room_type": "MeetingRoom",
+    "capacity": 4,
+    "description": "Meeting room perfect for small team discussions and collaborative work",
+    "amenities": [
+      "Whiteboard",
+      "Video Conference",
+      "WiFi",
+      "Projector"
+    ],
+    "price": 45.0,
+    "coordinates": {
+      "x": 661.28,
+      "y": 485.78
+    },
+    "is_available": true
+  },
+  {
+    "name": "MeetingRoom 3",
+    "svg_id": "rect270",
+    "room_type": "MeetingRoom",
+    "capacity": 4,
+    "description": "Meeting room perfect for small team discussions and collaborative work",
+    "amenities": [
+      "Whiteboard",
+      "Video Conference",
+      "WiFi",
+      "Projector"
+    ],
+    "price": 45.0,
+    "coordinates": {
+      "x": 660.33,
+      "y": 1098.76
+    },
+    "is_available": true
+  },
+  {
+    "name": "MeetingRoom 4",
+    "svg_id": "rect271",
+    "room_type": "MeetingRoom",
+    "capacity": 4,
+    "description": "Meeting room perfect for small team discussions and collaborative work",
+    "amenities": [
+      "Whiteboard",
+      "Video Conference",
+      "WiFi",
+      "Projector"
+    ],
+    "price": 45.0,
+    "coordinates": {
+      "x": 661.28,
+      "y": 1209.87
+    },
+    "is_available": true
+  },
+  {
+    "name": "MeetingRoom 5",
+    "svg_id": "rect272",
+    "room_type": "MeetingRoom",
+    "capacity": 4,
+    "description": "Meeting room perfect for small team discussions and collaborative work",
+    "amenities": [
+      "Whiteboard",
+      "Video Conference",
+      "WiFi",
+      "Projector"
+    ],
+    "price": 45.0,
+    "coordinates": {
+      "x": 3308.55,
+      "y": 1028.19
+    },
+    "is_available": true
+  },
+  {
+    "name": "ManagerDesk 1",
+    "svg_id": "rect273",
+    "room_type": "ManagerDesk",
+    "capacity": 1,
+    "description": "Manager desk for leadership and administrative work",
+    "amenities": [
+      "Executive Desk",
+      "Ergonomic Chair",
+      "Storage",
+      "WiFi"
+    ],
+    "price": 30.0,
+    "coordinates": {
+      "x": 3310.48,
+      "y": 1183.1
+    },
+    "is_available": true
+  },
+  {
+    "name": "ManagerDesk 2",
+    "svg_id": "rect274",
+    "room_type": "ManagerDesk",
+    "capacity": 1,
+    "description": "Manager desk for leadership and administrative work",
+    "amenities": [
+      "Executive Desk",
+      "Ergonomic Chair",
+      "Storage",
+      "WiFi"
+    ],
+    "price": 30.0,
+    "coordinates": {
+      "x": 3312.42,
+      "y": 427.93
+    },
+    "is_available": true
+  },
+  {
+    "name": "MeetingRoom 6",
+    "svg_id": "rect275",
+    "room_type": "MeetingRoom",
+    "capacity": 4,
+    "description": "Meeting room perfect for small team discussions and collaborative work",
+    "amenities": [
+      "Whiteboard",
+      "Video Conference",
+      "WiFi",
+      "Projector"
+    ],
+    "price": 45.0,
+    "coordinates": {
+      "x": 3311.77,
+      "y": 582.19
+    },
+    "is_available": true
+  },
+  {
+    "name": "MeetingRoom 7",
+    "svg_id": "rect276",
+    "room_type": "MeetingRoom",
+    "capacity": 4,
+    "description": "Meeting room perfect for small team discussions and collaborative work",
+    "amenities": [
+      "Whiteboard",
+      "Video Conference",
+      "WiFi",
+      "Projector"
+    ],
+    "price": 45.0,
+    "coordinates": {
+      "x": 2947.73,
+      "y": 903.42
+    },
+    "is_available": true
+  },
+  {
+    "name": "DiscussionZone 1",
+    "svg_id": "rect277",
+    "room_type": "DiscussionZone",
+    "capacity": 6,
+    "description": "Open discussion zone for brainstorming and team collaboration",
+    "amenities": [
+      "Whiteboard",
+      "Comfortable Seating",
+      "WiFi",
+      "Natural Light"
+    ],
+    "price": 35.0,
+    "coordinates": {
+      "x": 2949.23,
+      "y": 742.36
+    },
+    "is_available": true
+  },
+  {
+    "name": "ServerRoom 1",
+    "svg_id": "rect278",
+    "room_type": "ServerRoom",
+    "capacity": 2,
+    "description": "Server room for IT infrastructure (restricted access)",
+    "amenities": [
+      "Climate Control",
+      "Security",
+      "Power Backup"
+    ],
+    "price": 100.0,
+    "coordinates": {
+      "x": 2765.7,
+      "y": 718.39
+    },
+    "is_available": true
+  },
+  {
+    "name": "Deposit 1",
+    "svg_id": "rect279",
+    "room_type": "Deposit",
+    "capacity": 2,
+    "description": "Storage and deposit area",
+    "amenities": [
+      "Storage Space",
+      "Shelving"
+    ],
+    "price": 15.0,
+    "coordinates": {
+      "x": 2764.95,
+      "y": 859.22
+    },
+    "is_available": true
+  },
+  {
+    "name": "Deposit 2",
+    "svg_id": "rect280",
+    "room_type": "Deposit",
+    "capacity": 2,
+    "description": "Storage and deposit area",
+    "amenities": [
+      "Storage Space",
+      "Shelving"
+    ],
+    "price": 15.0,
+    "coordinates": {
+      "x": 2118.47,
+      "y": 922.15
+    },
+    "is_available": true
+  },
+  {
+    "name": "ElectricTable 1",
+    "svg_id": "rect281",
+    "room_type": "ElectricTable",
+    "capacity": 6,
+    "description": "Adjustable electric table for flexible working arrangements",
+    "amenities": [
+      "Electric Adjustable Desk",
+      "Power Outlets",
+      "WiFi",
+      "Seating"
+    ],
+    "price": 50.0,
+    "coordinates": {
+      "x": 2204.62,
+      "y": 920.65
+    },
+    "is_available": true
+  },
+  {
+    "name": "ElectricTable 2",
+    "svg_id": "rect282",
+    "room_type": "ElectricTable",
+    "capacity": 6,
+    "description": "Adjustable electric table for flexible working arrangements",
+    "amenities": [
+      "Electric Adjustable Desk",
+      "Power Outlets",
+      "WiFi",
+      "Seating"
+    ],
+    "price": 50.0,
+    "coordinates": {
+      "x": 1555.58,
+      "y": 660.33
+    },
+    "is_available": true
+  },
+  {
+    "name": "CoffeePoint 1",
+    "svg_id": "rect284",
+    "room_type": "CoffeePoint",
+    "capacity": 4,
+    "description": "Coffee area for casual meetings and breaks",
+    "amenities": [
+      "Coffee Machine",
+      "Seating",
+      "WiFi"
+    ],
+    "price": 20.0,
+    "coordinates": {
+      "x": 2765.27,
+      "y": 931.31
+    },
+    "is_available": true
+  },
+  {
+    "name": "Bubble 1",
+    "svg_id": "rect317",
+    "room_type": "Bubble",
+    "capacity": 2,
+    "description": "Small private bubble space for one-on-one discussions",
+    "amenities": [
+      "Privacy",
+      "Seating",
+      "WiFi"
+    ],
+    "price": 25.0,
+    "coordinates": {
+      "x": 801.38,
+      "y": 464.36
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 1",
+    "svg_id": "rect318",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 847.33,
+      "y": 341.34
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 2",
+    "svg_id": "rect319",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 885.56,
+      "y": 340.72
+    },
+    "is_available": true
+  },
+  {
+    "name": "Bubble 2",
+    "svg_id": "rect324",
+    "room_type": "Bubble",
+    "capacity": 2,
+    "description": "Small private bubble space for one-on-one discussions",
+    "amenities": [
+      "Privacy",
+      "Seating",
+      "WiFi"
+    ],
+    "price": 25.0,
+    "coordinates": {
+      "x": 1915.73,
+      "y": 482.86
+    },
+    "is_available": true
+  },
+  {
+    "name": "PhoneBoothArea 1",
+    "svg_id": "rect325",
+    "room_type": "PhoneBoothArea",
+    "capacity": 1,
+    "description": "Private phone booth for confidential calls and focused work",
+    "amenities": [
+      "Soundproof",
+      "WiFi",
+      "Power Outlet"
+    ],
+    "price": 15.0,
+    "coordinates": {
+      "x": 1914.81,
+      "y": 409.17
+    },
+    "is_available": true
+  },
+  {
+    "name": "PhoneBoothArea 2",
+    "svg_id": "rect331",
+    "room_type": "PhoneBoothArea",
+    "capacity": 1,
+    "description": "Private phone booth for confidential calls and focused work",
+    "amenities": [
+      "Soundproof",
+      "WiFi",
+      "Power Outlet"
+    ],
+    "price": 15.0,
+    "coordinates": {
+      "x": 1915.54,
+      "y": 1124.94
+    },
+    "is_available": true
+  },
+  {
+    "name": "Bubble 3",
+    "svg_id": "rect332",
+    "room_type": "Bubble",
+    "capacity": 2,
+    "description": "Small private bubble space for one-on-one discussions",
+    "amenities": [
+      "Privacy",
+      "Seating",
+      "WiFi"
+    ],
+    "price": 25.0,
+    "coordinates": {
+      "x": 802.15,
+      "y": 1120.45
+    },
+    "is_available": true
+  },
+  {
+    "name": "Bubble 4",
+    "svg_id": "rect333",
+    "room_type": "Bubble",
+    "capacity": 2,
+    "description": "Small private bubble space for one-on-one discussions",
+    "amenities": [
+      "Privacy",
+      "Seating",
+      "WiFi"
+    ],
+    "price": 25.0,
+    "coordinates": {
+      "x": 1913.61,
+      "y": 1240.45
+    },
+    "is_available": true
+  },
+  {
+    "name": "Bubble 5",
+    "svg_id": "rect334",
+    "room_type": "Bubble",
+    "capacity": 2,
+    "description": "Small private bubble space for one-on-one discussions",
+    "amenities": [
+      "Privacy",
+      "Seating",
+      "WiFi"
+    ],
+    "price": 25.0,
+    "coordinates": {
+      "x": 2521.29,
+      "y": 1236.99
+    },
+    "is_available": true
+  },
+  {
+    "name": "Bubble 6",
+    "svg_id": "rect335",
+    "room_type": "Bubble",
+    "capacity": 2,
+    "description": "Small private bubble space for one-on-one discussions",
+    "amenities": [
+      "Privacy",
+      "Seating",
+      "WiFi"
+    ],
+    "price": 25.0,
+    "coordinates": {
+      "x": 3206.29,
+      "y": 344.18
+    },
+    "is_available": true
+  },
+  {
+    "name": "Bubble 7",
+    "svg_id": "rect336",
+    "room_type": "Bubble",
+    "capacity": 2,
+    "description": "Small private bubble space for one-on-one discussions",
+    "amenities": [
+      "Privacy",
+      "Seating",
+      "WiFi"
+    ],
+    "price": 25.0,
+    "coordinates": {
+      "x": 2447.63,
+      "y": 348.06
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 3",
+    "svg_id": "rect337",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 1151.57,
+      "y": 340.3
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 4",
+    "svg_id": "rect338",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 1193.41,
+      "y": 340.3
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 5",
+    "svg_id": "rect339",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 1438.82,
+      "y": 339.43
+    },
+    "is_available": true
+  },
+  {
+    "name": "Bubble 8",
+    "svg_id": "rect340",
+    "room_type": "Bubble",
+    "capacity": 2,
+    "description": "Small private bubble space for one-on-one discussions",
+    "amenities": [
+      "Privacy",
+      "Seating",
+      "WiFi"
+    ],
+    "price": 25.0,
+    "coordinates": {
+      "x": 1603.58,
+      "y": 346.77
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 6",
+    "svg_id": "rect341",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 1744.18,
+      "y": 338.57
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 7",
+    "svg_id": "rect342",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 2023.23,
+      "y": 338.57
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 8",
+    "svg_id": "rect343",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 2578.32,
+      "y": 339.0
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 9",
+    "svg_id": "rect344",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 2618.86,
+      "y": 340.73
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 10",
+    "svg_id": "rect345",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 2769.82,
+      "y": 340.73
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 11",
+    "svg_id": "rect346",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 2809.5,
+      "y": 340.73
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 12",
+    "svg_id": "rect347",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 2926.26,
+      "y": 1244.68
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 13",
+    "svg_id": "rect348",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 2885.54,
+      "y": 1246.33
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 14",
+    "svg_id": "rect349",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 2663.24,
+      "y": 1246.88
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 15",
+    "svg_id": "rect350",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 2338.59,
+      "y": 1245.23
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 16",
+    "svg_id": "rect351",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 2402.97,
+      "y": 1246.33
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 17",
+    "svg_id": "rect352",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 2025.49,
+      "y": 1245.23
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 18",
+    "svg_id": "rect353",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 1744.86,
+      "y": 1244.68
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 19",
+    "svg_id": "rect354",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 1436.72,
+      "y": 1245.23
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 20",
+    "svg_id": "rect355",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 1192.95,
+      "y": 1245.23
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 21",
+    "svg_id": "rect356",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 1149.48,
+      "y": 1245.23
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 22",
+    "svg_id": "rect357",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 886.46,
+      "y": 1244.68
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 23",
+    "svg_id": "rect358",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 844.64,
+      "y": 1244.68
+    },
+    "is_available": true
+  },
+  {
+    "name": "Bubble 9",
+    "svg_id": "rect373",
+    "room_type": "Bubble",
+    "capacity": 2,
+    "description": "Small private bubble space for one-on-one discussions",
+    "amenities": [
+      "Privacy",
+      "Seating",
+      "WiFi"
+    ],
+    "price": 25.0,
+    "coordinates": {
+      "x": 1275.92,
+      "y": 1236.6
+    },
+    "is_available": true
+  },
+  {
+    "name": "SoloDesk 24",
+    "svg_id": "rect381",
+    "room_type": "SoloDesk",
+    "capacity": 1,
+    "description": "Solo desk for individual focused work",
+    "amenities": [
+      "Desk",
+      "Chair",
+      "Power Outlet",
+      "WiFi"
+    ],
+    "price": 12.0,
+    "coordinates": {
+      "x": 2334.79,
+      "y": 338.39
+    },
+    "is_available": true
+  },
+  {
+    "name": "CoffeePoint 2",
+    "svg_id": "rect407",
+    "room_type": "CoffeePoint",
+    "capacity": 4,
+    "description": "Coffee area for casual meetings and breaks",
+    "amenities": [
+      "Coffee Machine",
+      "Seating",
+      "WiFi"
+    ],
+    "price": 20.0,
+    "coordinates": {
+      "x": 1649.92,
+      "y": 660.81
+    },
+    "is_available": true
+  }
+]

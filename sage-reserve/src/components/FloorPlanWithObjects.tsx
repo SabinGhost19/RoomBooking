@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ExternalLink, Users, DollarSign, Wifi, Coffee, CheckCircle, XCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { getRooms, getRoom, getRoomBookings, type Room as RoomType, type Booking } from '@/lib/roomsApi';
 
 interface SVGObject {
     id: string;
@@ -19,6 +23,15 @@ interface SVGObject {
     properties: Record<string, string>;
 }
 
+interface RoomDetailedData {
+    room: RoomType;
+    upcomingBookings: Booking[];
+    todayBookings: Booking[];
+    isAvailableNow: boolean;
+    nextAvailableTime?: string;
+    loadedAt: number;
+}
+
 interface FloorPlanWithObjectsProps {
     imageSrc: string;
     svgObjectsSrc: string;
@@ -30,11 +43,148 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
     svgObjectsSrc,
     className = ''
 }) => {
+    const navigate = useNavigate();
     const [objects, setObjects] = useState<SVGObject[]>([]);
+    const [rooms, setRooms] = useState<Map<string, RoomType>>(new Map());
+    const [roomDetails, setRoomDetails] = useState<Map<string, RoomDetailedData>>(new Map());
+    const [loadingDetails, setLoadingDetails] = useState<Set<string>>(new Set());
     const [hoveredObject, setHoveredObject] = useState<string | null>(null);
     const [imageLoaded, setImageLoaded] = useState(false);
     const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
     const [svgViewBox, setSvgViewBox] = useState({ x: 0, y: 0, width: 0, height: 0 });
+
+    // Load rooms from API
+    useEffect(() => {
+        const loadRooms = async () => {
+            try {
+                console.log('🔄 Loading rooms from API...');
+                const roomsData = await getRooms({ limit: 1000 });
+                const roomsMap = new Map<string, RoomType>();
+
+                roomsData.forEach(room => {
+                    if (room.svg_id) {
+                        roomsMap.set(room.svg_id, room);
+                    }
+                });
+
+                console.log(`✅ Loaded ${roomsMap.size} rooms from API`);
+                setRooms(roomsMap);
+            } catch (error) {
+                console.error('❌ Error loading rooms:', error);
+            }
+        };
+
+        loadRooms();
+    }, []);
+
+    // Load detailed room data on hover
+    const loadRoomDetails = async (svgId: string, roomId: number) => {
+        // Check if we already have recent data (less than 30 seconds old)
+        const existing = roomDetails.get(svgId);
+        if (existing && Date.now() - existing.loadedAt < 30000) {
+            console.log(`📦 Using cached data for room ${roomId}`);
+            return;
+        }
+
+        // Check if already loading
+        if (loadingDetails.has(svgId)) {
+            console.log(`⏳ Already loading data for room ${roomId}`);
+            return;
+        }
+
+        try {
+            setLoadingDetails(prev => new Set(prev).add(svgId));
+            console.log(`🔄 Loading detailed data for room ${roomId} (SVG: ${svgId})`);
+
+            // Fetch room details and bookings in parallel
+            const today = new Date().toISOString().split('T')[0];
+            const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+            const nextWeek = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0];
+
+            const [roomData, todayBookingsData, upcomingBookingsData] = await Promise.all([
+                getRoom(roomId),
+                getRoomBookings(roomId, today, today, 'upcoming').catch(() => []),
+                getRoomBookings(roomId, tomorrow, nextWeek, 'upcoming').catch(() => [])
+            ]);
+
+            // Calculate if available now
+            const now = new Date();
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+
+            let isAvailableNow = roomData.is_available;
+            let nextAvailableTime: string | undefined;
+
+            if (todayBookingsData.length > 0) {
+                const sortedBookings = [...todayBookingsData].sort((a, b) =>
+                    a.start_time.localeCompare(b.start_time)
+                );
+
+                for (const booking of sortedBookings) {
+                    const [startHour, startMin] = booking.start_time.split(':').map(Number);
+                    const [endHour, endMin] = booking.end_time.split(':').map(Number);
+                    const bookingStart = startHour * 60 + startMin;
+                    const bookingEnd = endHour * 60 + endMin;
+
+                    if (currentTime >= bookingStart && currentTime < bookingEnd) {
+                        isAvailableNow = false;
+                        // Find next available time
+                        const nextBooking = sortedBookings.find(b => {
+                            const [h, m] = b.start_time.split(':').map(Number);
+                            return h * 60 + m > bookingEnd;
+                        });
+
+                        if (nextBooking) {
+                            nextAvailableTime = nextBooking.start_time;
+                        } else {
+                            nextAvailableTime = booking.end_time;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            const detailedData: RoomDetailedData = {
+                room: roomData,
+                upcomingBookings: upcomingBookingsData,
+                todayBookings: todayBookingsData,
+                isAvailableNow,
+                nextAvailableTime,
+                loadedAt: Date.now()
+            };
+
+            setRoomDetails(prev => {
+                const newMap = new Map(prev);
+                newMap.set(svgId, detailedData);
+                return newMap;
+            });
+
+            console.log(`✅ Loaded detailed data for ${roomData.name}:`, {
+                todayBookings: todayBookingsData.length,
+                upcomingBookings: upcomingBookingsData.length,
+                isAvailableNow,
+                nextAvailableTime
+            });
+
+        } catch (error) {
+            console.error(`❌ Error loading room details for ${svgId}:`, error);
+        } finally {
+            setLoadingDetails(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(svgId);
+                return newSet;
+            });
+        }
+    };
+
+    // Handle hover - trigger detailed data loading
+    const handleObjectHover = (svgId: string) => {
+        setHoveredObject(svgId);
+
+        const room = rooms.get(svgId);
+        if (room) {
+            loadRoomDetails(svgId, room.id);
+        }
+    };
 
     // Parse SVG to extract objects
     useEffect(() => {
@@ -283,7 +433,7 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                                                 pointerEvents: isDisabled ? 'none' : 'auto',
                                                 borderRadius: '2px',
                                             }}
-                                            onMouseEnter={() => !isDisabled && setHoveredObject(obj.id)}
+                                            onMouseEnter={() => !isDisabled && handleObjectHover(obj.id)}
                                             onMouseLeave={() => !isDisabled && setHoveredObject(null)}
                                         >
                                             {/* Display title only on hover */}
@@ -296,60 +446,156 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                                     </TooltipTrigger>
                                     <TooltipContent
                                         side="top"
-                                        className="max-w-sm bg-slate-900 text-white border-slate-700"
+                                        className="max-w-md bg-slate-900 text-white border-slate-700 p-0"
                                     >
-                                        <div className="space-y-2">
-                                            <div className="font-bold text-lg border-b border-slate-700 pb-2">
-                                                {obj.title || obj.id}
-                                            </div>
-                                            {obj.title && (
-                                                <div className="text-xs text-slate-400">
-                                                    ID: {obj.id}
-                                                </div>
-                                            )}
-                                            <div className="grid grid-cols-2 gap-2 text-sm">
-                                                <div>
-                                                    <span className="text-slate-400">Type:</span>
-                                                    <span className="ml-2 text-white font-medium">{obj.type}</span>
-                                                </div>
-                                                <div>
-                                                    <span className="text-slate-400">Fill:</span>
-                                                    <span className="ml-2 text-white font-medium">{obj.fill}</span>
-                                                </div>
-                                                <div>
-                                                    <span className="text-slate-400">X:</span>
-                                                    <span className="ml-2 text-white font-medium">{obj.x.toFixed(1)}</span>
-                                                </div>
-                                                <div>
-                                                    <span className="text-slate-400">Y:</span>
-                                                    <span className="ml-2 text-white font-medium">{obj.y.toFixed(1)}</span>
-                                                </div>
-                                                <div>
-                                                    <span className="text-slate-400">Width:</span>
-                                                    <span className="ml-2 text-white font-medium">{obj.width.toFixed(1)}</span>
-                                                </div>
-                                                <div>
-                                                    <span className="text-slate-400">Height:</span>
-                                                    <span className="ml-2 text-white font-medium">{obj.height.toFixed(1)}</span>
-                                                </div>
-                                            </div>
-                                            {Object.keys(obj.properties).length > 0 && (
-                                                <div className="mt-3 pt-2 border-t border-slate-700">
-                                                    <div className="text-xs text-slate-400 mb-1">Properties:</div>
-                                                    <div className="text-xs space-y-1 max-h-32 overflow-y-auto">
-                                                        {Object.entries(obj.properties)
-                                                            .filter(([key]) => !['x', 'y', 'width', 'height', 'style'].includes(key))
-                                                            .map(([key, value]) => (
-                                                                <div key={key} className="flex gap-2">
-                                                                    <span className="text-slate-400">{key}:</span>
-                                                                    <span className="text-white font-mono">{value}</span>
+                                        {(() => {
+                                            const roomData = rooms.get(obj.id);
+                                            const detailedData = roomDetails.get(obj.id);
+                                            const isLoading = loadingDetails.has(obj.id);
+
+                                            if (roomData) {
+                                                // Use detailed data if available, otherwise use basic room data
+                                                const displayData = detailedData?.room || roomData;
+                                                const isAvailableNow = detailedData?.isAvailableNow ?? roomData.is_available;
+
+                                                return (
+                                                    <div className="p-4 space-y-3">
+                                                        {/* Room Name & Status */}
+                                                        <div className="flex items-start justify-between gap-3 border-b border-slate-700 pb-3">
+                                                            <div>
+                                                                <div className="font-bold text-lg text-white">
+                                                                    {displayData.name}
                                                                 </div>
-                                                            ))
-                                                        }
+                                                                <div className="text-xs text-slate-400 mt-1">
+                                                                    {displayData.description}
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex flex-col items-end gap-1">
+                                                                <div className="flex items-center gap-1 text-xs">
+                                                                    {isAvailableNow ? (
+                                                                        <>
+                                                                            <CheckCircle className="h-4 w-4 text-green-400" />
+                                                                            <span className="text-green-400 font-semibold">Available Now</span>
+                                                                        </>
+                                                                    ) : (
+                                                                        <>
+                                                                            <XCircle className="h-4 w-4 text-red-400" />
+                                                                            <span className="text-red-400 font-semibold">Occupied</span>
+                                                                        </>
+                                                                    )}
+                                                                </div>
+                                                                {!isAvailableNow && detailedData?.nextAvailableTime && (
+                                                                    <div className="text-xs text-slate-400">
+                                                                        Free at {detailedData.nextAvailableTime}
+                                                                    </div>
+                                                                )}
+                                                                {isLoading && (
+                                                                    <div className="text-xs text-blue-400 animate-pulse">
+                                                                        Loading...
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>                                                        {/* Room Details */}
+                                                        <div className="grid grid-cols-2 gap-3 text-sm">
+                                                            <div className="flex items-center gap-2">
+                                                                <Users className="h-4 w-4 text-blue-400" />
+                                                                <div>
+                                                                    <div className="text-slate-400 text-xs">Capacity</div>
+                                                                    <div className="text-white font-medium">{displayData.capacity} {displayData.capacity === 1 ? 'person' : 'people'}</div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <DollarSign className="h-4 w-4 text-green-400" />
+                                                                <div>
+                                                                    <div className="text-slate-400 text-xs">Price</div>
+                                                                    <div className="text-white font-medium">${displayData.price}/hr</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Today's Bookings */}
+                                                        {detailedData && detailedData.todayBookings.length > 0 && (
+                                                            <div className="border-t border-slate-700 pt-3">
+                                                                <div className="text-xs text-slate-400 mb-2 font-semibold">Today's Schedule ({detailedData.todayBookings.length})</div>
+                                                                <div className="space-y-1 max-h-24 overflow-y-auto">
+                                                                    {detailedData.todayBookings.slice(0, 3).map((booking, idx) => (
+                                                                        <div key={idx} className="text-xs flex items-center gap-2 bg-slate-800/50 p-2 rounded">
+                                                                            <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+                                                                            <span className="text-white font-medium">
+                                                                                {booking.start_time.substring(0, 5)} - {booking.end_time.substring(0, 5)}
+                                                                            </span>
+                                                                            <span className="text-slate-400 text-[10px]">
+                                                                                ({booking.status})
+                                                                            </span>
+                                                                        </div>
+                                                                    ))}
+                                                                    {detailedData.todayBookings.length > 3 && (
+                                                                        <div className="text-xs text-slate-500 text-center">
+                                                                            +{detailedData.todayBookings.length - 3} more
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Upcoming Bookings */}
+                                                        {detailedData && detailedData.upcomingBookings.length > 0 && (
+                                                            <div className="border-t border-slate-700 pt-3">
+                                                                <div className="text-xs text-slate-400 mb-2 font-semibold">Next 7 Days ({detailedData.upcomingBookings.length} bookings)</div>
+                                                                <div className="text-xs text-slate-300">
+                                                                    {detailedData.upcomingBookings.length} upcoming reservations
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Amenities */}
+                                                        {displayData.amenities && displayData.amenities.length > 0 && (
+                                                            <div className="border-t border-slate-700 pt-3">
+                                                                <div className="text-xs text-slate-400 mb-2">Amenities</div>
+                                                                <div className="flex flex-wrap gap-1">
+                                                                    {displayData.amenities.map((amenity, idx) => (
+                                                                        <span
+                                                                            key={idx}
+                                                                            className="text-xs px-2 py-1 bg-slate-800 rounded-full text-slate-300"
+                                                                        >
+                                                                            {amenity}
+                                                                        </span>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {/* View Details Button */}
+                                                        <Button
+                                                            size="sm"
+                                                            className="w-full mt-2 gap-2"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                navigate(`/rooms/${roomData.id}`);
+                                                            }}
+                                                        >
+                                                            View Details & Book
+                                                            <ExternalLink className="h-4 w-4" />
+                                                        </Button>
                                                     </div>
-                                                </div>
-                                            )}
-                                        </div>
+                                                );
+                                            } else {
+                                                // Fallback to basic SVG info if no room data
+                                                return (
+                                                    <div className="p-4 space-y-2">
+                                                        <div className="font-bold text-lg border-b border-slate-700 pb-2">
+                                                            {obj.title || obj.id}
+                                                        </div>
+                                                        <div className="text-xs text-slate-400">
+                                                            No room data available for this area
+                                                        </div>
+                                                        <div className="text-xs text-slate-500">
+                                                            SVG ID: {obj.id}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            }
+                                        })()}
                                     </TooltipContent>
                                 </Tooltip>
                             );
