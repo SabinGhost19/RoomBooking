@@ -1727,7 +1727,10 @@
        width="2996.749"
        height="9.7773209"
        x="388.64148"
-       y="311.61343" />
+       y="311.61343">
+      <title
+         id="title496">Wall</title>
+    </rect>
     <rect
        style="fill:#000080;stroke-width:1.28614"
        id="rect224"
@@ -1741,14 +1744,20 @@
        width="2996"
        height="9"
        x="386"
-       y="1265" />
+       y="1265">
+      <title
+         id="title498">Wall</title>
+    </rect>
     <rect
        style="fill:#000080;stroke-width:2.46102"
        id="rect226"
        width="11"
        height="963"
        x="387"
-       y="310" />
+       y="310">
+      <title
+         id="title497">Wall</title>
+    </rect>
     <rect
        style="fill:#504416"
        id="rect227"
@@ -2249,126 +2258,180 @@
        width="184.81653"
        height="13.879501"
        x="878.79163"
-       y="528.88208" />
+       y="528.88208">
+      <title
+         id="title495">Wall</title>
+    </rect>
     <rect
        style="fill:#000080;fill-opacity:1"
        id="rect288"
        width="187.73853"
        height="13.149001"
        x="1127.1616"
-       y="531.07355" />
+       y="531.07355">
+      <title
+         id="title499">Wall</title>
+    </rect>
     <rect
        style="fill:#000080;fill-opacity:1"
        id="rect289"
        width="181.89452"
        height="10.957501"
        x="1378.4536"
-       y="531.80408" />
+       y="531.80408">
+      <title
+         id="title500">Wall</title>
+    </rect>
     <rect
        style="fill:#000080;fill-opacity:1"
        id="rect290"
        width="183.35551"
        height="11.688002"
        x="1627.5542"
-       y="532.53455" />
+       y="532.53455">
+      <title
+         id="title501">Wall</title>
+    </rect>
     <rect
        style="fill:#000080;fill-opacity:1"
        id="rect291"
        width="182.62502"
        height="12.418502"
        x="2016.1802"
-       y="531.07355" />
+       y="531.07355">
+      <title
+         id="title502">Wall</title>
+    </rect>
     <rect
        style="fill:#000080;fill-opacity:1"
        id="rect292"
        width="184.08601"
        height="12.418502"
        x="2264.5503"
-       y="531.80408" />
+       y="531.80408">
+      <title
+         id="title503">Wall</title>
+    </rect>
     <rect
        style="fill:#000080;fill-opacity:1"
        id="rect293"
        width="181.89452"
        height="12.418502"
        x="2515.8423"
-       y="532.53455" />
+       y="532.53455">
+      <title
+         id="title504">Wall</title>
+    </rect>
     <rect
        style="fill:#000080;fill-opacity:1"
        id="rect294"
        width="182.62502"
        height="11.688002"
        x="2764.9429"
-       y="531.80408" />
+       y="531.80408">
+      <title
+         id="title505">Wall</title>
+    </rect>
     <rect
        style="fill:#000080;fill-opacity:1"
        id="rect295"
        width="182.62502"
        height="13.149001"
        x="3012.5823"
-       y="531.80408" />
+       y="531.80408">
+      <title
+         id="title506">Wall</title>
+    </rect>
     <rect
        style="fill:#000080;fill-opacity:1"
        id="rect296"
        width="182.62502"
        height="13.149001"
        x="3013.3127"
-       y="1038.0406" />
+       y="1038.0406">
+      <title
+         id="title507">Wall</title>
+    </rect>
     <rect
        style="fill:#000080;fill-opacity:1"
        id="rect297"
        width="183.35551"
        height="13.149001"
        x="2764.2124"
-       y="1037.3102" />
+       y="1037.3102">
+      <title
+         id="title508">Wall</title>
+    </rect>
     <rect
        style="fill:#000080;fill-opacity:1"
        id="rect298"
        width="185.54703"
        height="13.149001"
        x="2512.9204"
-       y="1038.0406" />
+       y="1038.0406">
+      <title
+         id="title509">Wall</title>
+    </rect>
     <rect
        style="fill:#000080;fill-opacity:1"
        id="rect299"
        width="186.27753"
        height="12.418502"
        x="2261.6282"
-       y="1038.0406" />
+       y="1038.0406">
+      <title
+         id="title510">Wall</title>
+    </rect>
     <rect
        style="fill:#000080;fill-opacity:1"
        id="rect300"
        width="182.62502"
        height="12.418502"
        x="2015.4497"
-       y="1038.0406" />
+       y="1038.0406">
+      <title
+         id="title511">Wall</title>
+    </rect>
     <rect
        style="fill:#000080;fill-opacity:1"
        id="rect301"
        width="181.16402"
        height="10.957501"
        x="1629.0151"
-       y="1038.7711" />
+       y="1038.7711">
+      <title
+         id="title512">Wall</title>
+    </rect>
     <rect
        style="fill:#000080;fill-opacity:1"
        id="rect302"
        width="183.35551"
        height="13.149001"
        x="1377.7231"
-       y="1038.7711" />
+       y="1038.7711">
+      <title
+         id="title513">Wall</title>
+    </rect>
     <rect
        style="fill:#000080;fill-opacity:1"
        id="rect303"
        width="183.35551"
        height="12.418502"
        x="1128.6227"
-       y="1038.0406" />
+       y="1038.0406">
+      <title
+         id="title514">Wall</title>
+    </rect>
     <rect
-       style="fill:#445016;fill-opacity:1"
+       style="fill:#000080;fill-opacity:1"
        id="rect304"
        width="184.81653"
        height="12.418502"
-       x="878.0611"
-       y="1038.0406" />
+       x="879.19305"
+       y="1038.6066">
+      <title
+         id="title515">Wall</title>
+    </rect>
     <rect
        style="fill:#d35f5f;fill-opacity:0.766784"
        id="rect317"
@@ -2440,7 +2503,7 @@
          id="title368">Bubble</title>
     </rect>
     <rect
-       style="fill:#d35f5f;fill-opacity:0.766784"
+       style="fill:#000080;fill-opacity:0.766784"
        id="rect333"
        width="87.274193"
        height="50.054317"
@@ -2728,6 +2791,586 @@
        y="606.34888">
       <title
          id="title407">CoffeePoint</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect515"
+       width="7.4914951"
+       height="224.35057"
+       x="606.02252"
+       y="318.97998">
+      <title
+         id="title516">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect516"
+       width="174.67014"
+       height="5.5200491"
+       x="604.83966"
+       y="537.02191">
+      <title
+         id="title517">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect517"
+       width="6.3086276"
+       height="41.006081"
+       x="772.80688"
+       y="583.54803">
+      <title
+         id="title518">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect518"
+       width="76.492111"
+       height="5.9143386"
+       x="771.22974"
+       y="600.10822">
+      <title
+         id="title519">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect519"
+       width="64.663437"
+       height="5.1257601"
+       x="912.77954"
+       y="600.10822">
+      <title
+         id="title520">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784;stroke-width:3.56389"
+       id="rect520"
+       width="5.9143386"
+       height="385.61487"
+       x="969.55719"
+       y="599.31964">
+      <title
+         id="title521">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect521"
+       width="65.057724"
+       height="7.0972061"
+       x="911.99097"
+       y="978.23157">
+      <title
+         id="title522">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect522"
+       width="76.097824"
+       height="7.4914951"
+       x="772.80688"
+       y="977.44299">
+      <title
+         id="title523">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect523"
+       width="8.6743631"
+       height="16.954437"
+       x="772.4126"
+       y="984.14594">
+      <title
+         id="title524">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect524"
+       width="174.27583"
+       height="5.5200491"
+       x="605.62823"
+       y="1041.3179">
+      <title
+         id="title525">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect525"
+       width="6.3086276"
+       height="225.53343"
+       x="606.8111"
+       y="1044.4722">
+      <title
+         id="title526">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect526"
+       width="108.03525"
+       height="6.7029171"
+       x="606.02252"
+       y="1150.1417">
+      <title
+         id="title527">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect527"
+       width="8.3037939"
+       height="63.410789"
+       x="705.82251"
+       y="1044.0134">
+      <title
+         id="title528">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect528"
+       width="6.0391231"
+       height="60.391228"
+       x="707.33228"
+       y="1204.0502">
+      <title
+         id="title529">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect529"
+       width="109.45911"
+       height="7.5489035"
+       x="604.66718"
+       y="425.00327">
+      <title
+         id="title530">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect530"
+       width="6.7940135"
+       height="60.391228"
+       x="705.82251"
+       y="478.60049">
+      <title
+         id="title531">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect531"
+       width="10.568465"
+       height="56.616776"
+       x="703.5578"
+       y="318.56372">
+      <title
+         id="title532">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784;stroke-width:0.797724"
+       id="rect532"
+       width="70.204803"
+       height="10.568465"
+       x="1027.4058"
+       y="602.40253">
+      <title
+         id="title533">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784;stroke-width:0.866025"
+       id="rect533"
+       width="395.56256"
+       height="11.323355"
+       x="1130.8258"
+       y="601.64764">
+      <title
+         id="title534">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect534"
+       width="9.8135748"
+       height="379.70984"
+       x="1026.6509"
+       y="600.8927">
+      <title
+         id="title535">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect535"
+       width="73.224365"
+       height="9.8135748"
+       x="1024.3862"
+       y="968.52435">
+      <title
+         id="title536">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784;stroke-width:1.58543"
+       id="rect536"
+       width="698.27356"
+       height="8.3037939"
+       x="1131.5807"
+       y="971.54388">
+      <title
+         id="title537">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect537"
+       width="14.342916"
+       height="372.91583"
+       x="1130.0709"
+       y="600.8927">
+      <title
+         id="title538">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect538"
+       width="9.8135748"
+       height="118.51778"
+       x="1513.5552"
+       y="602.40253">
+      <title
+         id="title539">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect539"
+       width="199.29106"
+       height="8.3037939"
+       x="1509.7808"
+       y="708.84204">
+      <title
+         id="title540">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect540"
+       width="9.0586843"
+       height="110.96888"
+       x="1700.0131"
+       y="603.15741">
+      <title
+         id="title541">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect541"
+       width="123.04713"
+       height="6.7940135"
+       x="1705.2974"
+       y="609.95142">
+      <title
+         id="title542">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect542"
+       width="9.0586843"
+       height="369.89627"
+       x="1817.0211"
+       y="609.19653">
+      <title
+         id="title543">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect543"
+       width="9.0586843"
+       height="376.69028"
+       x="1943.0878"
+       y="602.40253">
+      <title
+         id="title544">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784;stroke-width:1.0667"
+       id="rect544"
+       width="685.44049"
+       height="7.5489035"
+       x="1950.6367"
+       y="608.44165">
+      <title
+         id="title546">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect545"
+       width="7.5489035"
+       height="369.14139"
+       x="2629.2832"
+       y="611.46118">
+      <title
+         id="title545">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect546"
+       width="681.66602"
+       height="6.0391231"
+       x="1950.6367"
+       y="973.80859">
+      <title
+         id="title547">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect547"
+       width="149.46829"
+       height="6.0391231"
+       x="2673.0669"
+       y="600.8927">
+      <title
+         id="title548">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect548"
+       width="7.5489035"
+       height="373.67072"
+       x="2675.3315"
+       y="606.93182">
+      <title
+         id="title549">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect549"
+       width="68.695023"
+       height="6.0391231"
+       x="2673.8218"
+       y="972.29877">
+      <title
+         id="title550">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect550"
+       width="31.705395"
+       height="4.5293422"
+       x="2788.5649"
+       y="972.29877">
+      <title
+         id="title551">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect551"
+       width="6.0391231"
+       height="28.685833"
+       x="2811.2117"
+       y="605.42206">
+      <title
+         id="title552">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect552"
+       width="8.3037939"
+       height="191.74216"
+       x="2808.1921"
+       y="662.79376">
+      <title
+         id="title553">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect553"
+       width="7.5489035"
+       height="86.812393"
+       x="2809.7019"
+       y="886.99615">
+      <title
+         id="title554">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect554"
+       width="104.17487"
+       height="8.3037939"
+       x="2716.8503"
+       y="883.97662">
+      <title
+         id="title555">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect555"
+       width="93.606407"
+       height="8.3037939"
+       x="2716.8503"
+       y="823.58539">
+      <title
+         id="title556">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect556"
+       width="251.37849"
+       height="7.5489035"
+       x="2875.3774"
+       y="619.76501">
+      <title
+         id="title557">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect557"
+       width="9.8135748"
+       height="234.01601"
+       x="2873.8677"
+       y="727.71429">
+      <title
+         id="title558">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect558"
+       width="209.85953"
+       height="6.0391231"
+       x="2912.3669"
+       y="956.44611">
+      <title
+         id="title559">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect559"
+       width="49.822765"
+       height="7.5489035"
+       x="3156.1965"
+       y="620.5199">
+      <title
+         id="title560">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect560"
+       width="133.6156"
+       height="9.8135748"
+       x="3241.4993"
+       y="619.01007">
+      <title
+         id="title561">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect561"
+       width="172.11501"
+       height="6.7940135"
+       x="3200.7351"
+       y="955.69122">
+      <title
+         id="title562">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect562"
+       width="48.312984"
+       height="9.8135748"
+       x="3156.9514"
+       y="953.42651">
+      <title
+         id="title563">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect563"
+       width="8.3037939"
+       height="90.586845"
+       x="3246.0286"
+       y="960.9754">
+      <title
+         id="title564">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect564"
+       width="9.0586843"
+       height="107.19444"
+       x="3247.5383"
+       y="1159.5116">
+      <title
+         id="title565">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect565"
+       width="8.3037939"
+       height="34.724957"
+       x="3247.5383"
+       y="1083.2677">
+      <title
+         id="title566">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect566"
+       width="113.23355"
+       height="7.5489035"
+       x="3257.3518"
+       y="1094.5911">
+      <title
+         id="title567">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect567"
+       width="122.29224"
+       height="7.5489035"
+       x="3253.5774"
+       y="535.21729">
+      <title
+         id="title568">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784;stroke-width:1.31101"
+       id="rect568"
+       width="9.0586843"
+       height="166.07588"
+       x="3247.5383"
+       y="320.07352">
+      <title
+         id="title569">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect569"
+       width="9.0586843"
+       height="33.970066"
+       x="3246.0286"
+       y="523.89392">
+      <title
+         id="title570">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect570"
+       width="7.5489035"
+       height="30.950504"
+       x="3246.7834"
+       y="591.07916">
+      <title
+         id="title571">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect571"
+       width="12.401046"
+       height="333.45035"
+       x="3013.4541"
+       y="628.31964">
+      <title
+         id="title572">Wall</title>
+    </rect>
+    <rect
+       style="fill:#000080;fill-opacity:0.766784"
+       id="rect572"
+       width="152.94623"
+       height="13.778939"
+       x="2874.2869"
+       y="837.75952">
+      <title
+         id="title573">Wall</title>
     </rect>
   </g>
 </svg>

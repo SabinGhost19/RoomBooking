@@ -55,7 +55,7 @@ const Index = () => {
 
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <Link
-                  to="/booking"
+                  to="/map"
                   className="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-amber-500 text-slate-900 rounded-lg font-semibold text-lg hover:bg-amber-400 transition-all duration-200 shadow-xl hover:shadow-2xl hover:shadow-amber-500/50"
                 >
                   <BeerMugIcon className="w-6 h-6" />
