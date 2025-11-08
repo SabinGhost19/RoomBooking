@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan 3D - Vizualizare Camere și Pereți</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        #container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            max-width: 350px;
+            backdrop-filter: blur(10px);
+        }
+
+        #info h1 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        #info p {
+            margin: 8px 0;
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .controls button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .controls button:active {
+            transform: translateY(0);
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 8px;
+        }
+
+        .slider-container label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            min-width: 120px;
+        }
+
+        .slider-container input[type="range"] {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .slider-container span {
+            min-width: 50px;
+            text-align: right;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 200;
+            text-align: center;
+        }
+
+        #loading h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container"></div>
+
+    <div id="loading">
+        <h2>Se încarcă planul 3D...</h2>
+        <div class="spinner"></div>
+    </div>
+
+    <div id="info">
+        <h1>🏢 Vizualizare Plan 3D</h1>
+        <p><strong>Controale:</strong></p>
+        <p>🖱️ Click stânga + drag: Rotire cameră</p>
+        <p>🖱️ Click dreapta + drag: Panoramare</p>
+        <p>🎯 Scroll: Zoom</p>
+        <p><strong>Camere detectate:</strong> <span id="roomCount">0</span></p>
+        <p><strong>Pereți detectați:</strong> <span id="wallCount">0</span></p>
+    </div>
+
+    <div class="controls">
+        <button id="resetView">🔄 Resetare Vedere</button>
+        <button id="toggleWalls">🧱 Toggle Pereți</button>
+        <button id="toggleRooms">🏠 Toggle Camere</button>
+        <button id="toggleLabels">🏷️ Toggle Etichete</button>
+
+        <div class="slider-container">
+            <label for="wallHeight">Înălțime Pereți:</label>
+            <input type="range" id="wallHeight" min="50" max="500" value="250" step="10">
+            <span id="wallHeightValue">250</span>
+        </div>
+
+        <div class="slider-container">
+            <label for="floorHeight">Înălțime Podea:</label>
+            <input type="range" id="floorHeight" min="-100" max="100" value="0" step="5">
+            <span id="floorHeightValue">0</span>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script>
+        // Variabile globale
+        let scene, camera, renderer, controls;
+        let wallsGroup, roomsGroup, labelsGroup;
+        let svgData = null;
+        let wallHeight = 250;
+        let floorHeight = 0;
+        let showWalls = true;
+        let showRooms = true;
+        let showLabels = true;
+
+        // Inițializare scenă Three.js
+        function initScene() {
+            const container = document.getElementById('container');
+
+            // Scenă
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xf0f0f0);
+            scene.fog = new THREE.Fog(0xf0f0f0, 1000, 5000);
+
+            // Cameră
+            camera = new THREE.PerspectiveCamera(
+                60,
+                window.innerWidth / window.innerHeight,
+                1,
+                10000
+            );
+            camera.position.set(1500, 1200, 1500);
+            camera.lookAt(0, 0, 0);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+
+            // Controale orbită
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.screenSpacePanning = true;
+            controls.minDistance = 100;
+            controls.maxDistance = 5000;
+            controls.maxPolarAngle = Math.PI / 2;
+
+            // Grupuri pentru organizare
+            wallsGroup = new THREE.Group();
+            wallsGroup.name = 'Walls';
+            scene.add(wallsGroup);
+
+            roomsGroup = new THREE.Group();
+            roomsGroup.name = 'Rooms';
+            scene.add(roomsGroup);
+
+            labelsGroup = new THREE.Group();
+            labelsGroup.name = 'Labels';
+            scene.add(labelsGroup);
+
+            // Lumini
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight1.position.set(1000, 1500, 1000);
+            directionalLight1.castShadow = true;
+            directionalLight1.shadow.mapSize.width = 2048;
+            directionalLight1.shadow.mapSize.height = 2048;
+            scene.add(directionalLight1);
+
+            const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.4);
+            directionalLight2.position.set(-1000, 1000, -1000);
+            scene.add(directionalLight2);
+
+            const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.3);
+            scene.add(hemisphereLight);
+
+            // Grid ajutător
+            const gridHelper = new THREE.GridHelper(4000, 50, 0x888888, 0xcccccc);
+            scene.add(gridHelper);
+
+            // Axe ajutătoare
+            const axesHelper = new THREE.AxesHelper(500);
+            scene.add(axesHelper);
+
+            // Event listeners
+            window.addEventListener('resize', onWindowResize, false);
+
+            animate();
+        }
+
+        // Încărcare și parsare SVG
+        async function loadSVG() {
+            try {
+                const response = await fetch('floor-plan.svg');
+                const svgText = await response.text();
+                const parser = new DOMParser();
+                svgData = parser.parseFromString(svgText, 'image/svg+xml');
+
+                parseSVGAndCreate3D();
+
+                document.getElementById('loading').style.display = 'none';
+            } catch (error) {
+                console.error('Eroare la încărcarea SVG:', error);
+                document.getElementById('loading').innerHTML = '<h2>Eroare la încărcare!</h2><p>' + error.message + '</p>';
+            }
+        }
+
+        // Parsare SVG și creare obiecte 3D
+        function parseSVGAndCreate3D() {
+            if (!svgData) return;
+
+            // Extrage informații din SVG
+            const svg = svgData.querySelector('svg');
+            const viewBox = svg.getAttribute('viewBox').split(' ').map(Number);
+            const width = viewBox[2];
+            const height = viewBox[3];
+
+            // Centru SVG pentru centrare
+            const centerX = width / 2;
+            const centerY = height / 2;
+
+            let wallCount = 0;
+            let roomCount = 0;
+
+            // Extrage toate liniile (pereți potențiali)
+            const lines = svgData.querySelectorAll('line');
+            const paths = svgData.querySelectorAll('path');
+            const rects = svgData.querySelectorAll('rect');
+            const polygons = svgData.querySelectorAll('polygon');
+            const polylines = svgData.querySelectorAll('polyline');
+
+            // Procesare linii (pereți)
+            lines.forEach(line => {
+                const x1 = parseFloat(line.getAttribute('x1')) - centerX;
+                const y1 = parseFloat(line.getAttribute('y1')) - centerY;
+                const x2 = parseFloat(line.getAttribute('x2')) - centerX;
+                const y2 = parseFloat(line.getAttribute('y2')) - centerY;
+
+                const stroke = line.getAttribute('stroke');
+                const strokeWidth = parseFloat(line.getAttribute('stroke-width')) || 1;
+
+                // Determină dacă este perete (linii mai groase sau negre)
+                if (strokeWidth > 0.5 || stroke === '#000000' || stroke === 'black') {
+                    createWall(x1, -y1, x2, -y2, strokeWidth);
+                    wallCount++;
+                }
+            });
+
+            // Procesare dreptunghiuri (camere potențiale)
+            rects.forEach(rect => {
+                const x = parseFloat(rect.getAttribute('x')) - centerX;
+                const y = parseFloat(rect.getAttribute('y')) - centerY;
+                const w = parseFloat(rect.getAttribute('width'));
+                const h = parseFloat(rect.getAttribute('height'));
+                const fill = rect.getAttribute('fill');
+
+                // Creează cameră dacă are fill și nu este transparent
+                if (fill && fill !== 'none' && w > 50 && h > 50) {
+                    createRoom([
+                        { x: x, y: -y },
+                        { x: x + w, y: -y },
+                        { x: x + w, y: -(y + h) },
+                        { x: x, y: -(y + h) }
+                    ], fill);
+                    roomCount++;
+                }
+            });
+
+            // Procesare poligoane (camere cu forme complexe)
+            polygons.forEach(polygon => {
+                const points = polygon.getAttribute('points');
+                const fill = polygon.getAttribute('fill');
+
+                if (points && fill && fill !== 'none') {
+                    const coords = parsePointsString(points, centerX, centerY);
+                    if (coords.length >= 3) {
+                        createRoom(coords, fill);
+                        roomCount++;
+                    }
+                }
+            });
+
+            // Procesare polylines (pereți complexi)
+            polylines.forEach(polyline => {
+                const points = polyline.getAttribute('points');
+                const stroke = polyline.getAttribute('stroke');
+                const strokeWidth = parseFloat(polyline.getAttribute('stroke-width')) || 1;
+
+                if (points && strokeWidth > 0.5) {
+                    const coords = parsePointsString(points, centerX, centerY);
+                    for (let i = 0; i < coords.length - 1; i++) {
+                        createWall(coords[i].x, coords[i].y, coords[i + 1].x, coords[i + 1].y, strokeWidth);
+                        wallCount++;
+                    }
+                }
+            });
+
+            // Procesare paths (pereți și camere complexe)
+            paths.forEach(path => {
+                const d = path.getAttribute('d');
+                const fill = path.getAttribute('fill');
+                const stroke = path.getAttribute('stroke');
+                const strokeWidth = parseFloat(path.getAttribute('stroke-width')) || 1;
+
+                if (d) {
+                    const coords = parsePathData(d, centerX, centerY);
+
+                    // Dacă are fill, creează cameră
+                    if (fill && fill !== 'none' && coords.length >= 3) {
+                        createRoom(coords, fill);
+                        roomCount++;
+                    }
+
+                    // Dacă are stroke gros, creează pereți
+                    if (stroke && stroke !== 'none' && strokeWidth > 0.5) {
+                        for (let i = 0; i < coords.length - 1; i++) {
+                            createWall(coords[i].x, coords[i].y, coords[i + 1].x, coords[i + 1].y, strokeWidth);
+                            wallCount++;
+                        }
+                    }
+                }
+            });
+
+            // Dacă nu s-au găsit pereți din linii, încearcă să extragi din path-uri
+            if (wallCount === 0) {
+                // Extrage contururi din toate elementele
+                const allElements = svgData.querySelectorAll('*');
+                allElements.forEach(element => {
+                    const tagName = element.tagName.toLowerCase();
+                    if (['line', 'path', 'polyline', 'polygon'].includes(tagName)) {
+                        const stroke = element.getAttribute('stroke');
+                        const strokeWidth = parseFloat(element.getAttribute('stroke-width')) || 1;
+
+                        // Procesează orice element cu stroke vizibil
+                        if (stroke && stroke !== 'none') {
+                            processElementForWalls(element, centerX, centerY, strokeWidth);
+                            wallCount++;
+                        }
+                    }
+                });
+            }
+
+            // Actualizează contoarele
+            document.getElementById('roomCount').textContent = roomCount;
+            document.getElementById('wallCount').textContent = wallCount;
+
+            console.log(`Procesate: ${wallCount} pereți, ${roomCount} camere`);
+        }
+
+        // Parsare string de puncte
+        function parsePointsString(pointsStr, centerX, centerY) {
+            const coords = [];
+            const points = pointsStr.trim().split(/[\s,]+/);
+
+            for (let i = 0; i < points.length - 1; i += 2) {
+                coords.push({
+                    x: parseFloat(points[i]) - centerX,
+                    y: -(parseFloat(points[i + 1]) - centerY)
+                });
+            }
+
+            return coords;
+        }
+
+        // Parsare date path SVG
+        function parsePathData(d, centerX, centerY) {
+            const coords = [];
+            const commands = d.match(/[a-df-z][^a-df-z]*/gi);
+
+            let currentX = 0, currentY = 0;
+            let startX = 0, startY = 0;
+
+            commands.forEach(cmd => {
+                const type = cmd[0];
+                const args = cmd.slice(1).trim().split(/[\s,]+/).map(Number);
+
+                switch (type.toUpperCase()) {
+                    case 'M': // Move to
+                        currentX = type === 'M' ? args[0] : currentX + args[0];
+                        currentY = type === 'M' ? args[1] : currentY + args[1];
+                        startX = currentX;
+                        startY = currentY;
+                        coords.push({ x: currentX - centerX, y: -(currentY - centerY) });
+                        break;
+                    case 'L': // Line to
+                        currentX = type === 'L' ? args[0] : currentX + args[0];
+                        currentY = type === 'L' ? args[1] : currentY + args[1];
+                        coords.push({ x: currentX - centerX, y: -(currentY - centerY) });
+                        break;
+                    case 'H': // Horizontal line
+                        currentX = type === 'H' ? args[0] : currentX + args[0];
+                        coords.push({ x: currentX - centerX, y: -(currentY - centerY) });
+                        break;
+                    case 'V': // Vertical line
+                        currentY = type === 'V' ? args[0] : currentY + args[0];
+                        coords.push({ x: currentX - centerX, y: -(currentY - centerY) });
+                        break;
+                    case 'Z': // Close path
+                        if (currentX !== startX || currentY !== startY) {
+                            coords.push({ x: startX - centerX, y: -(startY - centerY) });
+                        }
+                        break;
+                }
+            });
+
+            return coords;
+        }
+
+        // Procesare element pentru pereți
+        function processElementForWalls(element, centerX, centerY, strokeWidth) {
+            const tagName = element.tagName.toLowerCase();
+
+            if (tagName === 'line') {
+                const x1 = parseFloat(element.getAttribute('x1')) - centerX;
+                const y1 = -(parseFloat(element.getAttribute('y1')) - centerY);
+                const x2 = parseFloat(element.getAttribute('x2')) - centerX;
+                const y2 = -(parseFloat(element.getAttribute('y2')) - centerY);
+                createWall(x1, y1, x2, y2, strokeWidth);
+            } else if (tagName === 'path') {
+                const d = element.getAttribute('d');
+                if (d) {
+                    const coords = parsePathData(d, centerX, centerY);
+                    for (let i = 0; i < coords.length - 1; i++) {
+                        createWall(coords[i].x, coords[i].y, coords[i + 1].x, coords[i + 1].y, strokeWidth);
+                    }
+                }
+            }
+        }
+
+        // Creare perete 3D
+        function createWall(x1, y1, x2, y2, thickness = 5) {
+            const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+
+            const geometry = new THREE.BoxGeometry(length, wallHeight, Math.max(thickness, 3));
+            const material = new THREE.MeshStandardMaterial({
+                color: 0x8B4513,
+                roughness: 0.8,
+                metalness: 0.2,
+                side: THREE.DoubleSide
+            });
+
+            const wall = new THREE.Mesh(geometry, material);
+            wall.position.set(
+                (x1 + x2) / 2,
+                wallHeight / 2 + floorHeight,
+                (y1 + y2) / 2
+            );
+            wall.rotation.y = -angle;
+            wall.castShadow = true;
+            wall.receiveShadow = true;
+
+            wallsGroup.add(wall);
+        }
+
+        // Creare cameră (podea) 3D
+        function createRoom(points, fillColor) {
+            if (points.length < 3) return;
+
+            // Creare shape din puncte
+            const shape = new THREE.Shape();
+            shape.moveTo(points[0].x, points[0].y);
+
+            for (let i = 1; i < points.length; i++) {
+                shape.lineTo(points[i].x, points[i].y);
+            }
+            shape.closePath();
+
+            // Geometrie extrudată pentru podea
+            const extrudeSettings = {
+                depth: 10,
+                bevelEnabled: false
+            };
+
+            const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+
+            // Culoare din SVG sau aleatorie
+            let color = 0xcccccc;
+            if (fillColor && fillColor.startsWith('#')) {
+                color = parseInt(fillColor.substring(1), 16);
+            } else if (fillColor && fillColor.startsWith('rgb')) {
+                // Parse RGB
+                const matches = fillColor.match(/\d+/g);
+                if (matches && matches.length >= 3) {
+                    color = (parseInt(matches[0]) << 16) | (parseInt(matches[1]) << 8) | parseInt(matches[2]);
+                }
+            } else {
+                // Culoare aleatorie pastel
+                color = Math.random() * 0xffffff;
+            }
+
+            const material = new THREE.MeshStandardMaterial({
+                color: color,
+                roughness: 0.7,
+                metalness: 0.1,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.7
+            });
+
+            const room = new THREE.Mesh(geometry, material);
+            room.rotation.x = -Math.PI / 2;
+            room.position.y = floorHeight;
+            room.receiveShadow = true;
+
+            roomsGroup.add(room);
+        }
+
+        // Resize
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // Animație
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // Resetare vedere
+        function resetView() {
+            camera.position.set(1500, 1200, 1500);
+            camera.lookAt(0, 0, 0);
+            controls.reset();
+        }
+
+        // Toggle vizibilitate
+        function toggleWalls() {
+            showWalls = !showWalls;
+            wallsGroup.visible = showWalls;
+        }
+
+        function toggleRooms() {
+            showRooms = !showRooms;
+            roomsGroup.visible = showRooms;
+        }
+
+        function toggleLabels() {
+            showLabels = !showLabels;
+            labelsGroup.visible = showLabels;
+        }
+
+        // Actualizare înălțime pereți
+        function updateWallHeight(newHeight) {
+            wallHeight = newHeight;
+
+            // Reface pereții
+            wallsGroup.children.forEach(wall => {
+                wall.geometry.dispose();
+                wall.geometry = new THREE.BoxGeometry(
+                    wall.geometry.parameters.width || 100,
+                    wallHeight,
+                    wall.geometry.parameters.depth || 5
+                );
+                wall.position.y = wallHeight / 2 + floorHeight;
+            });
+        }
+
+        // Actualizare înălțime podea
+        function updateFloorHeight(newHeight) {
+            floorHeight = newHeight;
+
+            roomsGroup.children.forEach(room => {
+                room.position.y = floorHeight;
+            });
+
+            wallsGroup.children.forEach(wall => {
+                wall.position.y = wallHeight / 2 + floorHeight;
+            });
+        }
+
+        // Event listeners pentru controale
+        document.getElementById('resetView').addEventListener('click', resetView);
+        document.getElementById('toggleWalls').addEventListener('click', toggleWalls);
+        document.getElementById('toggleRooms').addEventListener('click', toggleRooms);
+        document.getElementById('toggleLabels').addEventListener('click', toggleLabels);
+
+        document.getElementById('wallHeight').addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            document.getElementById('wallHeightValue').textContent = value;
+            updateWallHeight(value);
+        });
+
+        document.getElementById('floorHeight').addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            document.getElementById('floorHeightValue').textContent = value;
+            updateFloorHeight(value);
+        });
+
+        // Inițializare
+        initScene();
+        loadSVG();
+    </script>
+</body>
+
+</html>

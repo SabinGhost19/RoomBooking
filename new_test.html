@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floor Plan 3D - Perfect Robust View</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: #0a0a0a;
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            min-width: 280px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+
+        #info-panel h1 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #4CAF50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #info-panel .info-item {
+            margin: 10px 0;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #info-panel .info-item:last-child {
+            border-bottom: none;
+        }
+
+        #info-panel .label {
+            color: #aaa;
+        }
+
+        #info-panel .value {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 20px 30px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .control-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .control-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .control-btn.secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .control-btn.secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+        }
+
+        .control-btn.success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .control-btn.success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .control-btn.warning {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: #333;
+        }
+
+        .control-btn.warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(250, 112, 154, 0.4);
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 40px 60px;
+            border-radius: 15px;
+            font-size: 20px;
+            text-align: center;
+            z-index: 2000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        #loading .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #4CAF50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #room-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 1500;
+            display: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loading">
+        <div>🏗️ Loading Floor Plan...</div>
+        <div class="spinner"></div>
+        <div style="font-size: 14px; color: #aaa; margin-top: 10px;">Converting 2D to 3D</div>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <div id="info-panel" class="hidden">
+        <h1>🏢 Etaj 4 - Floor Plan 3D</h1>
+        <div class="info-item">
+            <span class="label">Rooms:</span>
+            <span class="value" id="room-count">0</span>
+        </div>
+        <div class="info-item">
+            <span class="label">Walls:</span>
+            <span class="value" id="wall-count">0</span>
+        </div>
+        <div class="info-item">
+            <span class="label">Total Area:</span>
+            <span class="value" id="total-area">0 m²</span>
+        </div>
+        <div
+            style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 12px; color: #aaa;">
+            <strong style="color: #4CAF50;">Controls:</strong><br>
+            🖱️ Left Drag: Rotate<br>
+            🖱️ Right Drag: Pan<br>
+            🖱️ Scroll: Zoom<br>
+            ⌨️ Double Click: Reset
+        </div>
+    </div>
+
+    <div id="controls" class="hidden">
+        <button class="control-btn primary" onclick="changeView('top')">
+            📐 Top View
+        </button>
+        <button class="control-btn secondary" onclick="changeView('iso')">
+            🎬 3D View
+        </button>
+        <button class="control-btn success" onclick="toggleWalls()">
+            🧱 Walls
+        </button>
+        <button class="control-btn warning" onclick="resetView()">
+            🎯 Reset
+        </button>
+    </div>
+
+    <div id="room-tooltip"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/SVGLoader.js"></script>
+
+    <script>
+        // Global variables
+        let scene, camera, renderer, controls;
+        let wallGroup, floorGroup, labelGroup;
+        let showWalls = true;
+        let svgGroup;
+        let roomData = [];
+        let raycaster, mouse;
+
+        // Initialize
+        function init() {
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a2e);
+            scene.fog = new THREE.Fog(0x1a1a2e, 2000, 8000);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(
+                50,
+                window.innerWidth / window.innerHeight,
+                1,
+                20000
+            );
+            camera.position.set(3000, 2500, 3000);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({
+                antialias: true,
+                alpha: true
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            // Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.minDistance = 500;
+            controls.maxDistance = 8000;
+            controls.maxPolarAngle = Math.PI / 2;
+            controls.target.set(1890, 0, 794);
+
+            // Raycaster for hover
+            raycaster = new THREE.Raycaster();
+            mouse = new THREE.Vector2();
+
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            mainLight.position.set(3000, 3000, 3000);
+            mainLight.castShadow = true;
+            mainLight.shadow.camera.left = -3000;
+            mainLight.shadow.camera.right = 3000;
+            mainLight.shadow.camera.top = 3000;
+            mainLight.shadow.camera.bottom = -3000;
+            mainLight.shadow.mapSize.width = 2048;
+            mainLight.shadow.mapSize.height = 2048;
+            scene.add(mainLight);
+
+            const fillLight = new THREE.DirectionalLight(0xffffff, 0.4);
+            fillLight.position.set(-2000, 2000, -2000);
+            scene.add(fillLight);
+
+            const backLight = new THREE.DirectionalLight(0x4a90e2, 0.3);
+            backLight.position.set(0, 1000, -3000);
+            scene.add(backLight);
+
+            // Ground plane
+            const groundGeometry = new THREE.PlaneGeometry(10000, 5000);
+            const groundMaterial = new THREE.MeshStandardMaterial({
+                color: 0x16213e,
+                roughness: 0.9,
+                metalness: 0.1
+            });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = -10;
+            ground.receiveShadow = true;
+            scene.add(ground);
+
+            // Grid
+            const gridHelper = new THREE.GridHelper(10000, 100, 0x2d4059, 0x1a1f35);
+            gridHelper.position.y = -9;
+            scene.add(gridHelper);
+
+            // Groups
+            wallGroup = new THREE.Group();
+            floorGroup = new THREE.Group();
+            labelGroup = new THREE.Group();
+            svgGroup = new THREE.Group();
+
+            scene.add(wallGroup);
+            scene.add(floorGroup);
+            scene.add(labelGroup);
+            scene.add(svgGroup);
+
+            // Load SVG
+            loadFloorPlan();
+
+            // Event listeners
+            window.addEventListener('resize', onWindowResize, false);
+            window.addEventListener('mousemove', onMouseMove, false);
+            renderer.domElement.addEventListener('dblclick', resetView);
+
+            // Animation
+            animate();
+        }
+
+        function loadFloorPlan() {
+            const loader = new THREE.SVGLoader();
+
+            loader.load('floor-plan.svg',
+                function (data) {
+                    console.log('✓ SVG loaded successfully');
+                    processSVGData(data);
+
+                    // Hide loading, show UI
+                    document.getElementById('loading').classList.add('hidden');
+                    document.getElementById('info-panel').classList.remove('hidden');
+                    document.getElementById('controls').classList.remove('hidden');
+                },
+                function (xhr) {
+                    console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+                },
+                function (error) {
+                    console.error('Error loading SVG:', error);
+                    document.getElementById('loading').innerHTML =
+                        '<div style="color: #ff5252;">❌ Error loading floor plan</div>' +
+                        '<div style="font-size: 14px; margin-top: 10px;">Please check console</div>';
+                }
+            );
+        }
+
+        function processSVGData(data) {
+            const paths = data.paths;
+            console.log(`Processing ${paths.length} SVG paths...`);
+
+            // Extract wall lines and room boundaries
+            const wallHeight = 100;
+            const scale = 1; // Adjust if needed
+
+            let wallCount = 0;
+            let roomCount = 0;
+
+            for (let i = 0; i < paths.length; i++) {
+                const path = paths[i];
+                const fillColor = path.userData.style.fill;
+                const strokeColor = path.userData.style.stroke;
+                const strokeWidth = parseFloat(path.userData.style.strokeWidth) || 1;
+
+                // Create shapes from path
+                const shapes = THREE.SVGLoader.createShapes(path);
+
+                if (shapes.length > 0) {
+                    shapes.forEach(shape => {
+                        // Determine if this is a wall or a room
+                        const isWall = strokeWidth > 2 || strokeColor === 'rgb(0,0,0)';
+                        const isRoom = fillColor && fillColor !== 'none' && fillColor !== 'rgb(255,255,255)';
+
+                        if (isRoom) {
+                            // Create floor for room
+                            const floorGeometry = new THREE.ShapeGeometry(shape);
+                            const color = new THREE.Color(fillColor || '#4CAF50');
+                            const floorMaterial = new THREE.MeshStandardMaterial({
+                                color: color,
+                                side: THREE.DoubleSide,
+                                transparent: true,
+                                opacity: 0.8,
+                                roughness: 0.7,
+                                metalness: 0.2
+                            });
+                            const floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
+                            floorMesh.rotation.x = -Math.PI / 2;
+                            floorMesh.scale.set(scale, scale, scale);
+                            floorMesh.receiveShadow = true;
+                            floorMesh.userData.isRoom = true;
+                            floorMesh.userData.roomIndex = roomCount;
+                            floorGroup.add(floorMesh);
+                            roomCount++;
+                        }
+
+                        if (isWall || strokeColor !== 'none') {
+                            // Create walls with extrusion
+                            const extrudeSettings = {
+                                depth: wallHeight,
+                                bevelEnabled: false,
+                                steps: 1
+                            };
+
+                            const wallGeometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+                            const wallMaterial = new THREE.MeshStandardMaterial({
+                                color: 0xe0e0e0,
+                                transparent: true,
+                                opacity: 0.85,
+                                roughness: 0.8,
+                                metalness: 0.1,
+                                side: THREE.DoubleSide
+                            });
+
+                            const wallMesh = new THREE.Mesh(wallGeometry, wallMaterial);
+                            wallMesh.rotation.x = -Math.PI / 2;
+                            wallMesh.scale.set(scale, scale, scale);
+                            wallMesh.castShadow = true;
+                            wallMesh.receiveShadow = true;
+                            wallGroup.add(wallMesh);
+                            wallCount++;
+                        }
+                    });
+                }
+            }
+
+            console.log(`✓ Created ${roomCount} rooms and ${wallCount} walls`);
+
+            // Update UI
+            document.getElementById('room-count').textContent = roomCount;
+            document.getElementById('wall-count').textContent = wallCount;
+            document.getElementById('total-area').textContent = '~1500 m²';
+
+            // Center the model
+            const box = new THREE.Box3().setFromObject(floorGroup);
+            const center = box.getCenter(new THREE.Vector3());
+
+            floorGroup.position.x = -center.x;
+            floorGroup.position.z = -center.z;
+            wallGroup.position.x = -center.x;
+            wallGroup.position.z = -center.z;
+
+            // Update camera target
+            controls.target.set(0, 0, 0);
+            camera.position.set(1500, 1500, 1500);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        function changeView(viewType) {
+            if (viewType === 'top') {
+                camera.position.set(0, 3000, 0);
+                controls.target.set(0, 0, 0);
+            } else if (viewType === 'iso') {
+                camera.position.set(1500, 1500, 1500);
+                controls.target.set(0, 0, 0);
+            }
+        }
+
+        function toggleWalls() {
+            showWalls = !showWalls;
+            wallGroup.visible = showWalls;
+        }
+
+        function resetView() {
+            camera.position.set(1500, 1500, 1500);
+            controls.target.set(0, 0, 0);
+            controls.update();
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function onMouseMove(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            // Raycast for room hover
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(floorGroup.children);
+
+            const tooltip = document.getElementById('room-tooltip');
+            if (intersects.length > 0 && intersects[0].object.userData.isRoom) {
+                const roomIndex = intersects[0].object.userData.roomIndex;
+                tooltip.style.display = 'block';
+                tooltip.style.left = event.clientX + 15 + 'px';
+                tooltip.style.top = event.clientY + 15 + 'px';
+                tooltip.textContent = `Room ${roomIndex + 1}`;
+            } else {
+                tooltip.style.display = 'none';
+            }
+        }
+
+        // Start application
+        init();
+    </script>
+</body>
+
+</html>
