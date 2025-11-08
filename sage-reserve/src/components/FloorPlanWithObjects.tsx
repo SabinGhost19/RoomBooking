@@ -36,12 +36,26 @@ interface FloorPlanWithObjectsProps {
     imageSrc: string;
     svgObjectsSrc: string;
     className?: string;
+    occupiedRoomIds?: Set<number>;
+    onQuickBooking?: (roomId: number) => Promise<void>;
+    selectedDate?: Date;
+    startTime?: string;
+    endTime?: string;
+    isSubmitting?: boolean;
+    selectedRoomId?: number | null;
 }
 
 export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
     imageSrc,
     svgObjectsSrc,
-    className = ''
+    className = '',
+    occupiedRoomIds,
+    onQuickBooking,
+    selectedDate,
+    startTime,
+    endTime,
+    isSubmitting = false,
+    selectedRoomId = null,
 }) => {
     const navigate = useNavigate();
     const [objects, setObjects] = useState<SVGObject[]>([]);
@@ -58,19 +72,42 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
         const loadRooms = async () => {
             try {
                 console.log('🔄 Loading rooms from API...');
-                const roomsData = await getRooms({ limit: 1000 });
+                console.log('🔗 API Config:', { limit: 500 });
+                const roomsData = await getRooms({ limit: 500 });
+                console.log('📦 Raw rooms data from API:', roomsData);
+                console.log('📊 Number of rooms received:', roomsData?.length);
+                
+                if (!roomsData || roomsData.length === 0) {
+                    console.warn('⚠️ No rooms data received from API!');
+                    return;
+                }
+                
                 const roomsMap = new Map<string, RoomType>();
 
-                roomsData.forEach(room => {
+                roomsData.forEach((room, index) => {
+                    if (index < 5) { // Log first 5 rooms in detail
+                        console.log(`🔍 Room ${index}:`, {
+                            id: room.id,
+                            name: room.name,
+                            svg_id: room.svg_id,
+                            has_svg_id: !!room.svg_id
+                        });
+                    }
                     if (room.svg_id) {
                         roomsMap.set(room.svg_id, room);
                     }
                 });
 
-                console.log(`✅ Loaded ${roomsMap.size} rooms from API`);
+                console.log(`✅ Loaded ${roomsMap.size} rooms from API (out of ${roomsData.length} total)`);
+                console.log('🗺️ First 10 Rooms Map keys:', Array.from(roomsMap.keys()).slice(0, 10));
+                console.log('📋 All SVG IDs in map:', Array.from(roomsMap.keys()));
                 setRooms(roomsMap);
             } catch (error) {
                 console.error('❌ Error loading rooms:', error);
+                if (error instanceof Error) {
+                    console.error('❌ Error message:', error.message);
+                    console.error('❌ Error stack:', error.stack);
+                }
             }
         };
 
@@ -203,10 +240,12 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                 // Get viewBox
                 const viewBox = svgElement.getAttribute('viewBox');
                 console.log('📐 ViewBox:', viewBox);
+                let viewBoxData = { x: 0, y: 0, width: 0, height: 0 };
                 if (viewBox) {
                     const [x, y, width, height] = viewBox.split(' ').map(Number);
-                    setSvgViewBox({ x, y, width, height });
-                    console.log('📐 ViewBox set:', { x, y, width, height });
+                    viewBoxData = { x, y, width, height };
+                    setSvgViewBox(viewBoxData);
+                    console.log('📐 ViewBox set:', viewBoxData);
                 }
 
                 // Check for group transforms
@@ -226,11 +265,14 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                     }
                 }
 
-                // Extract all rect elements
+                // Extract all rect and path elements
                 const rects = svgDoc.querySelectorAll('rect');
+                const paths = svgDoc.querySelectorAll('path');
                 console.log('🔢 Found rect elements:', rects.length);
+                console.log('🔢 Found path elements:', paths.length);
                 const parsedObjects: SVGObject[] = [];
 
+                // Process rect elements
                 rects.forEach((rect) => {
                     const id = rect.getAttribute('id') || `rect-${parsedObjects.length}`;
                     // Get raw coordinates from rect
@@ -271,12 +313,186 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                     });
                 });
 
+                // Process path elements - extract bounding box from path data
+                paths.forEach((path) => {
+                    const id = path.getAttribute('id') || `path-${parsedObjects.length}`;
+                    const pathData = path.getAttribute('d');
+                    
+                    if (!pathData) return;
+
+                    // Extract bounding box from path - parse path coordinates manually
+                    try {
+                        // Parse path data and convert relative to absolute coordinates
+                        const commands = pathData.match(/[MmLlHhVvCcSsQqTtAaZz][^MmLlHhVvCcSsQqTtAaZz]*/g) || [];
+                        
+                        let currentX = 0;
+                        let currentY = 0;
+                        const absoluteCoords: { x: number; y: number }[] = [];
+
+                        commands.forEach(cmd => {
+                            const type = cmd[0];
+                            const args = cmd.slice(1).trim().match(/-?\d+\.?\d*/g)?.map(parseFloat) || [];
+
+                            switch (type) {
+                                case 'M': // Move absolute
+                                    currentX = args[0];
+                                    currentY = args[1];
+                                    absoluteCoords.push({ x: currentX, y: currentY });
+                                    break;
+                                case 'm': // Move relative
+                                    currentX += args[0];
+                                    currentY += args[1];
+                                    absoluteCoords.push({ x: currentX, y: currentY });
+                                    break;
+                                case 'L': // Line absolute
+                                    currentX = args[0];
+                                    currentY = args[1];
+                                    absoluteCoords.push({ x: currentX, y: currentY });
+                                    break;
+                                case 'l': // Line relative
+                                    currentX += args[0];
+                                    currentY += args[1];
+                                    absoluteCoords.push({ x: currentX, y: currentY });
+                                    break;
+                                case 'H': // Horizontal line absolute
+                                    currentX = args[0];
+                                    absoluteCoords.push({ x: currentX, y: currentY });
+                                    break;
+                                case 'h': // Horizontal line relative
+                                    currentX += args[0];
+                                    absoluteCoords.push({ x: currentX, y: currentY });
+                                    break;
+                                case 'V': // Vertical line absolute
+                                    currentY = args[0];
+                                    absoluteCoords.push({ x: currentX, y: currentY });
+                                    break;
+                                case 'v': // Vertical line relative
+                                    currentY += args[0];
+                                    absoluteCoords.push({ x: currentX, y: currentY });
+                                    break;
+                                case 'Z':
+                                case 'z': // Close path
+                                    break;
+                                default:
+                                    // For other commands, extract pairs of coordinates
+                                    for (let i = 0; i < args.length; i += 2) {
+                                        if (type === type.toUpperCase()) {
+                                            // Absolute
+                                            currentX = args[i];
+                                            currentY = args[i + 1];
+                                        } else {
+                                            // Relative
+                                            currentX += args[i];
+                                            currentY += args[i + 1];
+                                        }
+                                        absoluteCoords.push({ x: currentX, y: currentY });
+                                    }
+                            }
+                        });
+
+                        if (absoluteCoords.length < 2) {
+                            console.warn(`⚠️ Not enough coordinates in path ${id}`);
+                            return;
+                        }
+
+                        // Calculate bounding box from absolute coordinates
+                        const xCoords = absoluteCoords.map(c => c.x);
+                        const yCoords = absoluteCoords.map(c => c.y);
+
+                        const rawX = Math.min(...xCoords);
+                        const rawY = Math.min(...yCoords);
+                        const maxX = Math.max(...xCoords);
+                        const maxY = Math.max(...yCoords);
+                        let width = maxX - rawX;
+                        let height = maxY - rawY;
+
+                        // Apply group transform
+                        const x = rawX + groupTransformX;
+                        const y = rawY + groupTransformY;
+
+                        console.log(`📍 ${id} (path): raw(${rawX.toFixed(2)}, ${rawY.toFixed(2)}) size(${width.toFixed(2)}x${height.toFixed(2)}) -> transformed(${x.toFixed(2)}, ${y.toFixed(2)})`);
+
+                        const styleAttr = path.getAttribute('style');
+                        let fill = '#cccccc';
+                        
+                        // Try to extract fill from style attribute
+                        if (styleAttr) {
+                            const fillMatch = styleAttr.match(/fill:(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3})/);
+                            if (fillMatch) {
+                                fill = fillMatch[1];
+                            } else {
+                                // Check for named colors or rgb
+                                const colorMatch = styleAttr.match(/fill:([^;]+)/);
+                                if (colorMatch) {
+                                    fill = colorMatch[1].trim();
+                                }
+                            }
+                        }
+                        
+                        // Fallback to fill attribute
+                        if (fill === '#cccccc') {
+                            fill = path.getAttribute('fill') || '#cccccc';
+                        }
+
+                        console.log(`🎨 ${id} fill color: ${fill}`);
+
+                        // Extract title element if exists
+                        const titleElement = path.querySelector('title');
+                        const title = titleElement?.textContent || undefined;
+
+                        console.log(`📝 ${id} title: ${title || 'none'}`);
+
+                        // Special handling for BeerPoint - extend to bottom of map
+                        if (title === 'BeerPoint' || id === 'path266') {
+                            console.log(`🍺 Extending BeerPoint to bottom of map`);
+                            console.log(`  Original: y=${y.toFixed(2)}, height=${height.toFixed(2)}`);
+                            
+                            // Extend height to reach the bottom of the viewBox
+                            const bottomOfMap = viewBoxData.height;
+                            height = bottomOfMap - y;
+                            
+                            console.log(`  Extended: y=${y.toFixed(2)}, height=${height.toFixed(2)} (reaches bottom at ${bottomOfMap})`);
+                        }
+
+                        // Get all attributes as properties
+                        const properties: Record<string, string> = {};
+                        Array.from(path.attributes).forEach(attr => {
+                            properties[attr.name] = attr.value;
+                        });
+
+                        parsedObjects.push({
+                            id,
+                            type: 'path',
+                            x,
+                            y,
+                            width,
+                            height,
+                            fill,
+                            title,
+                            properties
+                        });
+
+                        console.log(`✅ Added path ${id} to objects list`);
+                    } catch (error) {
+                        console.error(`❌ Error parsing path ${id}:`, error);
+                    }
+                });
+
                 console.log(`✅ Loaded ${parsedObjects.length} objects from SVG`);
                 console.log('📊 Parsed objects with coordinates:');
                 parsedObjects.forEach(obj => {
-                    console.log(`  - ${obj.id}: (${obj.x.toFixed(2)}, ${obj.y.toFixed(2)}) ${obj.width.toFixed(2)}x${obj.height.toFixed(2)}`);
+                    console.log(`  - ${obj.id} (${obj.type}): (${obj.x.toFixed(2)}, ${obj.y.toFixed(2)}) ${obj.width.toFixed(2)}x${obj.height.toFixed(2)} [${obj.fill}] title: ${obj.title || 'none'}`);
                 });
                 console.log('📐 ViewBox:', svgViewBox);
+                
+                // Log specifically about BeerPoint
+                const beerPoint = parsedObjects.find(o => o.title === 'BeerPoint' || o.id.includes('path266'));
+                if (beerPoint) {
+                    console.log('🍺 BeerPoint found in parsed objects!', beerPoint);
+                } else {
+                    console.warn('⚠️ BeerPoint NOT found in parsed objects!');
+                }
+                
                 setObjects(parsedObjects);
             } catch (error) {
                 console.error('❌ Error loading SVG objects:', error);
@@ -388,6 +604,26 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                             height: `${imageDimensions.height}px`,
                         }}
                     >
+                        {/* SVG definitions for clip paths - hidden but used by CSS */}
+                        <svg width="0" height="0" style={{ position: 'absolute' }}>
+                            <defs>
+                                {objects.map((obj) => {
+                                    if (obj.type === "path" && obj.properties?.pathData) {
+                                        // Normalize path to fit in 0-1 coordinate system for clipPathUnits="objectBoundingBox"
+                                        return (
+                                            <clipPath key={`clip-${obj.id}`} id={`clip-${obj.id}`} clipPathUnits="objectBoundingBox">
+                                                <path
+                                                    d={obj.properties.pathData}
+                                                    transform={`translate(${-obj.x} ${-obj.y}) scale(${1/obj.width} ${1/obj.height})`}
+                                                />
+                                            </clipPath>
+                                        );
+                                    }
+                                    return null;
+                                })}
+                            </defs>
+                        </svg>
+
                         {/* React Components for each SVG object */}
                         {objects.map((obj) => {
                             const coords = convertCoordinates(obj);
@@ -395,6 +631,51 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                             const isBlueBlocked = obj.fill.toLowerCase() === '#000080';
                             const isDisabled = isWall || isBlueBlocked;
                             const isHovered = hoveredObject === obj.id && !isDisabled;
+                            
+                            // Check if this object has room data
+                            const hasRoomData = rooms.has(obj.id);
+                            
+                            // Log for debugging - only non-wall, non-disabled objects
+                            if (!isDisabled && objects.indexOf(obj) < 10) {
+                                console.log(`🎯 SVG Object "${obj.id}" (${obj.title || 'no title'}):`, {
+                                    svg_id: obj.id,
+                                    hasRoomData,
+                                    roomsMapSize: rooms.size,
+                                    isInMap: rooms.has(obj.id),
+                                    // Show a few keys from the map for comparison
+                                    sampleKeys: Array.from(rooms.keys()).slice(0, 5)
+                                });
+                            }
+
+                            // Apply clip-path for path elements
+                            const clipPathStyle = obj.type === "path" && obj.properties?.pathData 
+                                ? { clipPath: `url(#clip-${obj.id})` }
+                                : {};
+
+                            // Special logging for BeerPoint
+                            if (obj.title === 'BeerPoint' || obj.id.includes('path266')) {
+                                console.log('🍺 Rendering BeerPoint:', {
+                                    id: obj.id,
+                                    obj: obj,
+                                    coords,
+                                    fill: obj.fill,
+                                    isWall,
+                                    isBlueBlocked,
+                                    isDisabled,
+                                    hasClipPath: !!clipPathStyle.clipPath,
+                                    containerSize: { w: imageDimensions.width, h: imageDimensions.height },
+                                    style: {
+                                        left: `${coords.x}%`,
+                                        top: `${coords.y}%`,
+                                        width: `${coords.width}%`,
+                                        height: `${coords.height}%`,
+                                    }
+                                });
+                            }
+                            
+                            // Make BeerPoint more visible with higher opacity
+                            const isBeerPoint = obj.title === 'BeerPoint' || obj.id.includes('path266');
+                            const opacity = isBeerPoint ? 0.8 : (isHovered ? 0.9 : 0.6);
 
                             // Log pentru primul obiect
                             if (obj.id === 'rect1') {
@@ -410,6 +691,10 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                                 });
                             }
 
+                            // Check if room is occupied (from parent component)
+                            const roomData = rooms.get(obj.id);
+                            const isOccupied = roomData && occupiedRoomIds?.has(roomData.id);
+
                             return (
                                 <Tooltip key={obj.id}>
                                     <TooltipTrigger asChild>
@@ -423,7 +708,7 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                                                 backgroundColor: isHovered
                                                     ? obj.fill
                                                     : `${obj.fill}80`, // Add transparency
-                                                opacity: isHovered ? 0.9 : 0.6,
+                                                opacity: opacity,
                                                 border: isHovered ? '3px solid white' : '2px solid rgba(255,255,255,0.5)',
                                                 boxShadow: isHovered
                                                     ? '0 4px 12px rgba(0,0,0,0.4)'
@@ -432,10 +717,23 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                                                 zIndex: isHovered ? 20 : 10,
                                                 pointerEvents: isDisabled ? 'none' : 'auto',
                                                 borderRadius: '2px',
+                                                ...clipPathStyle, // Apply clip-path for path elements
                                             }}
                                             onMouseEnter={() => !isDisabled && handleObjectHover(obj.id)}
                                             onMouseLeave={() => !isDisabled && setHoveredObject(null)}
                                         >
+                                            {/* Red hatching overlay for occupied rooms */}
+                                            {isOccupied && (
+                                                <div
+                                                    className="absolute inset-0 pointer-events-none"
+                                                    style={{
+                                                        background: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(239, 68, 68, 0.5) 4px, rgba(239, 68, 68, 0.5) 8px)',
+                                                        borderRadius: '2px',
+                                                        zIndex: 15,
+                                                    }}
+                                                />
+                                            )}
+
                                             {/* Display title only on hover */}
                                             {obj.title && isHovered && (
                                                 <span className="text-sm font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] pointer-events-none px-2 py-1 text-center">
@@ -446,7 +744,11 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                                     </TooltipTrigger>
                                     <TooltipContent
                                         side="top"
-                                        className="max-w-md bg-slate-900 text-white border-slate-700 p-0"
+                                        className="max-w-sm bg-slate-900 text-white border-slate-700 p-0 shadow-2xl z-50"
+                                        onPointerDownOutside={(e) => {
+                                            // Prevent tooltip from closing when clicking inside it
+                                            e.preventDefault();
+                                        }}
                                     >
                                         {(() => {
                                             const roomData = rooms.get(obj.id);
@@ -459,124 +761,261 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                                                 const isAvailableNow = detailedData?.isAvailableNow ?? roomData.is_available;
 
                                                 return (
-                                                    <div className="p-4 space-y-3">
-                                                        {/* Room Name & Status */}
-                                                        <div className="flex items-start justify-between gap-3 border-b border-slate-700 pb-3">
-                                                            <div>
-                                                                <div className="font-bold text-lg text-white">
-                                                                    {displayData.name}
+                                                    <div className="overflow-hidden">
+                                                        {/* Room Image Header */}
+                                                        {displayData.image ? (
+                                                            <div className="relative w-full h-40">
+                                                                <img 
+                                                                    src={displayData.image} 
+                                                                    alt={displayData.name}
+                                                                    className="w-full h-full object-cover"
+                                                                    onError={(e) => {
+                                                                        console.error('Failed to load image:', displayData.image);
+                                                                        const parent = (e.target as HTMLImageElement).parentElement;
+                                                                        if (parent) parent.style.display = 'none';
+                                                                    }}
+                                                                />
+                                                                {/* Gradient Overlay */}
+                                                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent" />
+                                                                
+                                                                {/* Room Name on Image */}
+                                                                <div className="absolute bottom-0 left-0 right-0 p-4">
+                                                                    <h3 className="text-xl font-bold text-white drop-shadow-lg">
+                                                                        {displayData.name}
+                                                                    </h3>
                                                                 </div>
-                                                                <div className="text-xs text-slate-400 mt-1">
-                                                                    {displayData.description}
-                                                                </div>
-                                                            </div>
-                                                            <div className="flex flex-col items-end gap-1">
-                                                                <div className="flex items-center gap-1 text-xs">
+
+                                                                {/* Status Badge */}
+                                                                <div className="absolute top-3 right-3">
                                                                     {isAvailableNow ? (
-                                                                        <>
-                                                                            <CheckCircle className="h-4 w-4 text-amber-400" />
-                                                                            <span className="text-amber-400 font-semibold">Available Now</span>
-                                                                        </>
+
+                                                                        <div className="flex items-center gap-1.5 bg-green-500/90 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                                                                            <CheckCircle className="h-3.5 w-3.5 text-white" />
+                                                                            <span className="text-xs font-semibold text-white">Available</span>
+                                                                        </div>
+
                                                                     ) : (
-                                                                        <>
-                                                                            <XCircle className="h-4 w-4 text-red-400" />
-                                                                            <span className="text-red-400 font-semibold">Occupied</span>
-                                                                        </>
+                                                                        <div className="flex items-center gap-1.5 bg-red-500/90 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                                                                            <XCircle className="h-3.5 w-3.5 text-white" />
+                                                                            <span className="text-xs font-semibold text-white">Occupied</span>
+                                                                        </div>
                                                                     )}
                                                                 </div>
-                                                                {!isAvailableNow && detailedData?.nextAvailableTime && (
-                                                                    <div className="text-xs text-slate-400">
-                                                                        Free at {detailedData.nextAvailableTime}
-                                                                    </div>
-                                                                )}
+
+                                                                {/* Loading Indicator */}
                                                                 {isLoading && (
-                                                                    <div className="text-xs text-blue-400 animate-pulse">
-                                                                        Loading...
+                                                                    <div className="absolute top-3 left-3">
+                                                                        <div className="bg-blue-500/90 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                                                                            <span className="text-xs font-medium text-white animate-pulse">
+                                                                                Loading details...
+                                                                            </span>
+                                                                        </div>
                                                                     </div>
                                                                 )}
                                                             </div>
-                                                        </div>                                                        {/* Room Details */}
-                                                        <div className="grid grid-cols-2 gap-3 text-sm">
-                                                            <div className="flex items-center gap-2">
-                                                                <Users className="h-4 w-4 text-blue-400" />
-                                                                <div>
-                                                                    <div className="text-slate-400 text-xs">Capacity</div>
-                                                                    <div className="text-white font-medium">{displayData.capacity} {displayData.capacity === 1 ? 'person' : 'people'}</div>
+                                                        ) : (
+                                                            // Fallback when no image
+                                                            <div className="relative w-full h-24 bg-gradient-to-br from-slate-800 to-slate-900">
+                                                                <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+                                                                    <h3 className="text-xl font-bold text-white text-center">
+                                                                        {displayData.name}
+                                                                    </h3>
+                                                                </div>
+                                                                
+                                                                {/* Status Badge */}
+                                                                <div className="absolute top-3 right-3">
+                                                                    {isAvailableNow ? (
+                                                                        <div className="flex items-center gap-1.5 bg-green-500/90 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                                                                            <CheckCircle className="h-3.5 w-3.5 text-white" />
+                                                                            <span className="text-xs font-semibold text-white">Available</span>
+                                                                        </div>
+                                                                    ) : (
+                                                                        <div className="flex items-center gap-1.5 bg-red-500/90 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                                                                            <XCircle className="h-3.5 w-3.5 text-white" />
+                                                                            <span className="text-xs font-semibold text-white">Occupied</span>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+
+                                                                {isLoading && (
+                                                                    <div className="absolute top-3 left-3">
+                                                                        <div className="bg-blue-500/90 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                                                                            <span className="text-xs font-medium text-white animate-pulse">Loading...</span>
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                        
+                                                        {/* Content Section */}
+                                                        <div className="p-4 space-y-3">
+                                                            {/* Description */}
+                                                            {displayData.description && (
+                                                                <p className="text-sm text-slate-300 leading-relaxed border-b border-slate-700 pb-3">
+                                                                    {displayData.description}
+                                                                </p>
+                                                            )}
+
+                                                            {/* Next Available Time */}
+                                                            {!isAvailableNow && detailedData?.nextAvailableTime && (
+                                                                <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-2.5">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <div className="h-2 w-2 rounded-full bg-orange-400 animate-pulse" />
+                                                                        <span className="text-xs font-medium text-orange-300">
+                                                                            Next available: {detailedData.nextAvailableTime}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+
+                                                            {/* Key Details */}
+                                                            <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    <Users className="h-4 w-4 text-blue-400" />
+                                                                    <span className="text-xs text-slate-400">Capacity</span>
+                                                                </div>
+                                                                <div className="text-lg font-bold text-white">
+                                                                    {displayData.capacity}
+                                                                </div>
+                                                                <div className="text-xs text-slate-500">
+                                                                    {displayData.capacity === 1 ? 'person' : 'people'}
                                                                 </div>
                                                             </div>
-                                                            <div className="flex items-center gap-2">
-                                                                <DollarSign className="h-4 w-4 text-amber-400" />
-                                                                <div>
-                                                                    <div className="text-slate-400 text-xs">Price</div>
-                                                                    <div className="text-white font-medium">${displayData.price}/hr</div>
+
+                                                            {/* Amenities */}
+                                                            {displayData.amenities && displayData.amenities.length > 0 && (
+                                                                <div className="border-t border-slate-700 pt-3">
+                                                                    <div className="text-xs font-semibold text-slate-400 mb-2">
+                                                                        ✨ Amenities
+                                                                    </div>
+                                                                    <div className="flex flex-wrap gap-1.5">
+                                                                        {displayData.amenities.map((amenity, idx) => (
+                                                                            <span 
+                                                                                key={idx} 
+                                                                                className="text-xs bg-blue-500/20 text-blue-300 px-2.5 py-1 rounded-full border border-blue-500/30"
+                                                                            >
+                                                                                {amenity}
+                                                                            </span>
+                                                                        ))}
+                                                                    </div>
                                                                 </div>
+                                                            )}
+
+                                                            {/* Today's Schedule */}
+                                                            {detailedData && detailedData.todayBookings.length > 0 && (
+                                                                <div className="border-t border-slate-700 pt-3">
+                                                                    <div className="flex items-center justify-between mb-2">
+                                                                        <span className="text-xs font-semibold text-slate-400">
+                                                                            📅 Today's Schedule
+                                                                        </span>
+                                                                        <span className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full">
+                                                                            {detailedData.todayBookings.length} booking{detailedData.todayBookings.length !== 1 ? 's' : ''}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="space-y-1.5 max-h-28 overflow-y-auto">
+                                                                        {detailedData.todayBookings.slice(0, 4).map((booking, idx) => (
+                                                                            <div 
+                                                                                key={idx} 
+                                                                                className="flex items-center gap-2 bg-slate-800/70 p-2 rounded border border-slate-700/50"
+                                                                            >
+                                                                                <div className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
+                                                                                <span className="text-xs text-white font-medium flex-1">
+                                                                                    {booking.start_time.substring(0, 5)} - {booking.end_time.substring(0, 5)}
+                                                                                </span>
+                                                                                <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                                                                                    booking.status === 'upcoming' ? 'bg-green-500/20 text-green-300' :
+                                                                                    booking.status === 'completed' ? 'bg-blue-500/20 text-blue-300' :
+                                                                                    'bg-red-500/20 text-red-300'
+                                                                                }`}>
+                                                                                    {booking.status}
+                                                                                </span>
+                                                                            </div>
+                                                                        ))}
+                                                                        {detailedData.todayBookings.length > 4 && (
+                                                                            <div className="text-xs text-slate-500 text-center py-1">
+                                                                                +{detailedData.todayBookings.length - 4} more booking{detailedData.todayBookings.length - 4 !== 1 ? 's' : ''}
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            )}
+
+                                                            {/* Upcoming Bookings Summary */}
+                                                            {detailedData && detailedData.upcomingBookings.length > 0 && (
+                                                                <div className="bg-slate-800/30 rounded-lg p-2.5 border border-slate-700">
+                                                                    <div className="flex items-center justify-between">
+                                                                        <span className="text-xs text-slate-400">📆 Next 7 days</span>
+                                                                        <span className="text-xs font-semibold text-blue-300">
+                                                                            {detailedData.upcomingBookings.length} reservation{detailedData.upcomingBookings.length !== 1 ? 's' : ''}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+
+                                                            {/* Booking Buttons */}
+                                                            <div className="space-y-2">
+                                                                {/* Quick Book Button (only if booking props provided) */}
+                                                                {onQuickBooking && selectedDate && startTime && endTime && (
+                                                                    <Button
+                                                                        size="sm"
+                                                                        className={`w-full gap-2 cursor-pointer ${
+                                                                            isOccupied 
+                                                                                ? 'bg-red-600 hover:bg-red-700' 
+                                                                                : 'bg-green-600 hover:bg-green-700'
+                                                                        } text-white`}
+                                                                        style={{ pointerEvents: 'auto' }}
+                                                                        onClick={(e) => {
+                                                                            e.preventDefault();
+                                                                            e.stopPropagation();
+                                                                            if (roomData && !isOccupied && onQuickBooking) {
+                                                                                onQuickBooking(roomData.id);
+                                                                            }
+                                                                        }}
+                                                                        onMouseDown={(e) => {
+                                                                            e.stopPropagation();
+                                                                        }}
+                                                                        disabled={isOccupied || isSubmitting}
+                                                                    >
+                                                                        {isSubmitting && selectedRoomId === roomData?.id ? (
+                                                                            <>
+                                                                                <span className="animate-spin">⏳</span>
+                                                                                <span>Booking...</span>
+                                                                            </>
+                                                                        ) : isOccupied ? (
+                                                                            <>
+                                                                                <XCircle className="h-3.5 w-3.5" />
+                                                                                <span>Occupied ({startTime} - {endTime})</span>
+                                                                            </>
+                                                                        ) : (
+                                                                            <>
+                                                                                <CheckCircle className="h-3.5 w-3.5" />
+                                                                                <span>Quick Book ({startTime} - {endTime})</span>
+                                                                            </>
+                                                                        )}
+                                                                    </Button>
+                                                                )}
+
+                                                                {/* View Details Button */}
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="outline"
+                                                                    className="w-full gap-2 bg-blue-600 hover:bg-blue-700 text-white border-blue-500 cursor-pointer"
+                                                                    style={{ pointerEvents: 'auto' }}
+                                                                    onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        e.stopPropagation();
+                                                                        console.log('🔘 Button clicked! Navigating to:', `/rooms/${roomData?.id || obj.id}`);
+                                                                        navigate(`/rooms/${roomData?.id || obj.id}`);
+                                                                    }}
+                                                                    onMouseDown={(e) => {
+                                                                        e.stopPropagation();
+                                                                    }}
+                                                                >
+                                                                    <span>View Full Details & Book</span>
+                                                                    <ExternalLink className="h-3.5 w-3.5" />
+                                                                </Button>
                                                             </div>
                                                         </div>
-
-                                                        {/* Today's Bookings */}
-                                                        {detailedData && detailedData.todayBookings.length > 0 && (
-                                                            <div className="border-t border-slate-700 pt-3">
-                                                                <div className="text-xs text-slate-400 mb-2 font-semibold">Today's Schedule ({detailedData.todayBookings.length})</div>
-                                                                <div className="space-y-1 max-h-24 overflow-y-auto">
-                                                                    {detailedData.todayBookings.slice(0, 3).map((booking, idx) => (
-                                                                        <div key={idx} className="text-xs flex items-center gap-2 bg-slate-800/50 p-2 rounded">
-                                                                            <div className="w-2 h-2 rounded-full bg-blue-400"></div>
-                                                                            <span className="text-white font-medium">
-                                                                                {booking.start_time.substring(0, 5)} - {booking.end_time.substring(0, 5)}
-                                                                            </span>
-                                                                            <span className="text-slate-400 text-[10px]">
-                                                                                ({booking.status})
-                                                                            </span>
-                                                                        </div>
-                                                                    ))}
-                                                                    {detailedData.todayBookings.length > 3 && (
-                                                                        <div className="text-xs text-slate-500 text-center">
-                                                                            +{detailedData.todayBookings.length - 3} more
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-                                                            </div>
-                                                        )}
-
-                                                        {/* Upcoming Bookings */}
-                                                        {detailedData && detailedData.upcomingBookings.length > 0 && (
-                                                            <div className="border-t border-slate-700 pt-3">
-                                                                <div className="text-xs text-slate-400 mb-2 font-semibold">Next 7 Days ({detailedData.upcomingBookings.length} bookings)</div>
-                                                                <div className="text-xs text-slate-300">
-                                                                    {detailedData.upcomingBookings.length} upcoming reservations
-                                                                </div>
-                                                            </div>
-                                                        )}
-
-                                                        {/* Amenities */}
-                                                        {displayData.amenities && displayData.amenities.length > 0 && (
-                                                            <div className="border-t border-slate-700 pt-3">
-                                                                <div className="text-xs text-slate-400 mb-2">Amenities</div>
-                                                                <div className="flex flex-wrap gap-1">
-                                                                    {displayData.amenities.map((amenity, idx) => (
-                                                                        <span
-                                                                            key={idx}
-                                                                            className="text-xs px-2 py-1 bg-slate-800 rounded-full text-slate-300"
-                                                                        >
-                                                                            {amenity}
-                                                                        </span>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                        )}
-
-                                                        {/* View Details Button */}
-                                                        <Button
-                                                            size="sm"
-                                                            className="w-full mt-2 gap-2"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                navigate(`/rooms/${roomData.id}`);
-                                                            }}
-                                                        >
-                                                            View Details & Book
-                                                            <ExternalLink className="h-4 w-4" />
-                                                        </Button>
                                                     </div>
                                                 );
                                             } else {

@@ -41,7 +41,7 @@ const View2DMap = () => {
         const loadSVG = async () => {
             try {
                 setIsLoading(true);
-                const response = await fetch("/floor_plan_optimized.svg");
+                const response = await fetch("../../public/OBJECTS.svg");
                 const text = await response.text();
                 setSvgContent(text);
 
@@ -63,7 +63,7 @@ const View2DMap = () => {
         if (!svgContent || !svgRef.current) return;
 
         const svg = svgRef.current;
-        const polygons = svg.querySelectorAll("polygon, path, rect");
+        const polygons = svg.querySelectorAll("polygon, path, rect, circle");
         const eventHandlers = new Map<Element, { click: EventListener; mouseenter: EventListener; mouseleave: EventListener; mousemove: EventListener }>();
 
         polygons.forEach((element) => {

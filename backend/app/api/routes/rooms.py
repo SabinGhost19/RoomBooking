@@ -26,11 +26,13 @@ async def list_rooms(
     is_available: Optional[bool] = Query(None),
     sort_by: str = Query("name", regex="^(name|capacity|price|id)$"),
     sort_order: str = Query("asc", regex="^(asc|desc)$"),
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    db: AsyncSession = Depends(get_db)
+    # Removed authentication requirement for public access to rooms list
+    # current_user: User = Depends(get_current_active_user)
 ):
     """
     Get list of rooms with optional filters and sorting.
+    Public endpoint - no authentication required.
     """
     rooms = await crud_room.get_rooms(
         db=db,
