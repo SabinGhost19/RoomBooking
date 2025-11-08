@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Rooms from "./pages/Rooms";
+import RoomDetails from "./pages/RoomDetails";
 import Booking from "./pages/Booking";
 import Profile from "./pages/Profile";
 import View2DMapReact from "./pages/View2DMapReact";
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/rooms" element={<ProtectedRoute><Rooms /></ProtectedRoute>} />
+            <Route path="/rooms/:roomId" element={<ProtectedRoute><RoomDetails /></ProtectedRoute>} />
             <Route path="/booking/:roomId" element={<ProtectedRoute><Booking /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/map" element={<ProtectedRoute><View2DMapReact /></ProtectedRoute>} />

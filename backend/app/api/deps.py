@@ -81,24 +81,24 @@ async def get_current_active_user(
     return current_user
 
 
-async def get_current_superuser(
+async def get_current_manager(
     current_user: User = Depends(get_current_active_user)
 ) -> User:
     """
-    Dependency to get the current superuser.
+    Dependency to get the current manager.
     
     Args:
         current_user: Current active user
     
     Returns:
-        Current superuser
+        Current manager
     
     Raises:
-        HTTPException: If user is not a superuser
+        HTTPException: If user is not a manager
     """
-    if not await user_crud.is_superuser(current_user):
+    if not current_user.is_manager:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not enough privileges"
+            detail="Not enough privileges. Manager access required."
         )
     return current_user

@@ -99,7 +99,7 @@ class CRUDUser:
             hashed_password=get_password_hash(obj_in.password),
             full_name=obj_in.full_name,
             is_active=True,
-            is_superuser=getattr(obj_in, 'is_superuser', False)
+            is_manager=getattr(obj_in, 'is_manager', False)
         )
         
         try:
@@ -238,17 +238,17 @@ class CRUDUser:
         """
         return user.is_active
     
-    async def is_superuser(self, user: User) -> bool:
+    async def is_manager(self, user: User) -> bool:
         """
-        Check if user is superuser.
+        Check if user is manager.
         
         Args:
             user: User object
         
         Returns:
-            True if user is superuser
+            True if user is manager
         """
-        return user.is_superuser
+        return user.is_manager
 
 
 # Create a singleton instance

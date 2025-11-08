@@ -41,7 +41,7 @@ class UserInDB(UserBase):
     """Schema representing user as stored in database."""
     id: int
     is_active: bool
-    is_superuser: bool
+    is_manager: bool
     created_at: datetime
     updated_at: datetime
     
@@ -53,7 +53,7 @@ class UserResponse(UserBase):
     """Schema for user response (public data)."""
     id: int
     is_active: bool
-    is_superuser: bool
+    is_manager: bool
     created_at: datetime
     updated_at: datetime
     

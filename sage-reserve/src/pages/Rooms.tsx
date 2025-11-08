@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { RoomCard } from "@/components/RoomCard";
 import { Button } from "@/components/ui/button";
@@ -7,27 +7,60 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, SlidersHorizontal, Map } from "lucide-react";
-import { mockRooms } from "@/data/mockData";
+import { Search, SlidersHorizontal, Map, Loader2 } from "lucide-react";
+import { getRooms, Room } from "@/lib/roomsApi";
+import { useToast } from "@/hooks/use-toast";
 
 const Rooms = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [capacityFilter, setCapacityFilter] = useState<number>(50);
   const [availabilityFilter, setAvailabilityFilter] = useState("all");
   const [priceRange, setPriceRange] = useState([0, 200]);
+  const [sortBy, setSortBy] = useState<'name' | 'capacity' | 'price'>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredRooms = mockRooms.filter((room) => {
-    const matchesSearch = room.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      room.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCapacity = room.capacity <= capacityFilter;
-    const matchesAvailability = availabilityFilter === "all" ||
-      (availabilityFilter === "available" && room.available) ||
-      (availabilityFilter === "unavailable" && !room.available);
-    const matchesPrice = room.price >= priceRange[0] && room.price <= priceRange[1];
+  useEffect(() => {
+    fetchRooms();
+  }, [searchTerm, capacityFilter, availabilityFilter, priceRange, sortBy, sortOrder]);
 
-    return matchesSearch && matchesCapacity && matchesAvailability && matchesPrice;
-  });
+  const fetchRooms = async () => {
+    try {
+      setLoading(true);
+      const filters = {
+        search: searchTerm || undefined,
+        max_capacity: capacityFilter || undefined,
+        min_price: priceRange[0],
+        max_price: priceRange[1],
+        is_available: availabilityFilter === "all" ? undefined : availabilityFilter === "available",
+        sort_by: sortBy,
+        sort_order: sortOrder,
+      };
+
+      const data = await getRooms(filters);
+      setRooms(data);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.detail || "Failed to fetch rooms",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetFilters = () => {
+    setSearchTerm("");
+    setCapacityFilter(50);
+    setAvailabilityFilter("all");
+    setPriceRange([0, 200]);
+    setSortBy('name');
+    setSortOrder('asc');
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-amber-900">
@@ -101,12 +134,7 @@ const Rooms = () => {
               <Button
                 variant="outline"
                 className="w-full bg-slate-700/40 text-white border-slate-600 hover:bg-slate-700"
-                onClick={() => {
-                  setSearchTerm("");
-                  setCapacityFilter(50);
-                  setAvailabilityFilter("all");
-                  setPriceRange([0, 200]);
-                }}
+                onClick={handleResetFilters}
               >
                 Reset Filters
               </Button>
@@ -116,7 +144,7 @@ const Rooms = () => {
           <div className="lg:col-span-3">
             <div className="mb-4 flex items-center justify-between">
               <p className="text-slate-300">
-                {filteredRooms.length} {filteredRooms.length === 1 ? 'room' : 'rooms'} found
+                {loading ? 'Loading...' : `${rooms.length} ${rooms.length === 1 ? 'room' : 'rooms'} found`}
               </p>
               <Button
                 variant="outline"
@@ -128,16 +156,24 @@ const Rooms = () => {
               </Button>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              {filteredRooms.map((room) => (
-                <RoomCard key={room.id} room={room} />
-              ))}
-            </div>
+            {loading ? (
+              <div className="flex justify-center items-center h-64">
+                <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+              </div>
+            ) : (
+              <>
+                <div className="grid md:grid-cols-2 gap-6">
+                  {rooms.map((room) => (
+                    <RoomCard key={room.id} room={room} />
+                  ))}
+                </div>
 
-            {filteredRooms.length === 0 && (
-              <Card className="p-12 text-center bg-slate-800/60 border-white/10">
-                <p className="text-slate-300">No rooms match your filters. Try adjusting your search criteria.</p>
-              </Card>
+                {rooms.length === 0 && (
+                  <Card className="p-12 text-center bg-slate-800/60 border-white/10">
+                    <p className="text-slate-300">No rooms match your filters. Try adjusting your search criteria.</p>
+                  </Card>
+                )}
+              </>
             )}
           </div>
         </div>

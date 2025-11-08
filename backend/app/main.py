@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.database import init_db
-from app.api.routes import auth, users
+from app.api.routes import auth, users, rooms, bookings
 
 # Configure logging
 logging.basicConfig(
@@ -70,6 +70,18 @@ app.include_router(
     users.router,
     prefix=f"{settings.API_V1_STR}/users",
     tags=["users"]
+)
+
+app.include_router(
+    rooms.router,
+    prefix=f"{settings.API_V1_STR}/rooms",
+    tags=["rooms"]
+)
+
+app.include_router(
+    bookings.router,
+    prefix=f"{settings.API_V1_STR}/bookings",
+    tags=["bookings"]
 )
 
 

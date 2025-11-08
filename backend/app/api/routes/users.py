@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.schemas.user import UserResponse, UserUpdate, Message
 from app.crud.user import user_crud
-from app.api.deps import get_current_active_user, get_current_superuser
+from app.api.deps import get_current_active_user, get_current_manager
 from app.models.user import User
 
 router = APIRouter()
@@ -114,15 +114,15 @@ async def get_user_by_id(
 async def delete_user_by_id(
     user_id: int,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_superuser)
+    current_user: User = Depends(get_current_manager)
 ) -> Any:
     """
-    Delete user by ID (superuser only).
+    Delete user by ID (manager only).
     
     Args:
         user_id: User ID to delete
         db: Database session
-        current_user: Current superuser
+        current_user: Current manager
     
     Returns:
         Success message
