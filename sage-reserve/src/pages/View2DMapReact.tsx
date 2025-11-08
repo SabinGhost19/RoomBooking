@@ -7,7 +7,7 @@ const View2DMap = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="w-screen h-screen bg-slate-900 flex flex-col">
+        <div className="w-screen h-screen bg-white flex flex-col">
             {/* Simple Navbar with Back Button */}
             <div className="w-full bg-background border-b border-border px-4 py-3 flex items-center">
                 <Button

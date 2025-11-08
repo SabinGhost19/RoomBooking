@@ -209,11 +209,11 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
     return (
         <TooltipProvider>
             <div className={`relative w-full h-full ${className}`}>
-                {/* Background Image */}
+                {/* Background Image - Hidden */}
                 <img
                     src={imageSrc}
                     alt="Floor Plan"
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-contain opacity-0"
                     onLoad={handleImageLoad}
                     onError={(e) => {
                         console.error('❌ Error loading image:', imageSrc);
@@ -221,30 +221,6 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                     }}
                 />
 
-                {/* Debug info */}
-                {imageLoaded && objects.length > 0 && (
-                    <div className="absolute top-4 right-4 bg-black/80 text-white p-3 rounded text-xs z-50 max-w-xs">
-                        <div className="font-bold mb-2 text-yellow-400">� Debug Info</div>
-                        <div>�📊 Objects: {objects.length}</div>
-                        <div className="mt-1 border-t border-gray-600 pt-1">
-                            <div className="text-green-400">Current Image:</div>
-                            <div className="ml-2">🖼️ {imageDimensions.width}x{imageDimensions.height} px</div>
-                        </div>
-                        <div className="mt-1 border-t border-gray-600 pt-1">
-                            <div className="text-blue-400">Target Image (ViewBox scaled to):</div>
-                            <div className="ml-2">🎯 2279x738 px</div>
-                        </div>
-                        <div className="mt-1 border-t border-gray-600 pt-1">
-                            <div className="text-purple-400">SVG ViewBox:</div>
-                            <div className="ml-2">📏 {svgViewBox.width.toFixed(1)}x{svgViewBox.height.toFixed(1)}</div>
-                        </div>
-                        <div className="mt-1 border-t border-gray-600 pt-1">
-                            <div className="text-orange-400">Scale Factors:</div>
-                            <div className="ml-2">🔄 SVG→Target: {(2279 / svgViewBox.width).toFixed(2)}x, {(738 / svgViewBox.height).toFixed(2)}x</div>
-                            <div className="ml-2">🔄 Target→Current: {(imageDimensions.width / 2279).toFixed(3)}x, {(imageDimensions.height / 738).toFixed(3)}x</div>
-                        </div>
-                    </div>
-                )}
 
                 {/* Overlay Container - aligned with image top-left corner */}
                 {imageLoaded && objects.length > 0 && (
@@ -259,7 +235,10 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                         {/* React Components for each SVG object */}
                         {objects.map((obj) => {
                             const coords = convertCoordinates(obj);
-                            const isHovered = hoveredObject === obj.id;
+                            const isWall = obj.id.toLowerCase().includes('wall');
+                            const isBlueBlocked = obj.fill.toLowerCase() === '#000080';
+                            const isDisabled = isWall || isBlueBlocked;
+                            const isHovered = hoveredObject === obj.id && !isDisabled;
 
                             // Log pentru primul obiect
                             if (obj.id === 'rect1') {
@@ -279,7 +258,7 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                                 <Tooltip key={obj.id}>
                                     <TooltipTrigger asChild>
                                         <div
-                                            className="absolute cursor-pointer transition-all duration-200"
+                                            className={`absolute transition-all duration-200 flex items-center justify-center ${isDisabled ? '' : 'cursor-pointer'}`}
                                             style={{
                                                 left: `${coords.x}%`,
                                                 top: `${coords.y}%`,
@@ -295,11 +274,11 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                                                     : '0 2px 4px rgba(0,0,0,0.2)',
                                                 transform: isHovered ? 'scale(1.02)' : 'scale(1)',
                                                 zIndex: isHovered ? 20 : 10,
-                                                pointerEvents: 'auto',
+                                                pointerEvents: isDisabled ? 'none' : 'auto',
                                                 borderRadius: '2px',
                                             }}
-                                            onMouseEnter={() => setHoveredObject(obj.id)}
-                                            onMouseLeave={() => setHoveredObject(null)}
+                                            onMouseEnter={() => !isDisabled && setHoveredObject(obj.id)}
+                                            onMouseLeave={() => !isDisabled && setHoveredObject(null)}
                                         />
                                     </TooltipTrigger>
                                     <TooltipContent
@@ -358,15 +337,18 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                             );
                         })}
                     </div>
-                )}
+                )
+                }
 
                 {/* Loading indicator */}
-                {!imageLoaded && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-slate-100">
-                        <div className="text-slate-600">Loading floor plan...</div>
-                    </div>
-                )}
-            </div>
-        </TooltipProvider>
+                {
+                    !imageLoaded && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-slate-100">
+                            <div className="text-slate-600">Loading floor plan...</div>
+                        </div>
+                    )
+                }
+            </div >
+        </TooltipProvider >
     );
 };
