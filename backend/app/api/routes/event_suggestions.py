@@ -115,7 +115,7 @@ async def confirm_bulk_bookings(
                     "activity": booking_conf.activity_name,
                     "error": "Failed to create booking - room or user may be unavailable"
                 })
-            
+                
         except Exception as e:
             failed_bookings.append({
                 "activity": booking_conf.activity_name,

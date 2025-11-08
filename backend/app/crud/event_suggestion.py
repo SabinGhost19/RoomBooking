@@ -34,14 +34,19 @@ class EventSuggestionService:
         start_time: time,
         end_time: time,
     ) -> List[Room]:
-        """Get all rooms available for a specific time slot."""
-        # Get all rooms
+        """
+        Get all rooms available for a specific time slot.
+        Only returns rooms that are:
+        1. Marked as available (is_available = True)
+        2. Not already booked for the requested time slot
+        """
+        # Get all rooms marked as available
         result = await db.execute(
             select(Room).where(Room.is_available == True)
         )
         all_rooms = result.scalars().all()
         
-        # Filter by availability
+        # Filter by actual booking availability
         available_rooms = []
         for room in all_rooms:
             is_available = await check_room_availability(
@@ -108,6 +113,9 @@ class EventSuggestionService:
 4. User preferences
 5. Overall suitability
 
+IMPORTANT: All rooms provided to you are ALREADY VERIFIED as available for the requested time slot. 
+You only need to select the BEST room based on the activity requirements and characteristics.
+
 You must respond with valid JSON only, following this exact structure:
 {
     "suggested_room_id": <number>,
@@ -123,7 +131,7 @@ ACTIVITY DETAILS:
 
 GENERAL PREFERENCES: {general_preferences or "None"}
 
-AVAILABLE ROOMS:
+AVAILABLE ROOMS (All verified as available for the time slot):
 {rooms_context}
 
 Analyze and suggest the best room. Consider:
@@ -132,6 +140,7 @@ Analyze and suggest the best room. Consider:
 - Activity type matches room characteristics
 - Overall room suitability
 
+Note: All rooms listed are confirmed available for booking at the requested time.
 Respond with JSON only."""
 
         try:
@@ -227,7 +236,11 @@ Respond with JSON only."""
             )
             
             if not available_rooms:
-                warnings.append(f"No rooms available for '{activity.name}' at {activity.start_time}-{activity.end_time}")
+                warnings.append(
+                    f"No available rooms for '{activity.name}' on {request.booking_date} "
+                    f"between {activity.start_time.strftime('%H:%M')}-{activity.end_time.strftime('%H:%M')}. "
+                    f"All rooms are either booked or unavailable for this time slot."
+                )
                 continue
             
             # Get AI suggestion

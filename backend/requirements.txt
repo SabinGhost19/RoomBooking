@@ -29,4 +29,6 @@ requests==2.31.0
 python-dateutil==2.8.2
 
 # OpenAI SDK for LLM agent
-openai==1.54.3
+
+httpx==0.24.1
+openai==1.12.0

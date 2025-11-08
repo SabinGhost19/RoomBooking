@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="foamGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFF8DC;stop-opacity:1" />
+      <stop offset="40%" style="stop-color:#FFFAF0;stop-opacity:0.95" />
+      <stop offset="100%" style="stop-color:#FFF;stop-opacity:0.8" />
+    </linearGradient>
+    <filter id="blur">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" />
+    </filter>
+  </defs>
+  
+  <!-- Main wave shape -->
+  <path d="M0,60 
+           C150,20 250,100 400,60 
+           C550,20 650,100 800,60 
+           C950,20 1050,100 1200,60 
+           L1200,120 L0,120 Z" 
+        fill="url(#foamGradient)" />
+  
+  <!-- Foam bubbles - top layer -->
+  <circle cx="100" cy="45" r="12" fill="#FFFAF0" opacity="0.7" filter="url(#blur)" />
+  <circle cx="150" cy="30" r="8" fill="#FFF8DC" opacity="0.6" />
+  <circle cx="180" cy="50" r="10" fill="#FFFAF0" opacity="0.8" filter="url(#blur)" />
+  <circle cx="300" cy="85" r="15" fill="#FFF" opacity="0.5" />
+  <circle cx="350" cy="70" r="9" fill="#FFFAF0" opacity="0.7" />
+  <circle cx="450" cy="40" r="11" fill="#FFF8DC" opacity="0.6" filter="url(#blur)" />
+  <circle cx="500" cy="25" r="14" fill="#FFFAF0" opacity="0.7" />
+  <circle cx="600" cy="80" r="10" fill="#FFF" opacity="0.6" />
+  <circle cx="650" cy="55" r="13" fill="#FFFAF0" opacity="0.8" filter="url(#blur)" />
+  <circle cx="750" cy="35" r="9" fill="#FFF8DC" opacity="0.6" />
+  <circle cx="800" cy="25" r="12" fill="#FFFAF0" opacity="0.7" />
+  <circle cx="900" cy="75" r="11" fill="#FFF" opacity="0.5" filter="url(#blur)" />
+  <circle cx="950" cy="45" r="10" fill="#FFFAF0" opacity="0.8" />
+  <circle cx="1050" cy="90" r="14" fill="#FFF8DC" opacity="0.6" />
+  <circle cx="1100" cy="60" r="8" fill="#FFFAF0" opacity="0.7" filter="url(#blur)" />
+  
+  <!-- Secondary bubbles -->
+  <circle cx="120" cy="60" r="6" fill="#FFF" opacity="0.5" />
+  <circle cx="250" cy="55" r="7" fill="#FFFAF0" opacity="0.6" />
+  <circle cx="380" cy="45" r="5" fill="#FFF8DC" opacity="0.5" />
+  <circle cx="520" cy="70" r="6" fill="#FFF" opacity="0.6" />
+  <circle cx="680" cy="40" r="7" fill="#FFFAF0" opacity="0.5" />
+  <circle cx="820" cy="65" r="5" fill="#FFF8DC" opacity="0.6" />
+  <circle cx="970" cy="30" r="6" fill="#FFF" opacity="0.5" />
+  <circle cx="1120" cy="75" r="7" fill="#FFFAF0" opacity="0.6" />
+</svg>
