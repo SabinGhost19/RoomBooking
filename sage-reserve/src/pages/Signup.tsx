@@ -3,46 +3,25 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BeerMugIcon } from '@/components/BeerMugIcon';
 import { useToast } from "@/hooks/use-toast";
-
-const IT_POSITIONS = [
-  "Frontend Developer",
-  "Backend Developer",
-  "Full Stack Developer",
-  "DevOps Engineer",
-  "Data Scientist",
-  "Machine Learning Engineer",
-  "QA Engineer",
-  "Software Architect",
-  "Product Manager",
-  "UI/UX Designer",
-  "Scrum Master",
-  "Business Analyst",
-  "Cloud Engineer",
-  "Security Engineer",
-  "Database Administrator",
-  "Mobile Developer",
-  "Tech Lead",
-  "Engineering Manager",
-  "CTO",
-  "IT Support Specialist"
-];
+import { useAuth } from "@/contexts/AuthContext";
 
 const Signup = () => {
   const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState<"client" | "manager" | "">("");
-  const [position, setPosition] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { signup } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (password !== confirmPassword) {
       toast({
         title: "Error",
@@ -51,27 +30,36 @@ const Signup = () => {
       });
       return;
     }
-    if (!role) {
+    
+    if (password.length < 8) {
       toast({
         title: "Error",
-        description: "Please select a role",
+        description: "Password must be at least 8 characters long",
         variant: "destructive",
       });
       return;
     }
-    if (!position) {
-      toast({
-        title: "Error",
-        description: "Please select your position",
-        variant: "destructive",
+    
+    setLoading(true);
+    
+    try {
+      await signup({
+        email,
+        username,
+        password,
+        full_name: name,
       });
-      return;
+      toast({
+        title: "Account created",
+        description: "Welcome to RoomBook!",
+      });
+      navigate("/");
+    } catch (error: any) {
+      // Error is already handled in the auth context
+      console.error("Signup error:", error);
+    } finally {
+      setLoading(false);
     }
-    toast({
-      title: "Account created",
-      description: `Welcome to RoomBook as a ${role}!`,
-    });
-    navigate("/");
   };
 
   return (
@@ -98,6 +86,18 @@ const Signup = () => {
                 placeholder="John Doe"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                className="bg-slate-700/40 text-white placeholder-slate-300 border border-slate-600 focus:ring-2 focus:ring-amber-400 rounded-lg py-3"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="username" className="text-slate-100 font-medium">Username</Label>
+              <Input
+                id="username"
+                type="text"
+                placeholder="johndoe"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
                 className="bg-slate-700/40 text-white placeholder-slate-300 border border-slate-600 focus:ring-2 focus:ring-amber-400 rounded-lg py-3"
               />
@@ -121,6 +121,7 @@ const Signup = () => {
               <Input
                 id="password"
                 type="password"
+                placeholder="Min. 8 characters with uppercase, lowercase & number"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -140,52 +141,15 @@ const Signup = () => {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="role" className="text-slate-100 font-medium">Role</Label>
-              <Select value={role} onValueChange={(value) => setRole(value as "client" | "manager")}>
-                <SelectTrigger className="bg-slate-700/40 text-white border border-slate-600 focus:ring-2 focus:ring-amber-400 rounded-lg py-3">
-                  <SelectValue placeholder="Select your role" />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-800 border border-slate-600">
-                  <SelectItem value="client" className="text-slate-200 hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white cursor-pointer">Client</SelectItem>
-                  <SelectItem value="manager" className="text-slate-200 hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white cursor-pointer">Manager</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="position" className="text-slate-100 font-medium">Position</Label>
-              <Select value={position} onValueChange={setPosition}>
-                <SelectTrigger className="bg-slate-700/40 text-white border border-slate-600 focus:ring-2 focus:ring-amber-400 rounded-lg py-3">
-                  <SelectValue placeholder="Select your position" />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-800 border border-slate-600 max-h-60">
-                  {IT_POSITIONS.map((pos) => (
-                    <SelectItem 
-                      key={pos} 
-                      value={pos}
-                      className="text-slate-200 hover:bg-amber-600 hover:text-white focus:bg-amber-600 focus:text-white cursor-pointer"
-                    >
-                      {pos}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Button type="submit" className="w-full bg-amber-500 text-slate-900 hover:bg-amber-400 py-3 rounded-lg shadow-md">
-              Create Account
+            <Button 
+              type="submit" 
+              className="w-full bg-amber-500 text-slate-900 hover:bg-amber-400 py-3 rounded-lg shadow-md"
+              disabled={loading}
+            >
+              {loading ? "Creating Account..." : "Create Account"}
             </Button>
           </form>
         </CardContent>
-        <CardFooter className="flex flex-col space-y-4">
-          <div className="text-sm text-center text-slate-200">
-            Already have an account?{" "}
-            <Link to="/login" className="text-amber-400 hover:underline font-medium">
-              Sign in
-            </Link>
-          </div>
-        </CardFooter>
       </Card>
     </div>
   );

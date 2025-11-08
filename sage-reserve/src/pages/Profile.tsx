@@ -1,4 +1,3 @@
-import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,93 +8,147 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Calendar, Clock, Mail, User, Bell, Shield } from "lucide-react";
-import { mockUser, mockBookings } from "@/data/mockData";
+import { mockBookings } from "@/data/mockData";
+import { useAuth } from "@/contexts/AuthContext";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import api from "@/lib/api";
 
 const Profile = () => {
+  const { user, logout, refreshUser } = useAuth();
+  const { toast } = useToast();
+  const [name, setName] = useState(user?.full_name || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [loading, setLoading] = useState(false);
+
+  const handleSaveChanges = async () => {
+    setLoading(true);
+    try {
+      await api.users.updateCurrentUser({
+        full_name: name,
+        email,
+      });
+      await refreshUser();
+      toast({
+        title: "Success",
+        description: "Profile updated successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.detail || "Failed to update profile",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    await logout();
+  };
+
+  if (!user) {
+    return null;
+  }
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-amber-900">
       
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-foreground mb-2">Profile</h1>
-            <p className="text-muted-foreground">Manage your account and preferences</p>
+            <h1 className="text-4xl font-bold text-white mb-2">Profile</h1>
+            <p className="text-slate-300">Manage your account and preferences</p>
           </div>
 
           <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="profile">Profile</TabsTrigger>
-              <TabsTrigger value="bookings">My Bookings</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-3 bg-slate-800/60 border-white/10">
+              <TabsTrigger value="profile" className="data-[state=active]:bg-amber-500 data-[state=active]:text-slate-900 text-white">Profile</TabsTrigger>
+              <TabsTrigger value="bookings" className="data-[state=active]:bg-amber-500 data-[state=active]:text-slate-900 text-white">My Bookings</TabsTrigger>
+              <TabsTrigger value="settings" className="data-[state=active]:bg-amber-500 data-[state=active]:text-slate-900 text-white">Settings</TabsTrigger>
             </TabsList>
 
             <TabsContent value="profile" className="space-y-6">
-              <Card>
+              <Card className="bg-slate-800/60 border-white/10">
                 <CardHeader>
-                  <CardTitle>Personal Information</CardTitle>
-                  <CardDescription>Update your profile details</CardDescription>
+                  <CardTitle className="text-white">Personal Information</CardTitle>
+                  <CardDescription className="text-slate-300">Update your profile details</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="flex items-center gap-6">
                     <Avatar className="h-24 w-24">
-                      <AvatarImage src={mockUser.avatar} />
-                      <AvatarFallback>SJ</AvatarFallback>
+                      <AvatarFallback className="bg-amber-500 text-slate-900 text-2xl font-bold">{user.username.substring(0, 2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <Button variant="outline" size="sm">Change Avatar</Button>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        JPG, PNG or GIF. Max 2MB.
-                      </p>
+                      <h3 className="font-semibold text-lg text-white">{user.username}</h3>
+                      <p className="text-sm text-slate-300">{user.email}</p>
+                      {user.is_superuser && (
+                        <Badge variant="secondary" className="mt-1 bg-amber-500 text-slate-900">Admin</Badge>
+                      )}
                     </div>
                   </div>
 
-                  <Separator />
+                  <Separator className="bg-white/10" />
 
                   <div className="grid gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="name">Full Name</Label>
-                      <Input id="name" defaultValue={mockUser.name} />
+                      <Label htmlFor="name" className="text-slate-200">Full Name</Label>
+                      <Input 
+                        id="name" 
+                        value={name} 
+                        onChange={(e) => setName(e.target.value)}
+                        className="bg-slate-700/40 text-white border-slate-600"
+                      />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" defaultValue={mockUser.email} />
+                      <Label htmlFor="email" className="text-slate-200">Email</Label>
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        value={email} 
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="bg-slate-700/40 text-white border-slate-600"
+                      />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="phone">Phone Number</Label>
-                      <Input id="phone" type="tel" placeholder="+1 (555) 000-0000" />
+                      <Label htmlFor="username" className="text-slate-200">Username</Label>
+                      <Input 
+                        id="username" 
+                        value={user.username} 
+                        disabled 
+                        className="bg-slate-700/40 text-slate-400 border-slate-600"
+                      />
                     </div>
                   </div>
 
-                  <Button>Save Changes</Button>
+                  <div className="flex gap-2">
+                    <Button onClick={handleSaveChanges} disabled={loading} className="bg-amber-500 text-slate-900 hover:bg-amber-400">
+                      {loading ? "Saving..." : "Save Changes"}
+                    </Button>
+                    <Button variant="outline" onClick={handleLogout} className="bg-slate-700/40 text-white border-slate-600 hover:bg-slate-700">
+                      Logout
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-slate-800/60 border-white/10">
                 <CardHeader>
-                  <CardTitle>Statistics</CardTitle>
+                  <CardTitle className="text-white">Statistics</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-primary mb-1">
-                        {mockUser.bookings}
+                      <div className="text-3xl font-bold text-amber-400 mb-1">
+                        {user.is_superuser ? "Admin" : "User"}
                       </div>
-                      <div className="text-sm text-muted-foreground">Total Bookings</div>
+                      <div className="text-sm text-slate-300">Account Type</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-primary mb-1">
-                        {mockUser.totalHours}h
+                      <div className="text-3xl font-bold text-amber-400 mb-1">
+                        {user.is_active ? "Active" : "Inactive"}
                       </div>
-                      <div className="text-sm text-muted-foreground">Hours Booked</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-primary mb-1">6</div>
-                      <div className="text-sm text-muted-foreground">Favorite Rooms</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-primary mb-1">$450</div>
-                      <div className="text-sm text-muted-foreground">Savings</div>
+                      <div className="text-sm text-slate-300">Status</div>
                     </div>
                   </div>
                 </CardContent>
@@ -104,12 +157,12 @@ const Profile = () => {
 
             <TabsContent value="bookings" className="space-y-4">
               {mockBookings.map((booking) => (
-                <Card key={booking.id}>
+                <Card key={booking.id} className="bg-slate-800/60 border-white/10">
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <h3 className="font-semibold text-lg">{booking.roomName}</h3>
-                        <p className="text-sm text-muted-foreground">{booking.date}</p>
+                        <h3 className="font-semibold text-lg text-white">{booking.roomName}</h3>
+                        <p className="text-sm text-slate-300">{booking.date}</p>
                       </div>
                       <Badge
                         variant={
@@ -119,11 +172,12 @@ const Profile = () => {
                             ? "secondary"
                             : "outline"
                         }
+                        className={booking.status === "upcoming" ? "bg-amber-500 text-slate-900" : ""}
                       >
                         {booking.status}
                       </Badge>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+                    <div className="flex items-center gap-4 text-sm text-slate-300 mb-4">
                       <div className="flex items-center gap-1">
                         <Clock className="h-4 w-4" />
                         <span>
@@ -133,10 +187,10 @@ const Profile = () => {
                     </div>
                     {booking.status === "upcoming" && (
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="bg-slate-700/40 text-white border-slate-600 hover:bg-slate-700">
                           Reschedule
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="bg-slate-700/40 text-white border-slate-600 hover:bg-slate-700">
                           Cancel
                         </Button>
                       </div>
@@ -147,41 +201,41 @@ const Profile = () => {
             </TabsContent>
 
             <TabsContent value="settings" className="space-y-6">
-              <Card>
+              <Card className="bg-slate-800/60 border-white/10">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-white">
                     <Bell className="h-5 w-5" />
                     Notifications
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-slate-300">
                     Configure how you receive notifications
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label>Email Notifications</Label>
-                      <p className="text-sm text-muted-foreground">
+                      <Label className="text-slate-200">Email Notifications</Label>
+                      <p className="text-sm text-slate-400">
                         Receive booking confirmations and updates
                       </p>
                     </div>
                     <Switch defaultChecked />
                   </div>
-                  <Separator />
+                  <Separator className="bg-white/10" />
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label>Booking Reminders</Label>
-                      <p className="text-sm text-muted-foreground">
+                      <Label className="text-slate-200">Booking Reminders</Label>
+                      <p className="text-sm text-slate-400">
                         Get reminders before your bookings
                       </p>
                     </div>
                     <Switch defaultChecked />
                   </div>
-                  <Separator />
+                  <Separator className="bg-white/10" />
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label>Marketing Emails</Label>
-                      <p className="text-sm text-muted-foreground">
+                      <Label className="text-slate-200">Marketing Emails</Label>
+                      <p className="text-sm text-slate-400">
                         Receive updates about new features
                       </p>
                     </div>
@@ -190,21 +244,21 @@ const Profile = () => {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-slate-800/60 border-white/10">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-white">
                     <Shield className="h-5 w-5" />
                     Security
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-slate-300">
                     Manage your security preferences
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start bg-slate-700/40 text-white border-slate-600 hover:bg-slate-700">
                     Change Password
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start bg-slate-700/40 text-white border-slate-600 hover:bg-slate-700">
                     Enable Two-Factor Authentication
                   </Button>
                 </CardContent>

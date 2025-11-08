@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Navbar } from "@/components/Navbar";
 import { RoomCard } from "@/components/RoomCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,46 +30,43 @@ const Rooms = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-amber-900">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2">Browse Rooms</h1>
-          <p className="text-muted-foreground">Find the perfect space for your needs</p>
+          <h1 className="text-4xl font-bold text-white mb-2">Browse Rooms</h1>
+          <p className="text-slate-300">Find the perfect space for your needs</p>
         </div>
 
         <div className="grid lg:grid-cols-4 gap-6">
-          {/* Filters Sidebar */}
-          <Card className="lg:col-span-1 h-fit sticky top-20">
+          <Card className="lg:col-span-1 h-fit sticky top-20 bg-slate-800/60 border-white/10 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-white">
                 <SlidersHorizontal className="h-5 w-5" />
                 Filters
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="search">Search</Label>
+                <Label htmlFor="search" className="text-slate-200">Search</Label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                   <Input
                     id="search"
                     placeholder="Search rooms..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-9"
+                    className="pl-9 bg-slate-700/40 text-white border-slate-600 placeholder-slate-400"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label>Availability</Label>
+                <Label className="text-slate-200">Availability</Label>
                 <Select value={availabilityFilter} onValueChange={setAvailabilityFilter}>
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-slate-700/40 text-white border-slate-600">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-slate-800 border-slate-600 text-white">
                     <SelectItem value="all">All Rooms</SelectItem>
                     <SelectItem value="available">Available Only</SelectItem>
                     <SelectItem value="unavailable">Unavailable</SelectItem>
@@ -79,7 +75,7 @@ const Rooms = () => {
               </div>
 
               <div className="space-y-2">
-                <Label>Max Capacity: {capacityFilter} people</Label>
+                <Label className="text-slate-200">Max Capacity: {capacityFilter} people</Label>
                 <Slider
                   value={[capacityFilter]}
                   onValueChange={(value) => setCapacityFilter(value[0])}
@@ -91,7 +87,7 @@ const Rooms = () => {
               </div>
 
               <div className="space-y-2">
-                <Label>Price Range: ${priceRange[0]} - ${priceRange[1]}/hour</Label>
+                <Label className="text-slate-200">Price Range: ${priceRange[0]} - ${priceRange[1]}/hour</Label>
                 <Slider
                   value={priceRange}
                   onValueChange={(value) => setPriceRange(value as [number, number])}
@@ -104,7 +100,7 @@ const Rooms = () => {
 
               <Button
                 variant="outline"
-                className="w-full"
+                className="w-full bg-slate-700/40 text-white border-slate-600 hover:bg-slate-700"
                 onClick={() => {
                   setSearchTerm("");
                   setCapacityFilter(50);
@@ -117,16 +113,15 @@ const Rooms = () => {
             </CardContent>
           </Card>
 
-          {/* Rooms Grid */}
           <div className="lg:col-span-3">
             <div className="mb-4 flex items-center justify-between">
-              <p className="text-muted-foreground">
+              <p className="text-slate-300">
                 {filteredRooms.length} {filteredRooms.length === 1 ? 'room' : 'rooms'} found
               </p>
               <Button
                 variant="outline"
                 onClick={() => navigate('/map')}
-                className="hover:bg-primary hover:text-primary-foreground transition-colors"
+                className="bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500 hover:text-slate-900 transition-colors"
               >
                 <Map className="mr-2 h-4 w-4" />
                 View 2D Map
@@ -140,8 +135,8 @@ const Rooms = () => {
             </div>
 
             {filteredRooms.length === 0 && (
-              <Card className="p-12 text-center">
-                <p className="text-muted-foreground">No rooms match your filters. Try adjusting your search criteria.</p>
+              <Card className="p-12 text-center bg-slate-800/60 border-white/10">
+                <p className="text-slate-300">No rooms match your filters. Try adjusting your search criteria.</p>
               </Card>
             )}
           </div>

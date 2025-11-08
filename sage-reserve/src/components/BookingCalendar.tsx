@@ -33,9 +33,9 @@ export const BookingCalendar = ({ onDateSelect, onTimeSelect }: BookingCalendarP
 
   return (
     <div className="grid md:grid-cols-2 gap-6">
-      <Card>
+      <Card className="bg-slate-800/60 border-white/10">
         <CardHeader>
-          <CardTitle>Select Date</CardTitle>
+          <CardTitle className="text-white">Select Date</CardTitle>
         </CardHeader>
         <CardContent className="flex justify-center">
           <Calendar
@@ -43,14 +43,14 @@ export const BookingCalendar = ({ onDateSelect, onTimeSelect }: BookingCalendarP
             selected={selectedDate}
             onSelect={handleDateSelect}
             disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-            className="rounded-md border pointer-events-auto"
+            className="rounded-md border border-slate-600 pointer-events-auto bg-slate-700/40 text-white"
           />
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-slate-800/60 border-white/10">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-white">
             <Clock className="h-5 w-5" />
             Select Time Slot
           </CardTitle>
@@ -67,13 +67,17 @@ export const BookingCalendar = ({ onDateSelect, onTimeSelect }: BookingCalendarP
                   variant={isSelected ? "default" : "outline"}
                   disabled={isBooked}
                   onClick={() => handleTimeSelect(time)}
-                  className="relative"
+                  className={`relative ${
+                    isSelected 
+                      ? "bg-amber-500 text-slate-900 hover:bg-amber-400" 
+                      : "bg-slate-700/40 text-white border-slate-600 hover:bg-slate-700"
+                  } ${isBooked ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   {time}
                   {isBooked && (
                     <Badge 
                       variant="secondary" 
-                      className="absolute -top-2 -right-2 text-xs"
+                      className="absolute -top-2 -right-2 text-xs bg-slate-700 text-slate-300"
                     >
                       Booked
                     </Badge>
