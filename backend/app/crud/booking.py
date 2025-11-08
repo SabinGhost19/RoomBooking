@@ -204,36 +204,55 @@ async def create_booking(
     """
     Create a new booking with participants.
     """
+    print(f"🔍 Creating booking for user {user_id}")
+    print(f"   Room: {booking.room_id}, Date: {booking.booking_date}")
+    print(f"   Time: {booking.start_time} - {booking.end_time}")
+    print(f"   Participants: {booking.participant_ids}")
+    
     # Check room availability
-    if not await check_room_availability(
+    room_available = await check_room_availability(
         db, booking.room_id, booking.booking_date, booking.start_time, booking.end_time
-    ):
+    )
+    print(f"   ✓ Room available: {room_available}")
+    if not room_available:
+        print("   ❌ Room not available!")
         return None
     
     # Check organizer availability
-    if not await check_user_availability(
+    organizer_available = await check_user_availability(
         db, user_id, booking.booking_date, booking.start_time, booking.end_time
-    ):
+    )
+    print(f"   ✓ Organizer available: {organizer_available}")
+    if not organizer_available:
+        print("   ❌ Organizer not available!")
         return None
     
     # Get room to check capacity
     room_result = await db.execute(select(Room).where(Room.id == booking.room_id))
     room = room_result.scalar_one_or_none()
     if not room:
+        print("   ❌ Room not found!")
         return None
     
     # Check if number of participants exceeds room capacity
     total_people = 1 + len(booking.participant_ids)  # Organizer + participants
+    print(f"   ✓ Capacity check: {total_people}/{room.capacity}")
     if total_people > room.capacity:
+        print("   ❌ Capacity exceeded!")
         return None
     
     # Check participants availability
     if booking.participant_ids:
         for participant_id in booking.participant_ids:
-            if not await check_user_availability(
+            participant_available = await check_user_availability(
                 db, participant_id, booking.booking_date, booking.start_time, booking.end_time
-            ):
+            )
+            print(f"   ✓ Participant {participant_id} available: {participant_available}")
+            if not participant_available:
+                print(f"   ❌ Participant {participant_id} not available!")
                 return None
+    
+    print("   ✅ All checks passed, creating booking...")
     
     # Create booking
     db_booking = Booking(

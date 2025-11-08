@@ -93,6 +93,18 @@ export const mockRooms: Room[] = [
     description: 'Premium space for important meetings',
     svgId: 'room-6',
     coordinates: { x: 600, y: 350 }
+  },
+  {
+    id: '7',
+    name: 'Beer Point',
+    capacity: 20,
+    price: 0,
+    amenities: ['Beer Tap', 'Seating', 'Social Area', 'Relaxation'],
+    image: 'https://images.unsplash.com/photo-1436076863939-06870fe779c2?w=800',
+    available: true,
+    description: 'Relaxation area with beer on tap',
+    svgId: 'path266',
+    coordinates: { x: 331.5, y: 115.5 }
   }
 ];
 
