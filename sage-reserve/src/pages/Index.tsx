@@ -3,23 +3,13 @@ import { Link } from 'react-router-dom';
 import { BeerMugIcon } from '@/components/BeerMugIcon';
 
 const Index = () => {
-  const [modelLoaded, setModelLoaded] = useState(false);
+  // Logged-in detection (simple heuristic): presence of a token in localStorage
+  // Assumption: authentication stores a token under 'token' in localStorage.
+  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Load model-viewer web component
     if (typeof window === 'undefined') return;
-    if (window.customElements?.get('model-viewer')) return;
-
-    const script = document.createElement('script');
-    script.type = 'module';
-    script.src = 'https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js';
-    document.head.appendChild(script);
-
-    return () => {
-      if (script.parentNode) {
-        document.head.removeChild(script);
-      }
-    };
+    setLoggedIn(!!localStorage.getItem('token'));
   }, []);
 
   return (
@@ -29,37 +19,36 @@ const Index = () => {
         {/* Subtle grid pattern overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 pb-32">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Column: Content */}
             <div className="text-white space-y-8">
               <div className="inline-block">
                 <span className="text-amber-400 text-sm font-semibold tracking-wide uppercase bg-amber-400/10 px-4 py-2 rounded-full border border-amber-400/20">
-                  Enterprise Room Booking
+                  Internal Space Reservations
                 </span>
               </div>
 
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
-                SpaceFlow
-                <span className="block text-amber-400 mt-2">Meeting Rooms</span>
+                Find your place
+                <span className="block text-amber-400 mt-2">within the company</span>
               </h1>
 
               <p className="text-xl text-slate-300 leading-relaxed max-w-xl italic">
-                "Find your space before the foam spills over"
+                "Find the right spot for every day"
               </p>
 
               <p className="text-lg text-slate-400 leading-relaxed max-w-xl mt-4">
-                Streamline your corporate meeting room reservations with our intelligent booking platform.
-                Featuring interactive 3D floor plans, real-time availability, and seamless integration.
+                Quick internal reservations for offices, meeting rooms, hot‑desks and relaxation areas. Choose a space, book a slot and get to work.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <Link
-                  to="/booking"
+                  to="/map"
                   className="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-amber-500 text-slate-900 rounded-lg font-semibold text-lg hover:bg-amber-400 transition-all duration-200 shadow-xl hover:shadow-2xl hover:shadow-amber-500/50"
                 >
                   <BeerMugIcon className="w-6 h-6" />
-                  Book a Room
+                  {loggedIn ? 'Open map' : 'Find a space'}
                   <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
@@ -68,7 +57,7 @@ const Index = () => {
                   href="#features"
                   className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/10 text-white rounded-lg font-semibold text-lg hover:bg-white/20 backdrop-blur-sm transition-all duration-200 border border-white/20"
                 >
-                  Explore Features
+                  View facilities
                 </a>
               </div>
 
@@ -89,58 +78,32 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Right Column: 3D Model */}
-            <div className="relative">
-              <div className="relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-4 backdrop-blur-sm border border-white/10 shadow-2xl">
-                {/* 3D Scene Container */}
-                <div className="relative aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-slate-700 to-slate-900">
-                  <model-viewer
-                    src="/beer_mug.glb"
-                    alt="Corporate meeting space 3D visualization"
-                    camera-controls
-                    auto-rotate
-                    auto-rotate-delay="500"
-                    rotation-per-second="15deg"
-                    shadow-intensity="2"
-                    environment-image="neutral"
-                    exposure="1.5"
-                    className="w-full h-full"
-                    style={{
-                      backgroundColor: 'transparent',
-                      '--poster-color': 'transparent'
-                    } as React.CSSProperties}
-                    onLoad={() => setModelLoaded(true)}
-                    camera-orbit="0deg 75deg 0.8m"
-                    min-camera-orbit="auto auto 0.5m"
-                    max-camera-orbit="auto auto 2m"
-                    field-of-view="30deg"
-                    interaction-prompt="none"
-                  />
+            {/* Right Column removed (no 3D model). Replace with clean call-to-action buttons. */}
+            <div className="flex items-center justify-center">
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-amber-500 rounded-2xl mb-6 shadow-xl mx-auto">
+                  <BeerMugIcon className="w-10 h-10 text-slate-900" />
                 </div>
+                <h2 className="text-3xl font-bold text-white mb-3">Start booking meeting rooms</h2>
+                <p className="text-slate-300 max-w-md mx-auto mb-6">Access interactive floor plans and real-time availability. Sign up to get full access.</p>
 
-                {/* Floating info cards */}
-                <div className="absolute -bottom-4 -left-4 bg-white rounded-lg shadow-xl p-4 border border-slate-200">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                      <svg className="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold text-slate-900">Real-time</div>
-                      <div className="text-xs text-slate-500">Availability</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="absolute -top-4 -right-4 bg-amber-500 text-slate-900 rounded-lg shadow-xl p-4 font-bold">
-                  <div className="text-2xl">3D</div>
-                  <div className="text-xs">Interactive</div>
+                <div className="flex items-center justify-center gap-4">
+                  {!loggedIn ? (
+                    <>
+                      <Link to="/signup" className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-slate-900 rounded-lg font-semibold hover:bg-amber-400 transition">
+                        Sign up
+                      </Link>
+                      <Link to="/login" className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition">
+                        Sign in
+                      </Link>
+                    </>
+                  ) : (
+                    <Link to="/map" className="inline-flex items-center gap-2 px-8 py-3 bg-amber-500 text-slate-900 rounded-lg font-semibold hover:bg-amber-400 transition">
+                      Open Map
+                    </Link>
+                  )}
                 </div>
               </div>
-
-              {/* Decorative elements */}
-              <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-3xl"></div>
             </div>
           </div>
         </div>
@@ -340,7 +303,7 @@ const Index = () => {
             <div>
               <h3 className="text-white font-semibold mb-4">Product</h3>
               <ul className="space-y-3">
-                <li><Link to="/booking" className="text-slate-400 hover:text-amber-400 transition-colors">Book a Room</Link></li>
+                <li><Link to="/booking" className="text-slate-400 hover:text-amber-400 transition-colors">Find a space</Link></li>
                 <li><a href="#features" className="text-slate-400 hover:text-amber-400 transition-colors">Features</a></li>
                 <li><a href="#" className="text-slate-400 hover:text-amber-400 transition-colors">Pricing</a></li>
                 <li><a href="#" className="text-slate-400 hover:text-amber-400 transition-colors">API Docs</a></li>
