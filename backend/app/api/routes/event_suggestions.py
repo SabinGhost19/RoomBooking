@@ -108,7 +108,13 @@ async def confirm_bulk_bookings(
                 user_id=current_user.id,
             )
             
-            created_ids.append(new_booking.id)
+            if new_booking:
+                created_ids.append(new_booking.id)
+            else:
+                failed_bookings.append({
+                    "activity": booking_conf.activity_name,
+                    "error": "Failed to create booking - room or user may be unavailable"
+                })
             
         except Exception as e:
             failed_bookings.append({
@@ -116,7 +122,7 @@ async def confirm_bulk_bookings(
                 "error": str(e)
             })
     
-    await db.commit()
+    # No need to commit here - create_booking already commits each booking
     
     return BulkBookingResponse(
         created_bookings=created_ids,
