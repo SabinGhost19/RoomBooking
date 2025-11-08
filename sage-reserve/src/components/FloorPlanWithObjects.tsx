@@ -474,8 +474,8 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                                                                 <div className="flex items-center gap-1 text-xs">
                                                                     {isAvailableNow ? (
                                                                         <>
-                                                                            <CheckCircle className="h-4 w-4 text-green-400" />
-                                                                            <span className="text-green-400 font-semibold">Available Now</span>
+                                                                            <CheckCircle className="h-4 w-4 text-amber-400" />
+                                                                            <span className="text-amber-400 font-semibold">Available Now</span>
                                                                         </>
                                                                     ) : (
                                                                         <>
@@ -505,7 +505,7 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                                                                 </div>
                                                             </div>
                                                             <div className="flex items-center gap-2">
-                                                                <DollarSign className="h-4 w-4 text-green-400" />
+                                                                <DollarSign className="h-4 w-4 text-amber-400" />
                                                                 <div>
                                                                     <div className="text-slate-400 text-xs">Price</div>
                                                                     <div className="text-white font-medium">${displayData.price}/hr</div>

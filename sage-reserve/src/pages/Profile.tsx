@@ -7,12 +7,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { Calendar, Clock, Mail, User, Bell, Shield } from "lucide-react";
+import { Calendar, Clock, Mail, User, Bell, Shield, Loader2 } from "lucide-react";
 import { mockBookings } from "@/data/mockData";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import api from "@/lib/api";
+import api, { BookingResponse } from "@/lib/api";
 
 const Profile = () => {
   const { user, logout, refreshUser } = useAuth();
@@ -20,6 +20,32 @@ const Profile = () => {
   const [name, setName] = useState(user?.full_name || "");
   const [email, setEmail] = useState(user?.email || "");
   const [loading, setLoading] = useState(false);
+  const [bookings, setBookings] = useState<BookingResponse[]>([]);
+  const [loadingBookings, setLoadingBookings] = useState(false);
+
+  // Load bookings on component mount
+  useEffect(() => {
+    const loadBookings = async () => {
+      if (!user) return;
+
+      setLoadingBookings(true);
+      try {
+        const myBookings = await api.bookings.getMyBookings();
+        setBookings(myBookings);
+      } catch (error: any) {
+        console.error("Failed to load bookings:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load bookings",
+          variant: "destructive",
+        });
+      } finally {
+        setLoadingBookings(false);
+      }
+    };
+
+    loadBookings();
+  }, [user, toast]);
 
   const handleSaveChanges = async () => {
     setLoading(true);
@@ -48,12 +74,48 @@ const Profile = () => {
     await logout();
   };
 
+  const handleCancelBooking = async (bookingId: number) => {
+    try {
+      await api.bookings.cancelBooking(bookingId);
+      toast({
+        title: "Success",
+        description: "Booking cancelled successfully",
+      });
+      // Reload bookings
+      const myBookings = await api.bookings.getMyBookings();
+      setBookings(myBookings);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.detail || "Failed to cancel booking",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  const formatTime = (timeString: string) => {
+    // Convert "HH:MM:SS" to "HH:MM AM/PM"
+    const [hours, minutes] = timeString.split(':').map(Number);
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours % 12 || 12;
+    return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+  };
+
   if (!user) {
     return null;
   }
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-amber-900">
-      
+
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
@@ -93,29 +155,29 @@ const Profile = () => {
                   <div className="grid gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="name" className="text-slate-200">Full Name</Label>
-                      <Input 
-                        id="name" 
-                        value={name} 
+                      <Input
+                        id="name"
+                        value={name}
                         onChange={(e) => setName(e.target.value)}
                         className="bg-slate-700/40 text-white border-slate-600"
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email" className="text-slate-200">Email</Label>
-                      <Input 
-                        id="email" 
-                        type="email" 
-                        value={email} 
+                      <Input
+                        id="email"
+                        type="email"
+                        value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="bg-slate-700/40 text-white border-slate-600"
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="username" className="text-slate-200">Username</Label>
-                      <Input 
-                        id="username" 
-                        value={user.username} 
-                        disabled 
+                      <Input
+                        id="username"
+                        value={user.username}
+                        disabled
                         className="bg-slate-700/40 text-slate-400 border-slate-600"
                       />
                     </div>
@@ -156,48 +218,64 @@ const Profile = () => {
             </TabsContent>
 
             <TabsContent value="bookings" className="space-y-4">
-              {mockBookings.map((booking) => (
-                <Card key={booking.id} className="bg-slate-800/60 border-white/10">
-                  <CardContent className="pt-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <h3 className="font-semibold text-lg text-white">{booking.roomName}</h3>
-                        <p className="text-sm text-slate-300">{booking.date}</p>
-                      </div>
-                      <Badge
-                        variant={
-                          booking.status === "upcoming"
-                            ? "default"
-                            : booking.status === "completed"
-                            ? "secondary"
-                            : "outline"
-                        }
-                        className={booking.status === "upcoming" ? "bg-amber-500 text-slate-900" : ""}
-                      >
-                        {booking.status}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-4 text-sm text-slate-300 mb-4">
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        <span>
-                          {booking.startTime} - {booking.endTime}
-                        </span>
-                      </div>
-                    </div>
-                    {booking.status === "upcoming" && (
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="bg-slate-700/40 text-white border-slate-600 hover:bg-slate-700">
-                          Reschedule
-                        </Button>
-                        <Button variant="outline" size="sm" className="bg-slate-700/40 text-white border-slate-600 hover:bg-slate-700">
-                          Cancel
-                        </Button>
-                      </div>
-                    )}
+              {loadingBookings ? (
+                <Card className="bg-slate-800/60 border-white/10">
+                  <CardContent className="pt-6 flex items-center justify-center py-12">
+                    <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
                   </CardContent>
                 </Card>
-              ))}
+              ) : bookings.length === 0 ? (
+                <Card className="bg-slate-800/60 border-white/10">
+                  <CardContent className="pt-6 text-center py-12">
+                    <p className="text-slate-300">No bookings found</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                bookings.map((booking) => (
+                  <Card key={booking.id} className="bg-slate-800/60 border-white/10">
+                    <CardContent className="pt-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h3 className="font-semibold text-lg text-white">Room #{booking.room_id}</h3>
+                          <p className="text-sm text-slate-300">{formatDate(booking.booking_date)}</p>
+                        </div>
+                        <Badge
+                          variant={
+                            booking.status === "upcoming"
+                              ? "default"
+                              : booking.status === "completed"
+                                ? "secondary"
+                                : "outline"
+                          }
+                          className={booking.status === "upcoming" ? "bg-amber-500 text-slate-900" : ""}
+                        >
+                          {booking.status}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-4 text-sm text-slate-300 mb-4">
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          <span>
+                            {formatTime(booking.start_time)} - {formatTime(booking.end_time)}
+                          </span>
+                        </div>
+                      </div>
+                      {booking.status === "upcoming" && (
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="bg-slate-700/40 text-white border-slate-600 hover:bg-slate-700"
+                            onClick={() => handleCancelBooking(booking.id)}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </TabsContent>
 
             <TabsContent value="settings" className="space-y-6">

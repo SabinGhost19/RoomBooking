@@ -17,37 +17,37 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 120 10% 20%;
 
-    --primary: 100 15% 58%;
+    --primary: 38 92% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 105 25% 75%;
-    --secondary-foreground: 120 10% 20%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 105 20% 88%;
-    --muted-foreground: 120 8% 45%;
+    --muted: 215 20% 65%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 105 35% 90%;
-    --accent-foreground: 120 10% 20%;
+    --accent: 38 92% 50%;
+    --accent-foreground: 0 0% 0%;
 
     --destructive: 0 70% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 105 15% 85%;
-    --input: 105 15% 85%;
-    --ring: 100 15% 58%;
+    --border: 215 15% 25%;
+    --input: 215 15% 25%;
+    --ring: 38 92% 50%;
 
     --radius: 0.75rem;
-    
-    --sage-primary: 100 15% 58%;
-    --sage-secondary: 105 25% 75%;
-    --sage-accent: 105 35% 90%;
-    
-    --gradient-hero: linear-gradient(135deg, hsl(var(--sage-primary)) 0%, hsl(var(--sage-secondary)) 100%);
+
+    --amber-primary: 38 92% 50%;
+    --amber-secondary: 32 95% 44%;
+    --amber-accent: 45 93% 47%;
+
+    --gradient-hero: linear-gradient(135deg, hsl(var(--amber-primary)) 0%, hsl(var(--amber-secondary)) 100%);
     --gradient-card: linear-gradient(to bottom, hsl(var(--card)) 0%, hsl(var(--accent)) 100%);
-    
-    --shadow-soft: 0 2px 20px -5px hsl(var(--sage-primary) / 0.15);
-    --shadow-hover: 0 8px 30px -8px hsl(var(--sage-primary) / 0.25);
-    
+
+    --shadow-soft: 0 2px 20px -5px hsl(var(--amber-primary) / 0.15);
+    --shadow-hover: 0 8px 30px -8px hsl(var(--amber-primary) / 0.25);
+
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
@@ -111,7 +111,74 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html {
+    overscroll-behavior: none;
+    overflow-x: hidden;
+  }
+
   body {
     @apply bg-background text-foreground;
+    overscroll-behavior: none;
+    overflow-x: hidden;
+    position: relative;
   }
+}
+
+/* Calendar booking intensity styles */
+.rdp-day-booked1 {
+  background: rgba(245, 158, 11, 0.2) !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+  color: rgb(253, 224, 71) !important;
+}
+
+.rdp-day-booked2 {
+  background: rgba(245, 158, 11, 0.4) !important;
+  border: 1px solid rgba(245, 158, 11, 0.5) !important;
+  color: rgb(254, 243, 199) !important;
+  font-weight: 600 !important;
+}
+
+.rdp-day-booked3 {
+  background: rgba(245, 158, 11, 0.6) !important;
+  border: 1px solid rgba(245, 158, 11, 0.7) !important;
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+.rdp-day-booked4plus {
+  background: rgba(217, 119, 6, 0.8) !important;
+  border: 1px solid rgb(217, 119, 6) !important;
+  color: white !important;
+  font-weight: 800 !important;
+  box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.4) !important;
+  transform: scale(1.05) !important;
+}
+
+/* Hover states for booked days */
+.rdp-day-booked1:hover,
+.rdp-day-booked2:hover,
+.rdp-day-booked3:hover,
+.rdp-day-booked4plus:hover {
+  transform: scale(1.15) !important;
+  box-shadow: 0 20px 25px -5px rgba(245, 158, 11, 0.5) !important;
+}
+
+/* Animated gradient for navbar */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 8s ease infinite;
 }
