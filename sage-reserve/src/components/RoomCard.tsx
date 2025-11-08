@@ -37,10 +37,6 @@ export const RoomCard = ({ room }: RoomCardProps) => {
             <Users className="h-4 w-4 text-slate-400" />
             <span>{room.capacity} people</span>
           </div>
-          <div className="flex items-center gap-1">
-            <DollarSign className="h-4 w-4 text-slate-400" />
-            <span>${room.price}/hour</span>
-          </div>
         </div>
         <div className="flex flex-wrap gap-2">
           {room.amenities && room.amenities.slice(0, 3).map((amenity) => (

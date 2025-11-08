@@ -352,7 +352,7 @@ export const ReactMapView: React.FC<ReactMapViewProps> = ({
                     </div>
                     <div className="flex justify-between gap-6">
                         <span className="text-slate-600">Visible:</span>
-                        <span className="font-bold text-green-600">{visibleElements.length.toLocaleString()}</span>
+                        <span className="font-bold text-amber-600">{visibleElements.length.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between gap-6">
                         <span className="text-slate-600">Shape Groups:</span>

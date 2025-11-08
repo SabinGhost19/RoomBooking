@@ -128,6 +128,24 @@ const RoomDetails = () => {
         return bookings.filter(b => b.booking_date === dateStr);
     };
 
+    const getBookingCountForDate = (date: Date) => {
+        const dateStr = date.toISOString().split('T')[0];
+        return bookings.filter(b => b.booking_date === dateStr).length;
+    };
+
+    const getDayClassName = (date: Date) => {
+        const count = getBookingCountForDate(date);
+        if (count === 0) return '';
+
+        // Gradual intensity based on booking count
+        if (count === 1) return 'bg-amber-500/20 border-amber-500/30 text-amber-200';
+        if (count === 2) return 'bg-amber-500/40 border-amber-500/50 text-amber-100';
+        if (count === 3) return 'bg-amber-500/60 border-amber-500/70 text-white font-bold';
+        if (count >= 4) return 'bg-amber-600/80 border-amber-600 text-white font-extrabold shadow-lg shadow-amber-500/40';
+
+        return '';
+    };
+
     const isTimeSlotAvailable = (time: string) => {
         const dateStr = selectedDate.toISOString().split('T')[0];
         const todayBookings = bookings.filter(b => b.booking_date === dateStr);
@@ -202,11 +220,6 @@ const RoomDetails = () => {
                                         <span className="font-semibold">{room.capacity}</span>
                                         <span>people</span>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <DollarSign className="h-5 w-5 text-amber-500" />
-                                        <span className="font-semibold">${room.price}</span>
-                                        <span>/hour</span>
-                                    </div>
                                 </div>
 
                                 {room.amenities && room.amenities.length > 0 && (
@@ -249,7 +262,7 @@ const RoomDetails = () => {
                                                         {booking.start_time.substring(0, 5)} - {booking.end_time.substring(0, 5)}
                                                     </span>
                                                 </div>
-                                                <Badge variant="secondary">Booked</Badge>
+                                                <Badge className="bg-amber-500 text-slate-900 font-bold">Booked</Badge>
                                             </div>
                                         ))
                                     )}
@@ -260,20 +273,88 @@ const RoomDetails = () => {
 
                     {/* Booking Form */}
                     <div className="lg:col-span-1">
-                        <Card className="bg-slate-800/60 border-white/10 sticky top-20">
-                            <CardHeader>
-                                <CardTitle className="text-white">Book this Room</CardTitle>
+                        <Card className="bg-gradient-to-br from-slate-800/95 via-slate-800/90 to-slate-900/95 border border-amber-500/20 backdrop-blur-xl shadow-2xl shadow-amber-500/10 sticky top-20">
+                            <CardHeader className="pb-4 border-b border-amber-500/20">
+                                <CardTitle className="text-white text-2xl font-bold flex items-center gap-3">
+                                    <div className="p-2 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg shadow-lg shadow-amber-500/30">
+                                        <CalendarIcon className="h-5 w-5 text-slate-900" />
+                                    </div>
+                                    Book this Room
+                                </CardTitle>
+                                <p className="text-slate-400 text-sm mt-2">Select your preferred date and time</p>
                             </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label className="text-slate-200">Select Date</Label>
-                                    <Calendar
-                                        mode="single"
-                                        selected={selectedDate}
-                                        onSelect={(date) => date && setSelectedDate(date)}
-                                        disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                                        className="rounded-md border border-slate-600 bg-slate-700/40"
-                                    />
+                            <CardContent className="space-y-6 pt-6">
+                                {/* Calendar Section */}
+                                <div className="space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <Label className="text-amber-400 text-sm font-semibold flex items-center gap-2">
+                                            <CalendarIcon className="h-4 w-4" />
+                                            Select Date
+                                        </Label>
+                                        <span className="text-xs text-slate-400">
+                                            {selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                        </span>
+                                    </div>
+
+                                    <div className="p-4 bg-slate-700/30 rounded-2xl border border-amber-500/20 shadow-inner">
+                                        <Calendar
+                                            mode="single"
+                                            selected={selectedDate}
+                                            onSelect={(date) => date && setSelectedDate(date)}
+                                            disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                                            modifiers={{
+                                                booked1: (date) => getBookingCountForDate(date) === 1,
+                                                booked2: (date) => getBookingCountForDate(date) === 2,
+                                                booked3: (date) => getBookingCountForDate(date) === 3,
+                                                booked4plus: (date) => getBookingCountForDate(date) >= 4,
+                                            }}
+                                            modifiersClassNames={{
+                                                booked1: 'rdp-day-booked1',
+                                                booked2: 'rdp-day-booked2',
+                                                booked3: 'rdp-day-booked3',
+                                                booked4plus: 'rdp-day-booked4plus',
+                                            }}
+                                            className="mx-auto
+                                            [&_.rdp-months]:flex [&_.rdp-months]:justify-center [&_.rdp-months]:w-full
+                                            [&_.rdp-month]:w-full [&_.rdp-month]:max-w-[300px]
+                                            [&_.rdp-caption]:flex [&_.rdp-caption]:items-center [&_.rdp-caption]:justify-center [&_.rdp-caption]:mb-5 [&_.rdp-caption]:relative [&_.rdp-caption]:px-2
+                                            [&_.rdp-caption_label]:text-amber-400 [&_.rdp-caption_label]:font-bold [&_.rdp-caption_label]:text-lg [&_.rdp-caption_label]:tracking-wide
+                                            [&_.rdp-nav]:flex [&_.rdp-nav]:gap-2 [&_.rdp-nav]:absolute [&_.rdp-nav]:w-full [&_.rdp-nav]:justify-between [&_.rdp-nav]:px-2
+                                            [&_.rdp-nav_button]:h-10 [&_.rdp-nav_button]:w-10 [&_.rdp-nav_button]:rounded-xl [&_.rdp-nav_button]:border-2 [&_.rdp-nav_button]:border-amber-500/40 [&_.rdp-nav_button]:bg-gradient-to-br [&_.rdp-nav_button]:from-slate-700/80 [&_.rdp-nav_button]:to-slate-800/80 [&_.rdp-nav_button]:text-amber-400 [&_.rdp-nav_button:hover]:bg-gradient-to-br [&_.rdp-nav_button:hover]:from-amber-500/30 [&_.rdp-nav_button:hover]:to-amber-600/30 [&_.rdp-nav_button:hover]:border-amber-400/70 [&_.rdp-nav_button:hover]:scale-110 [&_.rdp-nav_button]:transition-all [&_.rdp-nav_button]:duration-300 [&_.rdp-nav_button]:shadow-xl [&_.rdp-nav_button:hover]:shadow-amber-500/40
+                                            [&_.rdp-head_cell]:text-amber-400/80 [&_.rdp-head_cell]:font-bold [&_.rdp-head_cell]:text-xs [&_.rdp-head_cell]:uppercase [&_.rdp-head_cell]:tracking-widest [&_.rdp-head_cell]:pb-3 [&_.rdp-head_cell]:w-[42px]
+                                            [&_.rdp-table]:w-full [&_.rdp-table]:table-fixed
+                                            [&_.rdp-cell]:p-0.5 [&_.rdp-cell]:text-center
+                                            [&_.rdp-button]:h-[42px] [&_.rdp-button]:w-[42px] [&_.rdp-button]:rounded-xl [&_.rdp-button]:text-white/90 [&_.rdp-button]:font-semibold [&_.rdp-button]:text-base [&_.rdp-button]:transition-all [&_.rdp-button]:duration-300 [&_.rdp-button]:border-2 [&_.rdp-button]:border-transparent [&_.rdp-button]:mx-auto [&_.rdp-button]:flex [&_.rdp-button]:items-center [&_.rdp-button]:justify-center
+                                            [&_.rdp-button:hover]:bg-gradient-to-br [&_.rdp-button:hover]:from-amber-500/30 [&_.rdp-button:hover]:to-amber-600/20 [&_.rdp-button:hover]:text-amber-200 [&_.rdp-button:hover]:scale-110 [&_.rdp-button:hover]:shadow-2xl [&_.rdp-button:hover]:shadow-amber-500/50 [&_.rdp-button:hover]:border-amber-400/60 [&_.rdp-button:hover]:font-bold [&_.rdp-button:hover]:z-10
+                                            [&_.rdp-day_selected]:!bg-gradient-to-br [&_.rdp-day_selected]:!from-amber-400 [&_.rdp-day_selected]:!via-amber-500 [&_.rdp-day_selected]:!to-amber-600 [&_.rdp-day_selected]:!text-slate-900 [&_.rdp-day_selected]:!font-extrabold [&_.rdp-day_selected]:!text-lg [&_.rdp-day_selected]:!shadow-2xl [&_.rdp-day_selected]:!shadow-amber-500/70 [&_.rdp-day_selected]:!scale-[1.15] [&_.rdp-day_selected]:!border-amber-300 [&_.rdp-day_selected]:!ring-4 [&_.rdp-day_selected]:!ring-amber-400/60 [&_.rdp-day_selected]:!ring-offset-2 [&_.rdp-day_selected]:!ring-offset-slate-800 [&_.rdp-day_selected]:!z-20
+                                            [&_.rdp-day_today]:bg-gradient-to-br [&_.rdp-day_today]:from-green-400 [&_.rdp-day_today]:via-lime-400 [&_.rdp-day_today]:to-yellow-400 [&_.rdp-day_today]:text-slate-900 [&_.rdp-day_today]:font-extrabold [&_.rdp-day_today]:border-2 [&_.rdp-day_today]:border-green-500 [&_.rdp-day_today]:shadow-2xl [&_.rdp-day_today]:shadow-green-500/60 [&_.rdp-day_today]:ring-4 [&_.rdp-day_today]:ring-green-400/50 [&_.rdp-day_today]:ring-offset-2 [&_.rdp-day_today]:ring-offset-slate-800 [&_.rdp-day_today]:animate-pulse
+                                            [&_.rdp-day_outside]:text-white/15 [&_.rdp-day_outside]:opacity-20 [&_.rdp-day_outside:hover]:opacity-30
+                                            [&_.rdp-day_disabled]:text-slate-700 [&_.rdp-day_disabled]:opacity-20 [&_.rdp-day_disabled]:cursor-not-allowed [&_.rdp-day_disabled:hover]:scale-100 [&_.rdp-day_disabled:hover]:bg-transparent [&_.rdp-day_disabled:hover]:shadow-none [&_.rdp-day_disabled]:line-through"
+                                        />
+                                    </div>
+
+                                    {/* Booking Intensity Legend */}
+                                    <div className="mt-4 p-3 bg-slate-700/30 rounded-lg border border-amber-500/20">
+                                        <p className="text-xs text-amber-400 font-semibold mb-2">Booking Intensity:</p>
+                                        <div className="grid grid-cols-2 gap-2 text-xs">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-4 h-4 rounded bg-amber-500/20 border border-amber-500/30"></div>
+                                                <span className="text-slate-300">1 booking</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-4 h-4 rounded bg-amber-500/40 border border-amber-500/50"></div>
+                                                <span className="text-slate-300">2 bookings</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-4 h-4 rounded bg-amber-500/60 border border-amber-500/70"></div>
+                                                <span className="text-slate-300">3 bookings</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-4 h-4 rounded bg-amber-600/80 border border-amber-600 shadow-md"></div>
+                                                <span className="text-slate-300">4+ bookings</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div className="space-y-2">

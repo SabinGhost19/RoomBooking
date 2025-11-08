@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BeerMugIcon } from '@/components/BeerMugIcon';
+import { BeerMug3D } from '@/components/BeerMug3D';
 
 const Index = () => {
   // Logged-in detection (simple heuristic): presence of a token in localStorage
@@ -30,12 +30,12 @@ const Index = () => {
               </div>
 
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
-                Find your place
-                <span className="block text-amber-400 mt-2">within the company</span>
+
+                Find your spot before <span className="text-amber-400">the foam spills over</span>
               </h1>
 
               <p className="text-xl text-slate-300 leading-relaxed max-w-xl italic">
-                "Find the right spot for every day"
+                "Secure your place before the foam takes over!"
               </p>
 
               <p className="text-lg text-slate-400 leading-relaxed max-w-xl mt-4">
@@ -47,7 +47,9 @@ const Index = () => {
                   to="/map"
                   className="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-amber-500 text-slate-900 rounded-lg font-semibold text-lg hover:bg-amber-400 transition-all duration-200 shadow-xl hover:shadow-2xl hover:shadow-amber-500/50"
                 >
-                  <BeerMugIcon className="w-6 h-6" />
+                  <div className="w-6 h-6 rounded-md overflow-hidden flex items-center justify-center">
+                    <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
+                  </div>
                   {loggedIn ? 'Open map' : 'Find a space'}
                   <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -78,12 +80,13 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Right Column removed (no 3D model). Replace with clean call-to-action buttons. */}
-            <div className="flex items-center justify-center">
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-amber-500 rounded-2xl mb-6 shadow-xl mx-auto">
-                  <BeerMugIcon className="w-10 h-10 text-slate-900" />
-                </div>
+            {/* Right Column - 3D Beer Mug Model */}
+            <div className="flex flex-col items-center justify-center">
+              <div className="w-full max-w-lg">
+                <BeerMug3D />
+              </div>
+
+              <div className="text-center mt-8">
                 <h2 className="text-3xl font-bold text-white mb-3">Start booking meeting rooms</h2>
                 <p className="text-slate-300 max-w-md mx-auto mb-6">Access interactive floor plans and real-time availability. Sign up to get full access.</p>
 
@@ -109,177 +112,22 @@ const Index = () => {
         </div>
 
         {/* Wave divider */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg className="w-full h-auto text-slate-50" viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 120L60 110C120 100 240 80 360 66.7C480 53.3 600 46.7 720 50C840 53.3 960 66.7 1080 73.3C1200 80 1320 80 1380 80L1440 80V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="currentColor" />
-          </svg>
+        <div className="absolute bottom-0 left-0 right-0 w-full h-[120px] pointer-events-none select-none">
+          <img src="/beer-foam-wave.png" alt="Beer foam wave" className="w-full h-full object-cover" />
         </div>
-      </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <span className="text-amber-600 font-semibold text-sm uppercase tracking-wide">
-              Enterprise Features
-            </span>
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 mt-3">
-              Why Industry Leaders Choose Us
-            </h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              Cutting-edge technology meets intuitive design for seamless room booking
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="group bg-slate-50 hover:bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-200">
-              <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">
-                Interactive 3D Floor Plans
-              </h3>
-              <p className="text-slate-600 leading-relaxed">
-                Visualize every meeting space with immersive 3D models. Navigate, rotate, and inspect rooms before booking.
-              </p>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="group bg-slate-50 hover:bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-200">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">
-                Real-Time Availability
-              </h3>
-              <p className="text-slate-600 leading-relaxed">
-                Instant booking confirmations with live synchronization across all devices and platforms.
-              </p>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="group bg-slate-50 hover:bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-200">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">
-                Enterprise Security
-              </h3>
-              <p className="text-slate-600 leading-relaxed">
-                Bank-grade encryption, SSO integration, and compliance with industry standards (SOC 2, GDPR).
-              </p>
-            </div>
-
-            {/* Feature 4 */}
-            <div className="group bg-slate-50 hover:bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-200">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">
-                Team Collaboration
-              </h3>
-              <p className="text-slate-600 leading-relaxed">
-                Built for teams of all sizes. Calendar integrations, automated notifications, and resource management.
-              </p>
-            </div>
-
-            {/* Feature 5 */}
-            <div className="group bg-slate-50 hover:bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-200">
-              <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">
-                Analytics & Insights
-              </h3>
-              <p className="text-slate-600 leading-relaxed">
-                Comprehensive reporting on room utilization, booking patterns, and space optimization metrics.
-              </p>
-            </div>
-
-            {/* Feature 6 */}
-            <div className="group bg-slate-50 hover:bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-200">
-              <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">
-                API Integration
-              </h3>
-              <p className="text-slate-600 leading-relaxed">
-                RESTful API for seamless integration with existing systems. Slack, Teams, Google Workspace compatible.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-slate-900 via-slate-800 to-amber-900 relative overflow-hidden">
-        {/* Background pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-amber-500 rounded-2xl mb-8 shadow-xl">
-            <BeerMugIcon className="w-10 h-10 text-slate-900" />
-          </div>
-
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Ready to Transform Your Workspace?
-          </h2>
-          <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
-            Join leading companies worldwide using our intelligent booking platform to optimize their meeting spaces.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              to="/booking"
-              className="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-amber-500 text-slate-900 rounded-lg font-semibold text-lg hover:bg-amber-400 transition-all duration-200 shadow-xl hover:shadow-2xl"
-            >
-              Get Started Now
-              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </Link>
-            <a
-              href="mailto:sales@roombooking.com"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/10 text-white rounded-lg font-semibold text-lg hover:bg-white/20 backdrop-blur-sm transition-all duration-200 border border-white/20"
-            >
-              Contact Sales
-            </a>
-          </div>
-
-          {/* Trust badges */}
-          <div className="mt-16 pt-8 border-t border-white/10">
-            <p className="text-slate-400 text-sm mb-6">Trusted by industry leaders</p>
-            <div className="flex items-center justify-center gap-12 opacity-50">
-              <div className="text-white font-bold text-xl">ACME Corp</div>
-              <div className="text-white font-bold text-xl">TechStart</div>
-              <div className="text-white font-bold text-xl">GlobalCo</div>
-            </div>
-          </div>
-        </div>
-      </section>
+        {/* Trust badges */}
+        {/* Trust badges section removed as requested */}
+      </section >
 
       {/* Footer */}
-      <footer className="bg-slate-900 text-slate-300 py-16 border-t border-slate-800">
+      < footer className="bg-slate-900 text-slate-300 py-16 border-t border-slate-800" >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-12">
             <div className="md:col-span-2">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center">
-                  <BeerMugIcon className="w-6 h-6 text-slate-900" />
+                <div className="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center overflow-hidden">
+                  <img src="/logo.png" alt="SpaceFlow Logo" className="w-full h-full object-cover rounded-lg" />
                 </div>
                 <span className="text-xl font-bold text-white">SpaceFlow</span>
               </div>
@@ -332,8 +180,8 @@ const Index = () => {
             </div>
           </div>
         </div>
-      </footer>
-    </div>
+      </footer >
+    </div >
   );
 };
 

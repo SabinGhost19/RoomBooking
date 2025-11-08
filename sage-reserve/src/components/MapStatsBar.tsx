@@ -24,8 +24,8 @@ export const MapStatsBar = ({ total, available, occupied, maintenance }: MapStat
 
                 <div className="text-center">
                     <div className="flex items-center justify-center gap-2 mb-1">
-                        <CheckCircle2 className="h-5 w-5 text-green-600" />
-                        <span className="text-2xl font-bold text-green-600">{available}</span>
+                        <CheckCircle2 className="h-5 w-5 text-amber-500" />
+                        <span className="text-2xl font-bold text-amber-500">{available}</span>
                     </div>
                     <p className="text-xs font-semibold text-muted-foreground uppercase">Available</p>
                 </div>

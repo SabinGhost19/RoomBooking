@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { BookingCalendar } from "@/components/BookingCalendar";
 import { Button } from "@/components/ui/button";
@@ -8,18 +8,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Users, DollarSign, Clock } from "lucide-react";
+import { ArrowLeft, Users, DollarSign, Clock, Loader2 } from "lucide-react";
 import { mockRooms } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
+import api from "@/lib/api";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Booking = () => {
   const { roomId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [duration, setDuration] = useState<string>("1");
   const [notes, setNotes] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const room = mockRooms.find((r) => r.id === roomId);
 
@@ -36,11 +40,47 @@ const Booking = () => {
     );
   }
 
+  // Check if user is logged in
+  useEffect(() => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please login to make a booking",
+        variant: "destructive",
+      });
+      navigate("/login");
+    }
+  }, [user, navigate, toast]);
+
   const calculateTotal = () => {
     return room.price * parseInt(duration);
   };
 
-  const handleConfirmBooking = () => {
+  const formatDateForAPI = (date: Date): string => {
+    return date.toISOString().split('T')[0]; // YYYY-MM-DD
+  };
+
+  const formatTimeForAPI = (time: string, durationHours: number): { start: string; end: string } => {
+    // Convert "9:00 AM" to "09:00:00"
+    const [timeStr, period] = time.split(' ');
+    let [hours, minutes] = timeStr.split(':').map(Number);
+
+    if (period === 'PM' && hours !== 12) {
+      hours += 12;
+    } else if (period === 'AM' && hours === 12) {
+      hours = 0;
+    }
+
+    const startTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+
+    // Calculate end time
+    const endHours = hours + durationHours;
+    const endTime = `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+
+    return { start: startTime, end: endTime };
+  };
+
+  const handleConfirmBooking = async () => {
     if (!selectedDate || !selectedTime) {
       toast({
         title: "Missing information",
@@ -50,16 +90,70 @@ const Booking = () => {
       return;
     }
 
-    toast({
-      title: "Booking confirmed!",
-      description: `Your reservation for ${room.name} has been confirmed.`,
-    });
-    navigate("/");
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please login to make a booking",
+        variant: "destructive",
+      });
+      navigate("/login");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const { start, end } = formatTimeForAPI(selectedTime, parseInt(duration));
+
+      // First check availability
+      const availabilityCheck = await api.bookings.checkAvailability({
+        room_id: parseInt(roomId!),
+        booking_date: formatDateForAPI(selectedDate),
+        start_time: start,
+        end_time: end,
+      });
+
+      if (!availabilityCheck.available) {
+        toast({
+          title: "Room not available",
+          description: "The room is not available for the selected time slot. Please choose another time.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Create booking
+      const booking = await api.bookings.createBooking({
+        room_id: parseInt(roomId!),
+        booking_date: formatDateForAPI(selectedDate),
+        start_time: start,
+        end_time: end,
+        participant_ids: [], // Can be extended to add participants
+      });
+
+      toast({
+        title: "Booking confirmed!",
+        description: `Your reservation for ${room.name} has been confirmed.`,
+      });
+
+      // Navigate to bookings or home
+      navigate("/");
+    } catch (error: any) {
+      console.error("Booking error:", error);
+      toast({
+        title: "Booking failed",
+        description: error.response?.data?.detail || "Unable to create booking. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-amber-900">
-      
+
       <div className="container mx-auto px-4 py-8">
         <Button
           variant="ghost"
@@ -186,16 +280,24 @@ const Booking = () => {
                   </div>
                 </div>
 
-                <Button 
-                  className="w-full bg-amber-500 text-slate-900 hover:bg-amber-400" 
+                <Button
+                  className="w-full bg-amber-500 text-slate-900 hover:bg-amber-400"
                   size="lg"
                   onClick={handleConfirmBooking}
+                  disabled={isLoading || !selectedDate || !selectedTime}
                 >
-                  <Clock className="mr-2 h-4 w-4" />
-                  Confirm Booking
-                </Button>
-
-                <p className="text-xs text-slate-400 text-center">
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Creating Booking...
+                    </>
+                  ) : (
+                    <>
+                      <Clock className="mr-2 h-4 w-4" />
+                      Confirm Booking
+                    </>
+                  )}
+                </Button>                <p className="text-xs text-slate-400 text-center">
                   By confirming, you agree to our booking terms and conditions
                 </p>
               </CardContent>

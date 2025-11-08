@@ -788,10 +788,12 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                                                                 {/* Status Badge */}
                                                                 <div className="absolute top-3 right-3">
                                                                     {isAvailableNow ? (
+
                                                                         <div className="flex items-center gap-1.5 bg-green-500/90 backdrop-blur-sm px-3 py-1.5 rounded-full">
                                                                             <CheckCircle className="h-3.5 w-3.5 text-white" />
                                                                             <span className="text-xs font-semibold text-white">Available</span>
                                                                         </div>
+
                                                                     ) : (
                                                                         <div className="flex items-center gap-1.5 bg-red-500/90 backdrop-blur-sm px-3 py-1.5 rounded-full">
                                                                             <XCircle className="h-3.5 w-3.5 text-white" />

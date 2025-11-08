@@ -14,6 +14,7 @@ import RoomDetails from "./pages/RoomDetails";
 import Booking from "./pages/Booking";
 import Profile from "./pages/Profile";
 import View2DMapReact from "./pages/View2DMapReact";
+import SuggestEvent from "./pages/SuggestEvent";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/booking/:roomId" element={<ProtectedRoute><Booking /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/map" element={<ProtectedRoute><View2DMapReact /></ProtectedRoute>} />
+            <Route path="/suggest-event" element={<ProtectedRoute><SuggestEvent /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
