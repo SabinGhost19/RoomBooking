@@ -15,6 +15,7 @@ interface SVGObject {
     width: number;
     height: number;
     fill: string;
+    title?: string; // Optional title from <title> element
     properties: Record<string, string>;
 }
 
@@ -97,6 +98,10 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                         || rect.getAttribute('fill')
                         || '#cccccc';
 
+                    // Extract title element if exists
+                    const titleElement = rect.querySelector('title');
+                    const title = titleElement?.textContent || undefined;
+
                     // Get all attributes as properties
                     const properties: Record<string, string> = {};
                     Array.from(rect.attributes).forEach(attr => {
@@ -111,6 +116,7 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                         width,
                         height,
                         fill,
+                        title,
                         properties
                     });
                 });
@@ -279,7 +285,14 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                                             }}
                                             onMouseEnter={() => !isDisabled && setHoveredObject(obj.id)}
                                             onMouseLeave={() => !isDisabled && setHoveredObject(null)}
-                                        />
+                                        >
+                                            {/* Display title only on hover */}
+                                            {obj.title && isHovered && (
+                                                <span className="text-sm font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] pointer-events-none px-2 py-1 text-center">
+                                                    {obj.title}
+                                                </span>
+                                            )}
+                                        </div>
                                     </TooltipTrigger>
                                     <TooltipContent
                                         side="top"
@@ -287,8 +300,13 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                                     >
                                         <div className="space-y-2">
                                             <div className="font-bold text-lg border-b border-slate-700 pb-2">
-                                                {obj.id}
+                                                {obj.title || obj.id}
                                             </div>
+                                            {obj.title && (
+                                                <div className="text-xs text-slate-400">
+                                                    ID: {obj.id}
+                                                </div>
+                                            )}
                                             <div className="grid grid-cols-2 gap-2 text-sm">
                                                 <div>
                                                     <span className="text-slate-400">Type:</span>
