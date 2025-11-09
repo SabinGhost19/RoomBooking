@@ -4,9 +4,20 @@ AI-powered event suggestion service using OpenAI.
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
 from typing import List, Dict, Any, Optional
-from datetime import date, time, datetime, timedelta
+from datetime import date, time, datetime, timedelta, timezone
 import json
 from openai import AsyncOpenAI
+
+# Try to import zoneinfo for proper timezone support (Python 3.9+)
+try:
+    from zoneinfo import ZoneInfo
+    ROMANIA_TZ = ZoneInfo("Europe/Bucharest")
+except ImportError:
+    # Fallback for Python < 3.9 or systems without zoneinfo
+    # Romania is UTC+2 (EET) in winter, UTC+3 (EEST) in summer
+    # Using UTC+2 as a safe default
+    ROMANIA_TZ = timezone(timedelta(hours=2))
+    print("[TIMEZONE] Warning: zoneinfo not available, using UTC+2 fallback")
 
 from app.core.config import settings
 from app.models.room import Room
@@ -25,7 +36,10 @@ class EventSuggestionService:
     """Service for AI-powered room booking suggestions."""
     
     def __init__(self):
-        self.client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+        self.client = AsyncOpenAI(
+            api_key=settings.OPENAI_API_KEY,
+            timeout=120.0  # Increased timeout to 120 seconds for LLM responses
+        )
     
     async def get_available_rooms_for_slot(
         self,
@@ -96,8 +110,8 @@ class EventSuggestionService:
     ) -> Dict[str, Any]:
         """Use OpenAI to parse natural language prompt into structured activities."""
         
-        # Get current date and time for context
-        now = datetime.now()
+        # Get current date and time in Romania timezone (Europe/Bucharest)
+        now = datetime.now(ROMANIA_TZ)
         current_date = now.date()
         
         # Round current time to nearest hour for cleaner suggestions
@@ -113,6 +127,15 @@ class EventSuggestionService:
         current_time = rounded_now.strftime("%H:00")  # Always show as HH:00
         current_datetime_str = f"{current_date.isoformat()} {current_time}"
         current_day_name = now.strftime("%A")  # e.g., "Monday"
+        
+        # Calculate tomorrow's date for AI context
+        tomorrow_date = current_date + timedelta(days=1)
+        
+        # Log timezone-aware dates for debugging
+        print(f"[TIMEZONE] Current datetime (Romania): {now}")
+        print(f"[TIMEZONE] Current date: {current_date} ({current_day_name})")
+        print(f"[TIMEZONE] Tomorrow date: {tomorrow_date}")
+        print(f"[TIMEZONE] Calendar date provided: {booking_date}")
         
         # Calculate next available time slot (rounded)
         next_slot = (rounded_now + timedelta(hours=1)).strftime("%H:00")
@@ -195,16 +218,24 @@ CURRENT CONTEXT:
 - Current date and time: {current_datetime_str} ({current_day_name})
 - Current rounded hour: {current_time}
 - Next available hour: {next_slot}
-- Current date: {current_date.isoformat()}
-- Provided date: {booking_date.isoformat() if booking_date else "Use current date or extract from prompt"}
+- **TODAY'S DATE: {current_date.isoformat()} ({current_day_name})**
+- **TOMORROW'S DATE: {tomorrow_date.isoformat()} ({(now + timedelta(days=1)).strftime("%A")})**
+- **TARGET DATE SPECIFIED BY USER: {booking_date.isoformat() if booking_date else "NOT SPECIFIED - extract from prompt or use dates above"}**
 - Additional preferences: {general_preferences or "None"}
 
 USER'S EXISTING BOOKINGS (avoid these times):
 {bookings_context}
 
-INSTRUCTIONS:
-1. Calculate relative times based on ROUNDED current hour ({current_time} on {current_day_name})
-2. ALWAYS round times to exact hours (HH:00 format only)
+CRITICAL INSTRUCTIONS:
+1. **IF USER SPECIFIED A DATE IN THE CALENDAR ({booking_date.isoformat() if booking_date else 'N/A'}), USE THAT DATE!**
+2. If user says "tomorrow"/"mâine" in prompt:
+   - If no calendar date provided, use {tomorrow_date.isoformat()}
+   - If calendar date IS provided, USE THE CALENDAR DATE (ignore "tomorrow" in prompt)
+3. If user says "today"/"azi"/"astăzi":
+   - If no calendar date provided, use {current_date.isoformat()}
+   - If calendar date IS provided, USE THE CALENDAR DATE
+4. Calculate relative times based on ROUNDED current hour ({current_time} on {current_day_name})
+5. ALWAYS round times to exact hours (HH:00 format only)
 3. AVOID suggesting times that conflict with user's existing bookings
 4. Extract ALL activities with EXACT HOUR time slots (e.g., 09:00, 10:00, 14:00, NOT 09:30, 14:45)
 5. If user says "available room" without specific time, use next available hour ({next_slot})
@@ -215,9 +246,11 @@ INSTRUCTIONS:
 EXAMPLES (ALL times at exact hours):
 - Current hour {current_time}, "in 2 hours" → start_time: "{(rounded_now + timedelta(hours=2)).strftime('%H:00')}"
 - Current hour {current_time}, "in 3 hours" → start_time: "{(rounded_now + timedelta(hours=3)).strftime('%H:00')}"
-- "tomorrow at 3pm" → booking_date: {(current_date + timedelta(days=1)).isoformat()}, start_time: "15:00"
-- "available room with projector" → start_time: "{next_slot}", end_time: "{(rounded_now + timedelta(hours=2)).strftime('%H:00')}", amenities: ["Projector"]
+- "tomorrow at 3pm" / "mâine la 15:00" → booking_date: "{tomorrow_date.isoformat()}", start_time: "15:00"
+- "today at 2pm" / "astăzi la 14:00" → booking_date: "{current_date.isoformat()}", start_time: "14:00"
+- "available room with projector" → booking_date: "{current_date.isoformat()}", start_time: "{next_slot}", end_time: "{(rounded_now + timedelta(hours=2)).strftime('%H:00')}", amenities: ["Projector"]
 - "pentru 2 ore" (for 2 hours) → start_time: "{next_slot}", end_time: "{(rounded_now + timedelta(hours=3)).strftime('%H:00')}"
+- "cameră de meeting mâine" → booking_date: "{tomorrow_date.isoformat()}", start_time: "09:00" or "10:00"
 
 REMEMBER: All times MUST be at exact hours (minutes = :00). Round up if necessary.
 
@@ -420,15 +453,19 @@ Respond with JSON only."""
                 
                 print(f"[GENERATE_SUGGESTIONS] Parsed data: {parsed_data}")
                 
-                # Extract booking date
-                if not request.booking_date and parsed_data.get("booking_date"):
-                    booking_date = datetime.fromisoformat(parsed_data["booking_date"]).date()
-                elif request.booking_date:
+                # Extract booking date - PRIORITY: calendar date > AI parsed date
+                if request.booking_date:
+                    # User selected a date in the calendar - USE IT!
                     booking_date = request.booking_date
+                    print(f"[GENERATE_SUGGESTIONS] Using calendar-selected date: {booking_date}")
+                elif parsed_data.get("booking_date"):
+                    # No calendar date, but AI extracted one from prompt
+                    booking_date = datetime.fromisoformat(parsed_data["booking_date"]).date()
+                    print(f"[GENERATE_SUGGESTIONS] Using AI-parsed date: {booking_date}")
                 else:
                     raise ValueError("Could not determine booking date from prompt. Please specify a date.")
                 
-                print(f"[GENERATE_SUGGESTIONS] Booking date: {booking_date}")
+                print(f"[GENERATE_SUGGESTIONS] Final booking date: {booking_date}")
                 
                 # Extract activities
                 activities_data = parsed_data.get("activities", [])

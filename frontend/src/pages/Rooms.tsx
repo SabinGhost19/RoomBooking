@@ -262,7 +262,7 @@ const Rooms = () => {
                             [&_.rdp-cell]:p-0.5
                             [&_.rdp-button]:h-10 [&_.rdp-button]:w-10 [&_.rdp-button]:rounded-lg [&_.rdp-button]:text-white/80 [&_.rdp-button]:text-sm [&_.rdp-button]:font-medium [&_.rdp-button]:transition-all [&_.rdp-button]:duration-200
                             [&_.rdp-button:hover]:bg-amber-500/20 [&_.rdp-button:hover]:text-white [&_.rdp-button:hover]:scale-105
-                            [&_.rdp-day_selected]:!bg-gradient-to-br [&_.rdp-day_selected]:!from-amber-500 [&_.rdp-day_selected]:!to-amber-600 [&_.rdp-day_selected]:!text-slate-900 [&_.rdp-day_selected]:!font-bold [&_.rdp-day_selected]:!shadow-lg [&_.rdp-day_selected]:!shadow-amber-500/50 [&_.rdp-day_selected]:!scale-105
+                            [&_.rdp-day_selected]:!bg-amber-500 [&_.rdp-day_selected]:!text-slate-900 [&_.rdp-day_selected]:!font-bold [&_.rdp-day_selected]:!shadow-lg [&_.rdp-day_selected]:!shadow-amber-500/50 [&_.rdp-day_selected]:!scale-105
                             [&_.rdp-day_today]:bg-slate-600/50 [&_.rdp-day_today]:text-amber-400 [&_.rdp-day_today]:font-bold [&_.rdp-day_today]:ring-2 [&_.rdp-day_today]:ring-amber-500/50
                             [&_.rdp-day_outside]:text-white/20 [&_.rdp-day_outside]:opacity-30
                             [&_.rdp-day_disabled]:text-white/10 [&_.rdp-day_disabled]:opacity-20 [&_.rdp-day_disabled]:cursor-not-allowed"

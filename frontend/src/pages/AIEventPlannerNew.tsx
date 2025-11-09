@@ -239,12 +239,20 @@ const AIEventPlannerNew = () => {
           preferences: activity.preferences || undefined,
         }));
 
-        requestData.booking_date = selectedDate.toISOString().split("T")[0];
+        // Format date correctly without timezone conversion
+        const year = selectedDate.getFullYear();
+        const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+        const day = String(selectedDate.getDate()).padStart(2, '0');
+        requestData.booking_date = `${year}-${month}-${day}`;
         requestData.activities = activitiesPayload;
       } else {
         // Prompt-only mode: optionally include date if selected
         if (selectedDate) {
-          requestData.booking_date = selectedDate.toISOString().split("T")[0];
+          // Format date correctly without timezone conversion
+          const year = selectedDate.getFullYear();
+          const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+          const day = String(selectedDate.getDate()).padStart(2, '0');
+          requestData.booking_date = `${year}-${month}-${day}`;
         }
         // Do NOT include activities - let AI parse from prompt
       }
@@ -268,9 +276,22 @@ const AIEventPlannerNew = () => {
       });
     } catch (error: any) {
       console.error("Error getting suggestions:", error);
+      console.error("Error response data:", error.response?.data);
+      
+      let errorMessage = "Failed to get AI suggestions";
+      
+      // Check for timeout error
+      if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+        errorMessage = "Request timed out. The AI is taking longer than expected. Please try again.";
+      } else if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Error",
-        description: error.response?.data?.detail || "Failed to get AI suggestions",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

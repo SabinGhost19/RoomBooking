@@ -19,6 +19,7 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isManager, setIsManager] = useState(false);
+  const [secretPassword, setSecretPassword] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -42,6 +43,16 @@ const Signup = () => {
       toast({
         title: "Error",
         description: "Password must be at least 8 characters long",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Validate manager secret password
+    if (isManager && secretPassword !== "1234") {
+      toast({
+        title: "Error",
+        description: "Invalid manager secret password",
         variant: "destructive",
       });
       return;
@@ -203,6 +214,22 @@ const Signup = () => {
                 Register as a Manager
               </Label>
             </div>
+
+            {/* Manager Secret Password Field - only shown when isManager is checked */}
+            {isManager && (
+              <div className="space-y-2">
+                <Label htmlFor="secretPassword" className="text-slate-100 font-medium">Manager Secret Password</Label>
+                <Input
+                  id="secretPassword"
+                  type="password"
+                  placeholder="Enter manager secret password"
+                  value={secretPassword}
+                  onChange={(e) => setSecretPassword(e.target.value)}
+                  required
+                  className="bg-slate-700/40 text-white placeholder-slate-300 border border-slate-600 focus:ring-2 focus:ring-amber-400 rounded-lg py-3"
+                />
+              </div>
+            )}
 
             <Button 
               type="submit" 

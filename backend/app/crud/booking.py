@@ -267,6 +267,11 @@ async def create_booking(
     
     print("   ✅ All checks passed, creating booking...")
     
+    # Determine approval status based on room name
+    # Only MeetingRooms require manager approval, all others auto-approve
+    approval_status = 'pending' if 'MeetingRoom' in room.name else 'approved'
+    print(f"   📋 Approval status: {approval_status} (Room: {room.name})")
+    
     # Create booking
     db_booking = Booking(
         room_id=booking.room_id,
@@ -274,7 +279,8 @@ async def create_booking(
         booking_date=booking.booking_date,
         start_time=booking.start_time,
         end_time=booking.end_time,
-        status='upcoming'
+        status='upcoming',
+        approval_status=approval_status
     )
     db.add(db_booking)
     await db.flush()  # To get the booking ID

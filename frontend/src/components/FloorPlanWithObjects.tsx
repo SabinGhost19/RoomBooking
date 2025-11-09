@@ -1,7 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Users, DollarSign, Wifi, Coffee, CheckCircle, XCircle } from 'lucide-react';
+import { 
+    ExternalLink, 
+    Users, 
+    DollarSign, 
+    Wifi, 
+    Coffee, 
+    CheckCircle, 
+    XCircle,
+    Projector,
+    Presentation,
+    MessageSquare,
+    Lightbulb,
+    Monitor,
+    Phone,
+    Video,
+    Briefcase,
+    Brain,
+    Laptop,
+    CalendarDays,
+    Gamepad2,
+    Beer
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import {
     Tooltip,
@@ -45,6 +66,79 @@ interface FloorPlanWithObjectsProps {
     selectedRoomId?: number | null;
 }
 
+// Helper function to get room icon based on room name/type
+const getRoomIcon = (roomName: string, title?: string) => {
+    const name = (roomName || title || '').toLowerCase();
+    
+    // Conference & Meeting Rooms
+    if (name.includes('conference') || name.includes('meeting')) {
+        return Presentation;
+    }
+    
+    // Training & Workshop
+    if (name.includes('training') || name.includes('workshop') || name.includes('learning')) {
+        return Laptop;
+    }
+    
+    // Innovation & Brainstorming
+    if (name.includes('innovation') || name.includes('brainstorm') || name.includes('ideation')) {
+        return Lightbulb;
+    }
+    
+    // Focus & Quiet Rooms
+    if (name.includes('focus') || name.includes('quiet') || name.includes('zen') || name.includes('meditation')) {
+        return Brain;
+    }
+    
+    // Phone/Call Booths
+    if (name.includes('phone') || name.includes('call') || name.includes('booth')) {
+        return Phone;
+    }
+    
+    // Video Conference
+    if (name.includes('video') || name.includes('zoom') || name.includes('teams')) {
+        return Video;
+    }
+    
+    // Executive & Board Rooms
+    if (name.includes('executive') || name.includes('board') || name.includes('director')) {
+        return Briefcase;
+    }
+    
+    // Presentation Rooms
+    if (name.includes('presentation') || name.includes('demo') || name.includes('projector')) {
+        return Projector;
+    }
+    
+    // Collaboration Spaces
+    if (name.includes('collaboration') || name.includes('collab') || name.includes('huddle')) {
+        return MessageSquare;
+    }
+    
+    // Game/Recreation Rooms
+    if (name.includes('game') || name.includes('recreation') || name.includes('fun')) {
+        return Gamepad2;
+    }
+    
+    // Beer/Social Areas
+    if (name.includes('beer') || name.includes('social') || name.includes('lounge') || name.includes('bar')) {
+        return Beer;
+    }
+    
+    // Planning Rooms
+    if (name.includes('planning') || name.includes('strategy')) {
+        return CalendarDays;
+    }
+    
+    // Tech/IT Rooms
+    if (name.includes('tech') || name.includes('it') || name.includes('server')) {
+        return Monitor;
+    }
+    
+    // Default icon for generic rooms
+    return Users;
+};
+
 export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
     imageSrc,
     svgObjectsSrc,
@@ -63,6 +157,8 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
     const [roomDetails, setRoomDetails] = useState<Map<string, RoomDetailedData>>(new Map());
     const [loadingDetails, setLoadingDetails] = useState<Set<string>>(new Set());
     const [hoveredObject, setHoveredObject] = useState<string | null>(null);
+    const [openTooltip, setOpenTooltip] = useState<string | null>(null);
+    const [closeTimeoutId, setCloseTimeoutId] = useState<NodeJS.Timeout | null>(null);
     const [imageLoaded, setImageLoaded] = useState(false);
     const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
     const [svgViewBox, setSvgViewBox] = useState({ x: 0, y: 0, width: 0, height: 0 });
@@ -113,6 +209,33 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
 
         loadRooms();
     }, []);
+
+    // Handle tooltip open with immediate opening
+    const handleTooltipOpen = (objectId: string) => {
+        // Clear any existing timeout
+        if (closeTimeoutId) {
+            clearTimeout(closeTimeoutId);
+            setCloseTimeoutId(null);
+        }
+        setOpenTooltip(objectId);
+    };
+
+    // Handle tooltip close with delay
+    const handleTooltipClose = () => {
+        // Add 1000ms (1 second) delay before closing
+        const timeoutId = setTimeout(() => {
+            setOpenTooltip(null);
+        }, 1000);
+        setCloseTimeoutId(timeoutId);
+    };
+
+    // Cancel tooltip close (when mouse re-enters)
+    const cancelTooltipClose = () => {
+        if (closeTimeoutId) {
+            clearTimeout(closeTimeoutId);
+            setCloseTimeoutId(null);
+        }
+    };
 
     // Load detailed room data on hover
     const loadRoomDetails = async (svgId: string, roomId: number) => {
@@ -579,7 +702,7 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
     };
 
     return (
-        <TooltipProvider>
+        <TooltipProvider delayDuration={0} skipDelayDuration={0} disableHoverableContent={false}>
             <div className={`relative w-full h-full ${className}`}>
                 {/* Background Image - Hidden */}
                 <img
@@ -696,7 +819,17 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                             const isOccupied = roomData && occupiedRoomIds?.has(roomData.id);
 
                             return (
-                                <Tooltip key={obj.id}>
+                                <Tooltip 
+                                    key={obj.id} 
+                                    open={openTooltip === obj.id}
+                                    onOpenChange={(open) => {
+                                        if (open) {
+                                            handleTooltipOpen(obj.id);
+                                        } else {
+                                            handleTooltipClose();
+                                        }
+                                    }}
+                                >
                                     <TooltipTrigger asChild>
                                         <div
                                             className={`absolute transition-all duration-200 flex items-center justify-center ${isDisabled ? '' : 'cursor-pointer'}`}
@@ -727,12 +860,49 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                                                 <div
                                                     className="absolute inset-0 pointer-events-none"
                                                     style={{
-                                                        background: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(239, 68, 68, 0.5) 4px, rgba(239, 68, 68, 0.5) 8px)',
+                                                        background: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255, 0, 0, 0.75) 4px, rgba(255, 0, 0, 0.75) 8px)',
                                                         borderRadius: '2px',
                                                         zIndex: 15,
                                                     }}
                                                 />
                                             )}
+
+                                            {/* Room Icon - show when room has capacity > 1 and has room data */}
+                                            {(() => {
+                                                const roomData = rooms.get(obj.id);
+                                                if (roomData && roomData.capacity > 1) {
+                                                    const RoomIcon = getRoomIcon(roomData.name, obj.title);
+                                                    
+                                                    // Calculate icon size based on actual pixel dimensions
+                                                    const widthPx = (coords.width / 100) * imageDimensions.width;
+                                                    const heightPx = (coords.height / 100) * imageDimensions.height;
+                                                    const minDimension = Math.min(widthPx, heightPx);
+                                                    
+                                                    // Icon size: 40-60% of smallest dimension, min 20px, max 48px
+                                                    const iconSize = Math.max(20, Math.min(48, minDimension * 0.5));
+                                                    
+                                                    console.log(`🎨 Icon for ${roomData.name}:`, {
+                                                        widthPx,
+                                                        heightPx,
+                                                        minDimension,
+                                                        iconSize,
+                                                        capacity: roomData.capacity
+                                                    });
+                                                    
+                                                    return (
+                                                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                            <RoomIcon 
+                                                                className={`text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] transition-all duration-200 ${
+                                                                    isHovered ? 'opacity-100 scale-110' : 'opacity-70'
+                                                                }`}
+                                                                size={iconSize}
+                                                                strokeWidth={2.5}
+                                                            />
+                                                        </div>
+                                                    );
+                                                }
+                                                return null;
+                                            })()}
 
                                             {/* Display title only on hover */}
                                             {obj.title && isHovered && (
@@ -744,7 +914,11 @@ export const FloorPlanWithObjects: React.FC<FloorPlanWithObjectsProps> = ({
                                     </TooltipTrigger>
                                     <TooltipContent
                                         side="top"
-                                        className="max-w-sm bg-slate-900 text-white border-slate-700 p-0 shadow-2xl z-50"
+                                        className="max-w-sm bg-slate-900 text-white border-slate-700 p-0 shadow-2xl z-[9999] pointer-events-auto"
+                                        sideOffset={-5}
+                                        collisionPadding={10}
+                                        onPointerEnter={cancelTooltipClose}
+                                        onPointerLeave={handleTooltipClose}
                                         onPointerDownOutside={(e) => {
                                             // Prevent tooltip from closing when clicking inside it
                                             e.preventDefault();

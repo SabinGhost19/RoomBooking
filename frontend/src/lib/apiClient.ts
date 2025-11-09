@@ -18,7 +18,7 @@ const apiClient: AxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000,
+  timeout: 120000, // Increased to 120 seconds for AI operations
 });
 
 // Flag to prevent multiple refresh attempts

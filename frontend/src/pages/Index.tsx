@@ -1,16 +1,23 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { BeerMug3D } from '@/components/BeerMug3D';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
-  // Logged-in detection (simple heuristic): presence of a token in localStorage
-  // Assumption: authentication stores a token under 'token' in localStorage.
-  const [loggedIn, setLoggedIn] = useState(false);
+  const navigate = useNavigate();
+  const { isAuthenticated, loading } = useAuth();
 
+  // Redirect to map if user is already logged in
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    setLoggedIn(!!localStorage.getItem('token'));
-  }, []);
+    if (!loading && isAuthenticated) {
+      navigate('/map');
+    }
+  }, [isAuthenticated, loading, navigate]);
+
+  // Show nothing while checking auth or redirecting
+  if (loading || isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -50,7 +57,7 @@ const Index = () => {
                   <div className="w-6 h-6 rounded-md overflow-hidden flex items-center justify-center">
                     <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
                   </div>
-                  {loggedIn ? 'Open map' : 'Find a space'}
+                  Find a space
                   <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>

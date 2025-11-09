@@ -467,7 +467,10 @@ export const eventSuggestionAPI = {
   getSuggestions: async (data: EventSuggestionRequest): Promise<EventSuggestionResponse> => {
     const response = await apiClient.post<EventSuggestionResponse>(
       '/event-suggestions/suggest',
-      data
+      data,
+      {
+        timeout: 120000, // 120 seconds for AI processing
+      }
     );
     return response.data;
   },
@@ -478,7 +481,10 @@ export const eventSuggestionAPI = {
   confirmBulkBookings: async (data: BulkBookingConfirmation): Promise<BulkBookingResponse> => {
     const response = await apiClient.post<BulkBookingResponse>(
       '/event-suggestions/confirm-bulk',
-      data
+      data,
+      {
+        timeout: 60000, // 60 seconds for bulk booking creation
+      }
     );
     return response.data;
   },
