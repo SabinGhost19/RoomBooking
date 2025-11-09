@@ -178,7 +178,7 @@ export const Navbar = () => {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="flex items-center space-x-2 hover:bg-white/10 px-3 py-2 rounded-lg transition-all duration-300">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={(user as any).avatar || undefined} alt={(user as any).username || 'User'} />
+                        <AvatarImage src={(user as any).avatar_url || undefined} alt={(user as any).username || 'User'} />
                         <AvatarFallback className="bg-amber-500 text-slate-900 font-bold">
                           {((user as any).username || 'U').slice(0, 2).toUpperCase()}
                         </AvatarFallback>

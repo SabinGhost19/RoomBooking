@@ -235,6 +235,7 @@ const AIEventPlanner = () => {
       }));
 
       const requestData = {
+        prompt: `Book rooms for ${activities.length} activities on ${selectedDate!.toISOString().split('T')[0]}`,
         booking_date: selectedDate!.toISOString().split('T')[0],
         activities: activitiesData,
         general_preferences: generalPreferences || undefined,

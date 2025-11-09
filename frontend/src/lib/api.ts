@@ -515,15 +515,6 @@ export const notificationAPI = {
     const response = await apiClient.post<MessageResponse>(
       `/notifications/${invitationId}/accept`
     );
-  }
-// Avatar API
-export const avatarAPI = {
-  /**
-   * Get available avatar styles
-   */
-  getStyles: async (): Promise<string[]> => {
-    const response = await apiClient.get<string[]>('/avatars/styles');
-
     return response.data;
   },
 
@@ -549,6 +540,29 @@ export const avatarAPI = {
     const response = await apiClient.post<MessageResponse>(
       `/notifications/${invitationId}/mark-read`
     );
+    return response.data;
+  },
+
+  /**
+   * Mark all notifications as read
+   */
+  markAllAsRead: async (): Promise<MessageResponse> => {
+    const response = await apiClient.post<MessageResponse>('/notifications/mark-all-read');
+    return response.data;
+  },
+};
+
+// Avatar API
+export const avatarAPI = {
+  /**
+   * Get available avatar styles
+   */
+  getStyles: async (): Promise<string[]> => {
+    const response = await apiClient.get<string[]>('/avatars/styles');
+    return response.data;
+  },
+
+  /**
    * Get paginated list of avatars
    */
   getAvatars: async (
@@ -561,14 +575,10 @@ export const avatarAPI = {
     });
     return response.data;
   },
-
-  /**
-   * Mark all notifications as read
-   */
-  markAllAsRead: async (): Promise<MessageResponse> => {
-    const response = await apiClient.post<MessageResponse>('/notifications/mark-all-read');
-  };
   
+  /**
+   * Generate custom avatar
+   */
   generateCustom: async (style: string, seed: string): Promise<Avatar> => {
     const response = await apiClient.get<Avatar>('/avatars/generate', {
       params: { style, seed },

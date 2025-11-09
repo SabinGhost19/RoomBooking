@@ -101,6 +101,9 @@ app.include_router(
     notifications.router,
     prefix=f"{settings.API_V1_STR}",
     tags=["notifications"]
+)
+
+app.include_router(
     avatars.router,
     prefix=f"{settings.API_V1_STR}/avatars",
     tags=["avatars"]

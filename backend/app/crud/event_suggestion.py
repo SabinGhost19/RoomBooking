@@ -92,17 +92,83 @@ class EventSuggestionService:
         prompt: str,
         booking_date: Optional[date] = None,
         general_preferences: Optional[str] = None,
+        user_bookings: list = None,
     ) -> Dict[str, Any]:
         """Use OpenAI to parse natural language prompt into structured activities."""
         
+        # Get current date and time for context
+        now = datetime.now()
+        current_date = now.date()
+        
+        # Round current time to nearest hour for cleaner suggestions
+        current_hour = now.hour
+        current_minute = now.minute
+        
+        # If past 30 minutes, round up to next hour, otherwise use current hour
+        if current_minute >= 30:
+            rounded_now = now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
+        else:
+            rounded_now = now.replace(minute=0, second=0, microsecond=0)
+        
+        current_time = rounded_now.strftime("%H:00")  # Always show as HH:00
+        current_datetime_str = f"{current_date.isoformat()} {current_time}"
+        current_day_name = now.strftime("%A")  # e.g., "Monday"
+        
+        # Calculate next available time slot (rounded)
+        next_slot = (rounded_now + timedelta(hours=1)).strftime("%H:00")
+        
+        # Format user's existing bookings for context
+        bookings_context = ""
+        if user_bookings:
+            bookings_list = []
+            for booking in user_bookings:
+                bookings_list.append(
+                    f"  - {booking.booking_date.strftime('%Y-%m-%d (%A)')}: "
+                    f"{booking.start_time.strftime('%H:%M')}-{booking.end_time.strftime('%H:%M')}"
+                )
+            bookings_context = "\n".join(bookings_list)
+        else:
+            bookings_context = "  No existing bookings"
+        
         system_prompt = """You are an intelligent event planning assistant. Your task is to parse natural language descriptions of events into structured activity data.
 
-IMPORTANT RULES:
-1. If no participant count is mentioned, assume 1 person (DEFAULT)
-2. Extract date information if present
-3. Extract time slots for each activity
-4. Identify required amenities from the description
-5. Each activity should be a separate booking
+CRITICAL REQUIREMENTS:
+1. EVERY activity MUST have both "start_time" and "end_time" in "HH:00" format (24-hour format, ALWAYS at exact hours)
+2. ALL times MUST be at exact hours (00 minutes): 09:00, 10:00, 14:00, 15:00, etc.
+3. NEVER use minutes other than :00 (e.g., NEVER use 09:30, 14:45, etc.)
+4. Parse relative times correctly and round to nearest hour
+5. If no participant count is mentioned, assume 1 person (DEFAULT)
+6. Extract date information from the prompt, including relative dates
+7. Identify required amenities from the description
+8. Each activity should be a separate booking
+9. Support both English and Romanian language
+
+TIME PARSING RULES (ALWAYS ROUND TO EXACT HOURS):
+- "in X hours" / "în X ore" = current hour + X hours (e.g., if now is 14:00 and user says "in 2 hours" → 16:00)
+- "in X minutes" / "în X minute" = round up to next hour
+- "tomorrow" / "mâine" = next day at reasonable hour (e.g., 09:00 or 10:00)
+- "today" / "azi" / "astăzi" = current date
+- "pentru X ore" (for X hours) = duration of X hours starting at next available round hour
+- Specific times: round to nearest hour (e.g., "3:30pm" → "15:00" or "16:00", "la 14:45" → "15:00")
+- If only duration given (e.g., "for 2 hours"), start at next available hour
+
+EXAMPLES OF CORRECT TIME ROUNDING:
+- Current time 14:23, "in 2 hours" → start_time: "16:00"
+- Current time 09:45, "in 1 hour" → start_time: "11:00"
+- "tomorrow at 3pm" → start_time: "15:00"
+- "at 14:30" → start_time: "15:00" (round up)
+- "for 3 hours" starting now (14:23) → start_time: "15:00", end_time: "18:00"
+
+AMENITY KEYWORDS (English & Romanian):
+- "projector", "projection", "screen", "videoproiector", "proiector" → "Projector"
+- "whiteboard", "board", "tablă" → "Whiteboard"
+- "video", "zoom", "teams", "conference call", "videoconferință" → "Video Conference"
+- "wifi", "internet" → "WiFi"
+
+MANDATORY: 
+- Never set start_time or end_time to null or omit them
+- ALWAYS use HH:00 format (exact hours only, minutes must be :00)
+- If you cannot determine times, DO NOT include that activity
 
 You must respond with valid JSON only, following this exact structure:
 {
@@ -110,10 +176,10 @@ You must respond with valid JSON only, following this exact structure:
     "activities": [
         {
             "name": "Activity name",
-            "start_time": "HH:MM",
-            "end_time": "HH:MM",
-            "participants_count": 1,  // DEFAULT to 1 if not specified
-            "required_amenities": ["amenity1", "amenity2"],
+            "start_time": "HH:00",  // REQUIRED - Always exact hour (e.g., "09:00", "14:00")
+            "end_time": "HH:00",    // REQUIRED - Always exact hour (e.g., "11:00", "16:00")
+            "participants_count": 1,
+            "required_amenities": ["Projector", "Whiteboard"],
             "preferences": "any specific preferences"
         }
     ],
@@ -125,14 +191,35 @@ You must respond with valid JSON only, following this exact structure:
 USER REQUEST:
 {prompt}
 
-CONTEXT:
-- Default participants: 1 person (unless explicitly stated otherwise)
-- Provided date: {booking_date.isoformat() if booking_date else "Not provided"}
+CURRENT CONTEXT:
+- Current date and time: {current_datetime_str} ({current_day_name})
+- Current rounded hour: {current_time}
+- Next available hour: {next_slot}
+- Current date: {current_date.isoformat()}
+- Provided date: {booking_date.isoformat() if booking_date else "Use current date or extract from prompt"}
 - Additional preferences: {general_preferences or "None"}
 
-Extract all activities with their time slots, participant counts (default to 1), and requirements.
-If the user mentions "we", "team", or "group" without specifying a number, estimate a reasonable count.
-If it's a single person activity (like "I need a room"), use 1 participant.
+USER'S EXISTING BOOKINGS (avoid these times):
+{bookings_context}
+
+INSTRUCTIONS:
+1. Calculate relative times based on ROUNDED current hour ({current_time} on {current_day_name})
+2. ALWAYS round times to exact hours (HH:00 format only)
+3. AVOID suggesting times that conflict with user's existing bookings
+4. Extract ALL activities with EXACT HOUR time slots (e.g., 09:00, 10:00, 14:00, NOT 09:30, 14:45)
+5. If user says "available room" without specific time, use next available hour ({next_slot})
+6. For participant counts: default to 1 if not specified
+7. Extract amenities from keywords in the request
+8. NEVER use minutes other than :00
+
+EXAMPLES (ALL times at exact hours):
+- Current hour {current_time}, "in 2 hours" → start_time: "{(rounded_now + timedelta(hours=2)).strftime('%H:00')}"
+- Current hour {current_time}, "in 3 hours" → start_time: "{(rounded_now + timedelta(hours=3)).strftime('%H:00')}"
+- "tomorrow at 3pm" → booking_date: {(current_date + timedelta(days=1)).isoformat()}, start_time: "15:00"
+- "available room with projector" → start_time: "{next_slot}", end_time: "{(rounded_now + timedelta(hours=2)).strftime('%H:00')}", amenities: ["Projector"]
+- "pentru 2 ore" (for 2 hours) → start_time: "{next_slot}", end_time: "{(rounded_now + timedelta(hours=3)).strftime('%H:00')}"
+
+REMEMBER: All times MUST be at exact hours (minutes = :00). Round up if necessary.
 
 Respond with JSON only."""
 
@@ -290,21 +377,48 @@ Respond with JSON only."""
         self,
         db: AsyncSession,
         request: EventSuggestionRequest,
+        user_id: int,
     ) -> EventSuggestionResponse:
         """Generate AI-powered room suggestions from prompt or explicit activities."""
+        
+        print(f"[GENERATE_SUGGESTIONS] Starting with prompt mode check")
+        print(f"[GENERATE_SUGGESTIONS] Activities provided: {request.activities is not None}")
+        print(f"[GENERATE_SUGGESTIONS] Activities count: {len(request.activities) if request.activities else 0}")
         
         suggestions = []
         warnings = []
         
+        # Get user's existing bookings for context (next 7 days)
+        from app.models.booking import Booking
+        today = date.today()
+        week_later = today + timedelta(days=7)
+        
+        user_bookings_query = select(Booking).where(
+            and_(
+                Booking.user_id == user_id,
+                Booking.booking_date >= today,
+                Booking.booking_date <= week_later,
+                Booking.status == 'upcoming'
+            )
+        )
+        result = await db.execute(user_bookings_query)
+        user_bookings = result.scalars().all()
+        
+        print(f"[GENERATE_SUGGESTIONS] Found {len(user_bookings)} existing bookings for user")
+        
         # Determine if we're in prompt mode or explicit mode
         if request.activities is None or len(request.activities) == 0:
+            print(f"[GENERATE_SUGGESTIONS] Entering PROMPT MODE")
             # PROMPT MODE: Parse the natural language prompt
             try:
                 parsed_data = await self._parse_prompt_to_activities(
                     prompt=request.prompt,
                     booking_date=request.booking_date,
                     general_preferences=request.general_preferences,
+                    user_bookings=user_bookings,
                 )
+                
+                print(f"[GENERATE_SUGGESTIONS] Parsed data: {parsed_data}")
                 
                 # Extract booking date
                 if not request.booking_date and parsed_data.get("booking_date"):
@@ -314,8 +428,12 @@ Respond with JSON only."""
                 else:
                     raise ValueError("Could not determine booking date from prompt. Please specify a date.")
                 
+                print(f"[GENERATE_SUGGESTIONS] Booking date: {booking_date}")
+                
                 # Extract activities
                 activities_data = parsed_data.get("activities", [])
+                print(f"[GENERATE_SUGGESTIONS] Activities data extracted: {len(activities_data)} activities")
+                
                 if not activities_data:
                     raise ValueError("Could not extract any activities from your request. Please be more specific.")
                 
@@ -323,10 +441,22 @@ Respond with JSON only."""
                 activities = []
                 for act_data in activities_data:
                     try:
+                        # Validate required fields
+                        if not act_data.get("name"):
+                            warnings.append(f"Skipped activity without name")
+                            continue
+                        
+                        start_time_str = act_data.get("start_time")
+                        end_time_str = act_data.get("end_time")
+                        
+                        if not start_time_str or not end_time_str:
+                            warnings.append(f"Skipped activity '{act_data.get('name', 'unknown')}': missing start_time or end_time")
+                            continue
+                        
                         activity = ActivityRequest(
                             name=act_data["name"],
-                            start_time=datetime.strptime(act_data["start_time"], "%H:%M").time(),
-                            end_time=datetime.strptime(act_data["end_time"], "%H:%M").time(),
+                            start_time=datetime.strptime(start_time_str, "%H:%M").time(),
+                            end_time=datetime.strptime(end_time_str, "%H:%M").time(),
                             participants_count=act_data.get("participants_count", 1),  # DEFAULT to 1
                             required_amenities=act_data.get("required_amenities", []),
                             preferences=act_data.get("preferences"),
@@ -341,10 +471,14 @@ Respond with JSON only."""
                     general_preferences = parsed_data["extracted_preferences"]
                 else:
                     general_preferences = request.general_preferences
+                
+                print(f"[GENERATE_SUGGESTIONS] Successfully parsed {len(activities)} valid activities")
                     
             except Exception as e:
+                print(f"[GENERATE_SUGGESTIONS] Error in PROMPT MODE: {type(e).__name__}: {str(e)}")
                 raise ValueError(f"Failed to understand your request: {str(e)}")
         else:
+            print(f"[GENERATE_SUGGESTIONS] Entering EXPLICIT MODE")
             # EXPLICIT MODE: Use provided activities directly
             activities = request.activities
             booking_date = request.booking_date
@@ -352,6 +486,8 @@ Respond with JSON only."""
             
             if not booking_date:
                 raise ValueError("Booking date is required when providing explicit activities.")
+            
+            print(f"[GENERATE_SUGGESTIONS] Using {len(activities)} explicit activities")
         
         # Process each activity
         for activity in activities:
@@ -422,9 +558,20 @@ Respond with JSON only."""
             
             suggestions.append(activity_suggestion)
         
+        # Check if we have any suggestions
+        if not suggestions:
+            error_msg = "Could not generate any suggestions. "
+            if warnings:
+                error_msg += "Issues encountered: " + " | ".join(warnings)
+            else:
+                error_msg += "No suitable rooms found for the requested activities."
+            raise ValueError(error_msg)
+        
         overall_notes = None
         if warnings:
             overall_notes = " | ".join(warnings)
+        
+        print(f"[GENERATE_SUGGESTIONS] Returning {len(suggestions)} suggestions with notes: {overall_notes}")
         
         return EventSuggestionResponse(
             booking_date=booking_date,

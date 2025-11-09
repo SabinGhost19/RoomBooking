@@ -201,10 +201,18 @@ async def check_user_availability(
 async def create_booking(
     db: AsyncSession,
     booking: BookingCreate,
-    user_id: int
+    user_id: int,
+    skip_organizer_availability_check: bool = False
 ) -> Optional[Booking]:
     """
     Create a new booking with participants.
+    
+    Args:
+        db: Database session
+        booking: Booking data
+        user_id: ID of the user creating the booking (organizer)
+        skip_organizer_availability_check: If True, skips checking if organizer is available
+                                          (useful for bulk operations where we check manually)
     """
     print(f"🔍 Creating booking for user {user_id}")
     print(f"   Room: {booking.room_id}, Date: {booking.booking_date}")
@@ -220,14 +228,17 @@ async def create_booking(
         print("   ❌ Room not available!")
         return None
     
-    # Check organizer availability
-    organizer_available = await check_user_availability(
-        db, user_id, booking.booking_date, booking.start_time, booking.end_time
-    )
-    print(f"   ✓ Organizer available: {organizer_available}")
-    if not organizer_available:
-        print("   ❌ Organizer not available!")
-        return None
+    # Check organizer availability (unless skipped for bulk operations)
+    if not skip_organizer_availability_check:
+        organizer_available = await check_user_availability(
+            db, user_id, booking.booking_date, booking.start_time, booking.end_time
+        )
+        print(f"   ✓ Organizer available: {organizer_available}")
+        if not organizer_available:
+            print("   ❌ Organizer not available!")
+            return None
+    else:
+        print(f"   ⏭️  Organizer availability check skipped (bulk operation)")
     
     # Get room to check capacity
     room_result = await db.execute(select(Room).where(Room.id == booking.room_id))

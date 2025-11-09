@@ -40,12 +40,29 @@ async def get_event_suggestions(
     Returns suggestions with confidence scores and alternatives.
     """
     try:
+        print(f"[EVENT SUGGESTIONS] Request received from user {current_user.id}")
+        print(f"[EVENT SUGGESTIONS] Prompt: {request.prompt[:100] if request.prompt else 'None'}...")
+        print(f"[EVENT SUGGESTIONS] Date: {request.booking_date}")
+        print(f"[EVENT SUGGESTIONS] Activities count: {len(request.activities) if request.activities else 0}")
+        
         suggestions = await event_suggestion_service.generate_suggestions(
             db=db,
             request=request,
+            user_id=current_user.id,
         )
+        
+        print(f"[EVENT SUGGESTIONS] Generated {len(suggestions.suggestions)} suggestions")
         return suggestions
+    except ValueError as e:
+        print(f"[EVENT SUGGESTIONS] ValueError: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
     except Exception as e:
+        print(f"[EVENT SUGGESTIONS] Unexpected error: {type(e).__name__}: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to generate suggestions: {str(e)}"
@@ -65,6 +82,9 @@ async def confirm_bulk_bookings(
     """
     created_ids = []
     failed_bookings = []
+    
+    # Track time slots being booked in this bulk operation to avoid conflicts
+    user_time_slots = []  # List of (start_time, end_time) tuples
     
     for booking_conf in confirmation.bookings:
         try:
@@ -93,6 +113,37 @@ async def confirm_bulk_bookings(
                 })
                 continue
             
+            # Check if user has time conflict with bookings being created in this batch
+            has_time_conflict = False
+            for existing_start, existing_end in user_time_slots:
+                # Check if times overlap
+                if (booking_conf.start_time < existing_end and booking_conf.end_time > existing_start):
+                    has_time_conflict = True
+                    break
+            
+            if has_time_conflict:
+                failed_bookings.append({
+                    "activity": booking_conf.activity_name,
+                    "error": "Time conflict with another activity in this batch"
+                })
+                continue
+            
+            # Check user availability in database (existing bookings)
+            user_available = await crud_booking.check_user_availability(
+                db=db,
+                user_id=current_user.id,
+                booking_date=confirmation.booking_date,
+                start_time=booking_conf.start_time,
+                end_time=booking_conf.end_time,
+            )
+            
+            if not user_available:
+                failed_bookings.append({
+                    "activity": booking_conf.activity_name,
+                    "error": "You have an existing booking at this time"
+                })
+                continue
+            
             # Create booking
             booking_data = BookingCreate(
                 room_id=booking_conf.room_id,
@@ -106,16 +157,19 @@ async def confirm_bulk_bookings(
                 db=db,
                 booking=booking_data,
                 user_id=current_user.id,
+                skip_organizer_availability_check=True,  # We already checked above
             )
             
             if new_booking:
                 created_ids.append(new_booking.id)
+                # Add this time slot to our tracking list
+                user_time_slots.append((booking_conf.start_time, booking_conf.end_time))
             else:
                 failed_bookings.append({
                     "activity": booking_conf.activity_name,
                     "error": "Failed to create booking - room or user may be unavailable"
                 })
-                
+
         except Exception as e:
             failed_bookings.append({
                 "activity": booking_conf.activity_name,

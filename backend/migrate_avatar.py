@@ -4,12 +4,12 @@ Run this script to update existing database.
 """
 import asyncio
 from sqlalchemy import text
-from app.database import async_engine
+from app.database import engine
 
 
 async def add_avatar_column():
     """Add avatar_url column to users table."""
-    async with async_engine.begin() as conn:
+    async with engine.begin() as conn:
         # Check if column already exists
         check_query = text("""
             SELECT column_name 
@@ -41,7 +41,7 @@ async def main():
         print(f"Migration failed: {e}")
         raise
     finally:
-        await async_engine.dispose()
+        await engine.dispose()
 
 
 if __name__ == "__main__":
