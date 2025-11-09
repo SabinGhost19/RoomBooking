@@ -1,9 +1,10 @@
 """
 User management routes.
 """
-from typing import Any
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Any, List
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
 from app.database import get_db
 from app.schemas.user import UserResponse, UserUpdate, Message
@@ -12,6 +13,48 @@ from app.api.deps import get_current_active_user, get_current_manager
 from app.models.user import User
 
 router = APIRouter()
+
+
+@router.get("/", response_model=List[UserResponse])
+async def get_users(
+    search: str = Query(None, description="Search by name, email or username"),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=500),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+) -> Any:
+    """
+    Get all users (requires authentication).
+    Used for selecting participants when creating bookings.
+    
+    Args:
+        search: Optional search string
+        skip: Number of records to skip
+        limit: Maximum number of records to return
+        db: Database session
+        current_user: Current authenticated user
+    
+    Returns:
+        List of users
+    """
+    query = select(User).where(User.is_active == True)
+    
+    # Apply search filter
+    if search:
+        search_filter = f"%{search}%"
+        query = query.where(
+            User.full_name.ilike(search_filter) |
+            User.email.ilike(search_filter) |
+            User.username.ilike(search_filter)
+        )
+    
+    # Apply pagination
+    query = query.offset(skip).limit(limit)
+    
+    result = await db.execute(query)
+    users = result.scalars().all()
+    
+    return users
 
 
 @router.get("/me", response_model=UserResponse)

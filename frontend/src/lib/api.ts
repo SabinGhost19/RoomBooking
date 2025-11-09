@@ -76,6 +76,10 @@ export interface BookingResponse {
   start_time: string;
   end_time: string;
   status: string;
+  approval_status: string;
+  approved_by_id?: number;
+  approved_at?: string;
+  rejection_reason?: string;
   created_at: string;
   updated_at: string;
 }
@@ -158,6 +162,41 @@ export interface BulkBookingResponse {
   failure_count: number;
 }
 
+
+// Notification Types
+export interface BookingInvitation {
+  id: number;
+  booking_id: number;
+  inviter_id: number;
+  invitee_id: number;
+  status: 'pending' | 'accepted' | 'rejected';
+  is_read: boolean;
+  response_message?: string;
+  created_at: string;
+  updated_at: string;
+  responded_at?: string;
+}
+
+export interface BookingInvitationWithDetails extends BookingInvitation {
+  inviter_name?: string;
+  inviter_email?: string;
+  room_name?: string;
+  room_id?: number;
+  booking_date?: string;
+  start_time?: string;
+  end_time?: string;
+}
+
+export interface NotificationCount {
+  unread_count: number;
+  pending_count: number;
+}
+
+export interface InvitationResponse {
+  status: 'pending' | 'accepted' | 'rejected';
+  response_message?: string;
+}
+
 // Avatar Types
 export interface Avatar {
   id: string;
@@ -177,6 +216,7 @@ export interface AvatarListResponse {
     has_prev: boolean;
   };
   style: string;
+
 }
 
 // Auth API
@@ -228,6 +268,18 @@ export const authAPI = {
 
 // User API
 export const userAPI = {
+  /**
+   * Get all users (for participant selection)
+   */
+  getAllUsers: async (params?: {
+    search?: string;
+    skip?: number;
+    limit?: number;
+  }): Promise<UserResponse[]> => {
+    const response = await apiClient.get<UserResponse[]>('/users/', { params });
+    return response.data;
+  },
+
   /**
    * Get current user information
    */
@@ -289,8 +341,8 @@ export const bookingAPI = {
     start_date?: string;
     end_date?: string;
     status?: string;
-  }): Promise<BookingResponse[]> => {
-    const response = await apiClient.get<BookingResponse[]>('/bookings/my-bookings', {
+  }): Promise<BookingWithDetails[]> => {
+    const response = await apiClient.get<BookingWithDetails[]>('/bookings/my-bookings', {
       params,
     });
     return response.data;
@@ -346,6 +398,45 @@ export const bookingAPI = {
   },
 
   /**
+   * Get pending bookings (manager only)
+   */
+  getPendingBookings: async (params?: {
+    skip?: number;
+    limit?: number;
+  }): Promise<BookingWithDetails[]> => {
+    const response = await apiClient.get<BookingWithDetails[]>('/bookings/pending', { params });
+    return response.data;
+  },
+
+  /**
+   * Get count of pending bookings (manager only)
+   */
+  getPendingBookingsCount: async (): Promise<{ pending_count: number }> => {
+    const response = await apiClient.get<{ pending_count: number }>('/bookings/pending/count');
+    return response.data;
+  },
+
+  /**
+   * Approve a pending booking (manager only)
+   */
+  approveBooking: async (bookingId: number): Promise<BookingResponse> => {
+    const response = await apiClient.post<BookingResponse>(`/bookings/${bookingId}/approve`);
+    return response.data;
+  },
+
+  /**
+   * Reject a pending booking (manager only)
+   */
+  rejectBooking: async (bookingId: number, reason?: string): Promise<BookingResponse> => {
+    const response = await apiClient.post<BookingResponse>(
+      `/bookings/${bookingId}/reject`,
+      null,
+      { params: { reason } }
+    );
+    return response.data;
+  },
+
+  /**
    * Check room availability
    */
   checkAvailability: async (data: AvailabilityCheck): Promise<AvailabilityResponse> => {
@@ -393,6 +484,38 @@ export const eventSuggestionAPI = {
   },
 };
 
+
+// Notification API
+export const notificationAPI = {
+  /**
+   * Get all notifications for current user
+   */
+  getNotifications: async (params?: {
+    status?: 'pending' | 'accepted' | 'rejected';
+    is_read?: boolean;
+  }): Promise<BookingInvitationWithDetails[]> => {
+    const response = await apiClient.get<BookingInvitationWithDetails[]>('/notifications', {
+      params,
+    });
+    return response.data;
+  },
+
+  /**
+   * Get notification count
+   */
+  getCount: async (): Promise<NotificationCount> => {
+    const response = await apiClient.get<NotificationCount>('/notifications/count');
+    return response.data;
+  },
+
+  /**
+   * Accept an invitation
+   */
+  acceptInvitation: async (invitationId: number): Promise<MessageResponse> => {
+    const response = await apiClient.post<MessageResponse>(
+      `/notifications/${invitationId}/accept`
+    );
+  }
 // Avatar API
 export const avatarAPI = {
   /**
@@ -400,10 +523,32 @@ export const avatarAPI = {
    */
   getStyles: async (): Promise<string[]> => {
     const response = await apiClient.get<string[]>('/avatars/styles');
+
     return response.data;
   },
 
   /**
+   * Reject an invitation
+   */
+  rejectInvitation: async (
+    invitationId: number,
+    responseMessage?: string
+  ): Promise<MessageResponse> => {
+    const response = await apiClient.post<MessageResponse>(
+      `/notifications/${invitationId}/reject`,
+      null,
+      { params: { response_message: responseMessage } }
+    );
+    return response.data;
+  },
+
+  /**
+   * Mark notification as read
+   */
+  markAsRead: async (invitationId: number): Promise<MessageResponse> => {
+    const response = await apiClient.post<MessageResponse>(
+      `/notifications/${invitationId}/mark-read`
+    );
    * Get paginated list of avatars
    */
   getAvatars: async (
@@ -418,8 +563,12 @@ export const avatarAPI = {
   },
 
   /**
-   * Generate custom avatar
+   * Mark all notifications as read
    */
+  markAllAsRead: async (): Promise<MessageResponse> => {
+    const response = await apiClient.post<MessageResponse>('/notifications/mark-all-read');
+  };
+  
   generateCustom: async (style: string, seed: string): Promise<Avatar> => {
     const response = await apiClient.get<Avatar>('/avatars/generate', {
       params: { style, seed },
@@ -434,6 +583,7 @@ const api = {
   users: userAPI,
   bookings: bookingAPI,
   eventSuggestions: eventSuggestionAPI,
+  notifications: notificationAPI,
   avatars: avatarAPI,
 };
 

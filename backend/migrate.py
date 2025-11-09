@@ -9,7 +9,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
 from app.database import engine, Base
-from app.models import User, Room, Booking, booking_participants
+from app.models import User, Room, Booking, booking_participants, BookingInvitation
 
 
 async def create_tables():

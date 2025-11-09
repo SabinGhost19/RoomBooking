@@ -15,6 +15,8 @@ import Booking from "./pages/Booking";
 import Profile from "./pages/Profile";
 import View2DMapReact from "./pages/View2DMapReact";
 import SuggestEvent from "./pages/SuggestEvent";
+
+import { PendingApprovals } from "./pages/PendingApprovals";
 import AIEventPlannerNew from "./pages/AIEventPlannerNew";
 import NotFound from "./pages/NotFound";
 
@@ -38,6 +40,8 @@ const App = () => (
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/map" element={<ProtectedRoute><View2DMapReact /></ProtectedRoute>} />
             <Route path="/suggest-event" element={<ProtectedRoute><SuggestEvent /></ProtectedRoute>} />
+
+            <Route path="/pending-approvals" element={<ProtectedRoute><PendingApprovals /></ProtectedRoute>} />
             <Route path="/ai-event-planner" element={<ProtectedRoute><AIEventPlannerNew /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

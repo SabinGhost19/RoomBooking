@@ -2,14 +2,16 @@
 CRUD operations for Booking model.
 """
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_
+from sqlalchemy import select, and_, or_, insert, func
 from sqlalchemy.orm import selectinload
 from typing import Optional, List
 from datetime import date, time, datetime, timedelta
 from app.models.booking import Booking, booking_participants
 from app.models.room import Room
 from app.models.user import User
+from app.models.booking_invitation import BookingInvitation
 from app.schemas.booking import BookingCreate, BookingUpdate
+from app.schemas.booking_invitation import BookingInvitationCreate
 
 
 async def get_booking(db: AsyncSession, booking_id: int) -> Optional[Booking]:
@@ -266,13 +268,27 @@ async def create_booking(
     db.add(db_booking)
     await db.flush()  # To get the booking ID
     
-    # Add participants
+    # Add participants and create invitations
     if booking.participant_ids:
         for participant_id in booking.participant_ids:
-            participant_result = await db.execute(select(User).where(User.id == participant_id))
-            participant = participant_result.scalar_one_or_none()
-            if participant:
-                db_booking.participants.append(participant)
+            # Add participant to booking_participants table directly
+            await db.execute(
+                booking_participants.insert().values(
+                    booking_id=db_booking.id,
+                    user_id=participant_id
+                )
+            )
+            
+            # Create invitation for this participant
+            db_invitation = BookingInvitation(
+                booking_id=db_booking.id,
+                inviter_id=user_id,
+                invitee_id=participant_id,
+                status='pending',
+                is_read=False
+            )
+            db.add(db_invitation)
+            print(f"   📧 Created invitation for participant {participant_id}")
     
     await db.commit()
     await db.refresh(db_booking)
@@ -373,3 +389,88 @@ async def delete_booking(db: AsyncSession, booking_id: int, user_id: int) -> boo
     await db.delete(db_booking)
     await db.commit()
     return True
+
+
+async def get_pending_bookings_for_manager(
+    db: AsyncSession,
+    skip: int = 0,
+    limit: int = 100
+) -> List[Booking]:
+    """
+    Get all pending bookings that need manager approval.
+    """
+    from sqlalchemy.orm import selectinload
+    
+    result = await db.execute(
+        select(Booking)
+        .options(selectinload(Booking.user))  # Eager load user relationship
+        .options(selectinload(Booking.participants))  # Eager load participants
+        .where(Booking.approval_status == 'pending')
+        .order_by(Booking.created_at.desc())
+        .offset(skip)
+        .limit(limit)
+    )
+    return result.scalars().all()
+
+
+async def approve_booking(
+    db: AsyncSession,
+    booking_id: int,
+    manager_id: int
+) -> Optional[Booking]:
+    """
+    Approve a pending booking.
+    """
+    from datetime import datetime
+    
+    db_booking = await get_booking(db, booking_id)
+    if not db_booking or db_booking.approval_status != 'pending':
+        return None
+    
+    db_booking.approval_status = 'approved'
+    db_booking.approved_by_id = manager_id
+    db_booking.approved_at = datetime.now()
+    
+    await db.commit()
+    await db.refresh(db_booking)
+    
+    print(f"✅ Booking {booking_id} approved by manager {manager_id}")
+    return db_booking
+
+
+async def reject_booking(
+    db: AsyncSession,
+    booking_id: int,
+    manager_id: int,
+    reason: Optional[str] = None
+) -> Optional[Booking]:
+    """
+    Reject a pending booking.
+    """
+    from datetime import datetime
+    
+    db_booking = await get_booking(db, booking_id)
+    if not db_booking or db_booking.approval_status != 'pending':
+        return None
+    
+    db_booking.approval_status = 'rejected'
+    db_booking.approved_by_id = manager_id
+    db_booking.approved_at = datetime.now()
+    db_booking.rejection_reason = reason
+    
+    await db.commit()
+    await db.refresh(db_booking)
+    
+    print(f"❌ Booking {booking_id} rejected by manager {manager_id}")
+    return db_booking
+
+
+async def get_pending_bookings_count(db: AsyncSession) -> int:
+    """
+    Get count of pending bookings.
+    """
+    result = await db.execute(
+        select(func.count(Booking.id))
+        .where(Booking.approval_status == 'pending')
+    )
+    return result.scalar() or 0

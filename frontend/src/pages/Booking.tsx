@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { BookingCalendar } from "@/components/BookingCalendar";
+import ParticipantSelector from "@/components/ParticipantSelector";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -24,6 +25,7 @@ const Booking = () => {
   const [duration, setDuration] = useState<string>("1");
   const [notes, setNotes] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedParticipants, setSelectedParticipants] = useState<number[]>([]);
 
   const room = mockRooms.find((r) => r.id === roomId);
 
@@ -129,12 +131,14 @@ const Booking = () => {
         booking_date: formatDateForAPI(selectedDate),
         start_time: start,
         end_time: end,
-        participant_ids: [], // Can be extended to add participants
+        participant_ids: selectedParticipants, // Include selected participants
       });
 
       toast({
         title: "Booking confirmed!",
-        description: `Your reservation for ${room.name} has been confirmed.`,
+        description: selectedParticipants.length > 0
+          ? `Your reservation for ${room.name} has been confirmed. Invitations sent to ${selectedParticipants.length} participant(s).`
+          : `Your reservation for ${room.name} has been confirmed.`,
       });
 
       // Navigate to bookings or home
@@ -229,6 +233,20 @@ const Booking = () => {
                     rows={4}
                     className="bg-slate-700/40 text-white border-slate-600 placeholder-slate-400"
                   />
+                </div>
+
+                {/* Participant Selector */}
+                <div className="space-y-2">
+                  <ParticipantSelector
+                    selectedParticipants={selectedParticipants}
+                    onParticipantsChange={setSelectedParticipants}
+                    maxParticipants={room.capacity - 1} // -1 for the organizer
+                    currentUserId={user?.id}
+                    disabled={isLoading}
+                  />
+                  <p className="text-xs text-slate-400">
+                    Room capacity: {room.capacity} {room.capacity === 1 ? 'person' : 'people'} (including you)
+                  </p>
                 </div>
               </CardContent>
             </Card>

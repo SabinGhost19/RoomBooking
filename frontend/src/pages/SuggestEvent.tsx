@@ -1,12 +1,18 @@
 import { useState, useEffect } from "react";
-import { Calendar, Clock, Sparkles, TrendingDown, Users, Beer } from "lucide-react";
+import { Calendar, Clock, Sparkles, TrendingDown, Users, Beer, Loader2, CheckCircle2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import ParticipantSelector from "@/components/ParticipantSelector";
 import apiClient from "@/lib/apiClient";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { userAPI } from "@/lib/api";
 
 interface BookingAnalysis {
   date: string;
@@ -28,7 +34,12 @@ const SuggestEvent = () => {
   const [suggestion, setSuggestion] = useState<EventSuggestion | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedParticipants, setSelectedParticipants] = useState<number[]>([]);
+  const [inviteAllUsers, setInviteAllUsers] = useState(false);
+  const [creatingBooking, setCreatingBooking] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchEventSuggestion();
@@ -66,6 +77,65 @@ const SuggestEvent = () => {
   const getDayName = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', { weekday: 'long' });
+  };
+
+  const handleCreateBooking = async () => {
+    if (!suggestion) return;
+
+    try {
+      setCreatingBooking(true);
+
+      // Get all users if "Invite All" is checked
+      let participantIds = selectedParticipants;
+      if (inviteAllUsers) {
+        const allUsers = await userAPI.getAllUsers({ limit: 500 });
+        // Exclude current user
+        participantIds = allUsers
+          .filter(u => u.id !== user?.id)
+          .map(u => u.id);
+      }
+
+      // Parse suggested time to get start and end times
+      const timeMatch = suggestion.suggested_time.match(/(\d{1,2}):(\d{2})/);
+      const startHour = timeMatch ? parseInt(timeMatch[1]) : 18;
+      const startTime = `${startHour.toString().padStart(2, '0')}:00:00`;
+      const endTime = `${(startHour + 2).toString().padStart(2, '0')}:00:00`; // 2 hour event
+
+      // Find BeerPoint room ID
+      const roomsResponse = await apiClient.get('/rooms/', {
+        params: { search: 'BeerPoint', limit: 1 }
+      });
+      const beerPointRoom = roomsResponse.data[0];
+      
+      if (!beerPointRoom) {
+        throw new Error('BeerPoint room not found');
+      }
+
+      const response = await apiClient.post('/bookings/', {
+        room_id: beerPointRoom.id,
+        booking_date: suggestion.suggested_date,
+        start_time: startTime,
+        end_time: endTime,
+        participant_ids: participantIds,
+      });
+
+      toast({
+        title: "Event Created!",
+        description: `${suggestion.event_title} has been scheduled for ${formatDate(suggestion.suggested_date)}. ${participantIds.length > 0 ? `Invitations sent to ${participantIds.length} participant(s).` : ''}`,
+      });
+
+      setDialogOpen(false);
+      setSelectedParticipants([]);
+      setInviteAllUsers(false);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.detail || "Failed to create booking",
+        variant: "destructive",
+      });
+    } finally {
+      setCreatingBooking(false);
+    }
   };
 
   if (loading) {
@@ -253,10 +323,120 @@ const SuggestEvent = () => {
               This event will be held at the <strong className="text-amber-400">BeerPoint</strong> room. 
               Would you like to create a booking for this event?
             </p>
-            <Button className="bg-amber-500 hover:bg-amber-400 text-slate-900">
-              <Calendar className="mr-2 h-4 w-4" />
-              Create Booking
-            </Button>
+
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-amber-500 hover:bg-amber-400 text-slate-900">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Create Booking
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px] bg-slate-800 border-white/10">
+                <DialogHeader>
+                  <DialogTitle className="text-white text-xl">
+                    Create Event Booking
+                  </DialogTitle>
+                  <DialogDescription className="text-slate-400">
+                    {suggestion?.event_title} - {suggestion && formatDate(suggestion.suggested_date)} at {suggestion?.suggested_time}
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-6 py-4">
+                  {/* Event Details */}
+                  <div className="space-y-2">
+                    <Label className="text-slate-200">Event Details</Label>
+                    <div className="p-4 bg-slate-700/30 rounded-lg space-y-2">
+                      <div className="flex items-center gap-2 text-sm">
+                        <Calendar className="h-4 w-4 text-amber-400" />
+                        <span className="text-slate-300">
+                          {suggestion && formatDate(suggestion.suggested_date)}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Clock className="h-4 w-4 text-amber-400" />
+                        <span className="text-slate-300">{suggestion?.suggested_time}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Beer className="h-4 w-4 text-amber-400" />
+                        <span className="text-slate-300">BeerPoint Room</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Invite All Users Option */}
+                  <div className="flex items-center space-x-2 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                    <Checkbox
+                      id="inviteAll"
+                      checked={inviteAllUsers}
+                      onCheckedChange={(checked) => {
+                        setInviteAllUsers(checked as boolean);
+                        if (checked) {
+                          setSelectedParticipants([]);
+                        }
+                      }}
+                      className="border-amber-500 data-[state=checked]:bg-amber-500"
+                    />
+                    <label
+                      htmlFor="inviteAll"
+                      className="text-sm font-medium text-amber-400 cursor-pointer flex items-center gap-2"
+                    >
+                      <Users className="h-4 w-4" />
+                      Invite ALL Users (Company-wide Event)
+                    </label>
+                  </div>
+
+                  {/* Participant Selector (disabled if Invite All is checked) */}
+                  {!inviteAllUsers && (
+                    <div>
+                      <ParticipantSelector
+                        selectedParticipants={selectedParticipants}
+                        onParticipantsChange={setSelectedParticipants}
+                        currentUserId={user?.id}
+                        disabled={creatingBooking}
+                      />
+                    </div>
+                  )}
+
+                  {inviteAllUsers && (
+                    <Alert className="bg-amber-500/10 border-amber-500/30">
+                      <Users className="h-4 w-4 text-amber-400" />
+                      <AlertTitle className="text-amber-400">Company-wide Event</AlertTitle>
+                      <AlertDescription className="text-slate-300">
+                        All users in the system will receive an invitation for this event.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+
+                <div className="flex justify-end gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => setDialogOpen(false)}
+                    disabled={creatingBooking}
+                    className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleCreateBooking}
+                    disabled={creatingBooking}
+                    className="bg-amber-500 hover:bg-amber-400 text-slate-900"
+                  >
+                    {creatingBooking ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="mr-2 h-4 w-4" />
+                        Create Event Booking
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </CardContent>
         </Card>
       </div>

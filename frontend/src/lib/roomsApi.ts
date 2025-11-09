@@ -64,6 +64,10 @@ export interface Booking {
   start_time: string; // HH:MM:SS format
   end_time: string; // HH:MM:SS format
   status: 'upcoming' | 'completed' | 'cancelled';
+  approval_status: 'pending' | 'approved' | 'rejected';
+  approved_by_id?: number;
+  approved_at?: string;
+  rejection_reason?: string;
   created_at: string;
   updated_at: string;
 }

@@ -55,12 +55,6 @@ const Index = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
                 </Link>
-                <a
-                  href="#features"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/10 text-white rounded-lg font-semibold text-lg hover:bg-white/20 backdrop-blur-sm transition-all duration-200 border border-white/20"
-                >
-                  View facilities
-                </a>
               </div>
 
               {/* Stats */}
@@ -84,28 +78,6 @@ const Index = () => {
             <div className="flex flex-col items-center justify-center">
               <div className="w-full max-w-lg">
                 <BeerMug3D />
-              </div>
-
-              <div className="text-center mt-8">
-                <h2 className="text-3xl font-bold text-white mb-3">Start booking meeting rooms</h2>
-                <p className="text-slate-300 max-w-md mx-auto mb-6">Access interactive floor plans and real-time availability. Sign up to get full access.</p>
-
-                <div className="flex items-center justify-center gap-4">
-                  {!loggedIn ? (
-                    <>
-                      <Link to="/signup" className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-slate-900 rounded-lg font-semibold hover:bg-amber-400 transition">
-                        Sign up
-                      </Link>
-                      <Link to="/login" className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition">
-                        Sign in
-                      </Link>
-                    </>
-                  ) : (
-                    <Link to="/map" className="inline-flex items-center gap-2 px-8 py-3 bg-amber-500 text-slate-900 rounded-lg font-semibold hover:bg-amber-400 transition">
-                      Open Map
-                    </Link>
-                  )}
-                </div>
               </div>
             </div>
           </div>
