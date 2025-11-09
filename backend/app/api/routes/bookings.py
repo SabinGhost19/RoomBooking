@@ -140,6 +140,146 @@ async def check_availability(
     return {"available": is_available}
 
 
+# ============================================
+# APPROVAL ROUTES (must be BEFORE /{booking_id})
+# ============================================
+
+@router.get("/pending", response_model=List[BookingWithDetails])
+async def get_pending_bookings(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=500),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """
+    Get all pending bookings that need manager approval.
+    Only accessible by managers (is_manager).
+    """
+    if not current_user.is_manager:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only managers can view pending bookings"
+        )
+    
+    bookings = await crud_booking.get_pending_bookings_for_manager(
+        db=db,
+        skip=skip,
+        limit=limit
+    )
+    
+    # Convert to BookingWithDetails format
+    bookings_with_details = []
+    for booking in bookings:
+        # Fetch room name
+        room = await crud_room.get_room(db, booking.room_id)
+        
+        booking_dict = {
+            "id": booking.id,
+            "room_id": booking.room_id,
+            "user_id": booking.user_id,
+            "booking_date": booking.booking_date,
+            "start_time": booking.start_time,
+            "end_time": booking.end_time,
+            "status": booking.status,
+            "approval_status": booking.approval_status,
+            "approved_by_id": booking.approved_by_id,
+            "approved_at": booking.approved_at,
+            "rejection_reason": booking.rejection_reason,
+            "created_at": booking.created_at,
+            "updated_at": booking.updated_at,
+            "room_name": room.name if room else None,
+            "organizer_name": booking.user.full_name if booking.user else None,
+            "participant_ids": [p.id for p in booking.participants] if booking.participants else []
+        }
+        bookings_with_details.append(booking_dict)
+    
+    return bookings_with_details
+
+
+@router.get("/pending/count")
+async def get_pending_bookings_count(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """
+    Get count of pending bookings. Only accessible by managers.
+    """
+    if not current_user.is_manager:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only managers can view pending bookings count"
+        )
+    
+    count = await crud_booking.get_pending_bookings_count(db)
+    return {"pending_count": count}
+
+
+@router.post("/{booking_id}/approve", response_model=Booking)
+async def approve_booking_endpoint(
+    booking_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """
+    Approve a pending booking. Only accessible by managers.
+    """
+    if not current_user.is_manager:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only managers can approve bookings"
+        )
+    
+    booking = await crud_booking.approve_booking(
+        db=db,
+        booking_id=booking_id,
+        manager_id=current_user.id
+    )
+    
+    if not booking:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Booking not found or not in pending status"
+        )
+    
+    return booking
+
+
+@router.post("/{booking_id}/reject", response_model=Booking)
+async def reject_booking_endpoint(
+    booking_id: int,
+    reason: Optional[str] = Query(None, max_length=500),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """
+    Reject a pending booking with optional reason. Only accessible by managers.
+    """
+    if not current_user.is_manager:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only managers can reject bookings"
+        )
+    
+    booking = await crud_booking.reject_booking(
+        db=db,
+        booking_id=booking_id,
+        manager_id=current_user.id,
+        reason=reason
+    )
+    
+    if not booking:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Booking not found or not in pending status"
+        )
+    
+    return booking
+
+
+# ============================================
+# GENERIC BOOKING ROUTES
+# ============================================
+
 @router.get("/{booking_id}", response_model=Booking)
 async def get_booking(
     booking_id: int,

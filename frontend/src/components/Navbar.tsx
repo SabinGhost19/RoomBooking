@@ -1,21 +1,46 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Calendar, Home, User, LogOut, Map, Sparkles } from "lucide-react";
+import { Calendar, Home, User, LogOut, Map, Sparkles, CheckSquare } from "lucide-react";
 import { BeerMugIcon } from "@/components/BeerMugIcon";
+import NotificationBell from "@/components/NotificationBell";
+import { useState, useEffect } from "react";
+import { bookingAPI } from "@/lib/api";
 
 import { useAuth } from "@/contexts/AuthContext";
 
 export const Navbar = () => {
   const location = useLocation();
   const { user, isAuthenticated, logout } = useAuth();
+  const [pendingCount, setPendingCount] = useState(0);
   const isActive = (path: string) => location.pathname === path;
+
+  // Fetch pending bookings count for managers
+  useEffect(() => {
+    const fetchPendingCount = async () => {
+      if (isAuthenticated && user && (user as any).is_manager) {
+        try {
+          const data = await bookingAPI.getPendingBookingsCount();
+          setPendingCount(data.pending_count);
+        } catch (error) {
+          // Silently fail - user might not be manager or not logged in
+          console.error('Failed to fetch pending count:', error);
+        }
+      }
+    };
+
+    fetchPendingCount();
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchPendingCount, 30000);
+    return () => clearInterval(interval);
+  }, [isAuthenticated, user]);
 
   return (
     <nav className="sticky top-0 z-50 border-b border-white/10 bg-gradient-to-r from-slate-900 via-slate-800 to-amber-900 backdrop-blur-2xl shadow-2xl shadow-slate-900/30 overflow-hidden">
@@ -93,17 +118,37 @@ export const Navbar = () => {
               </Button>
             </Link>
             {isAuthenticated && user && (user as any).is_manager && (
-              <Link to="/suggest-event">
-                <Button
-                  variant="ghost"
-                  className={`transition-all text-white hover:bg-white/10 ${
-                    isActive("/suggest-event") ? "bg-white/10" : ""
-                  }`}
-                >
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Suggest Event
-                </Button>
-              </Link>
+              <>
+                <Link to="/suggest-event">
+                  <Button
+                    variant="ghost"
+                    className={`transition-all text-white hover:bg-white/10 ${
+                      isActive("/suggest-event") ? "bg-white/10" : ""
+                    }`}
+                  >
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Suggest Event
+                  </Button>
+                </Link>
+                <Link to="/pending-approvals">
+                  <Button
+                    variant="ghost"
+                    className={`relative transition-all text-white hover:bg-white/10 ${
+                      isActive("/pending-approvals") ? "bg-white/10" : ""
+                    }`}
+                  >
+                    <CheckSquare className="mr-2 h-4 w-4" />
+                    Approvals
+                    {pendingCount > 0 && (
+                      <Badge 
+                        className="ml-2 bg-red-500 text-white px-2 py-0.5 text-xs"
+                      >
+                        {pendingCount}
+                      </Badge>
+                    )}
+                  </Button>
+                </Link>
+              </>
             )}
           </div>
 
@@ -124,35 +169,40 @@ export const Navbar = () => {
             )}
 
             {isAuthenticated && user && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center space-x-2 hover:bg-white/10 px-3 py-2 rounded-lg transition-all duration-300">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={(user as any).avatar || undefined} alt={(user as any).username || 'User'} />
-                      <AvatarFallback className="bg-amber-500 text-slate-900 font-bold">
-                        {((user as any).username || 'U').slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="hidden sm:inline text-white font-medium">
-                      {(user as any).username || (user as any).full_name}
-                    </span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 bg-slate-800 border-white/10 rounded-lg">
-                  <DropdownMenuItem asChild>
-                    <Link to="/profile" className="cursor-pointer flex items-center gap-2 text-white hover:bg-white/10 px-3 py-2 rounded-md transition-all duration-200">
-                      <User className="h-4 w-4" />
-                      Profile
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => { logout(); }} className="text-white hover:bg-white/10 px-3 py-2 rounded-md transition-all duration-200 cursor-pointer">
-                    <div className="flex items-center gap-2">
-                      <LogOut className="h-4 w-4" />
-                      Logout
-                    </div>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <>
+                {/* Notification Bell */}
+                <NotificationBell />
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex items-center space-x-2 hover:bg-white/10 px-3 py-2 rounded-lg transition-all duration-300">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={(user as any).avatar || undefined} alt={(user as any).username || 'User'} />
+                        <AvatarFallback className="bg-amber-500 text-slate-900 font-bold">
+                          {((user as any).username || 'U').slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="hidden sm:inline text-white font-medium">
+                        {(user as any).username || (user as any).full_name}
+                      </span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56 bg-slate-800 border-white/10 rounded-lg">
+                    <DropdownMenuItem asChild>
+                      <Link to="/profile" className="cursor-pointer flex items-center gap-2 text-white hover:bg-white/10 px-3 py-2 rounded-md transition-all duration-200">
+                        <User className="h-4 w-4" />
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => { logout(); }} className="text-white hover:bg-white/10 px-3 py-2 rounded-md transition-all duration-200 cursor-pointer">
+                      <div className="flex items-center gap-2">
+                        <LogOut className="h-4 w-4" />
+                        Logout
+                      </div>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
             )}
           </div>
         </div>

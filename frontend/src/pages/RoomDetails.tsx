@@ -7,6 +7,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import ParticipantSelector from "@/components/ParticipantSelector";
 import {
     Users, DollarSign, ArrowLeft, Clock, Calendar as CalendarIcon,
     Loader2, CheckCircle2
@@ -262,7 +263,24 @@ const RoomDetails = () => {
                                                         {booking.start_time.substring(0, 5)} - {booking.end_time.substring(0, 5)}
                                                     </span>
                                                 </div>
-                                                <Badge className="bg-amber-500 text-slate-900 font-bold">Booked</Badge>
+                                                <div className="flex items-center gap-2">
+                                                    {booking.approval_status === 'pending' && (
+                                                        <Badge variant="secondary" className="bg-amber-500/20 text-amber-300 border-amber-500/30">
+                                                            Pending
+                                                        </Badge>
+                                                    )}
+                                                    {booking.approval_status === 'approved' && (
+                                                        <Badge className="bg-green-500/20 text-green-300 border-green-500/30">
+                                                            Approved
+                                                        </Badge>
+                                                    )}
+                                                    {booking.approval_status === 'rejected' && (
+                                                        <Badge variant="destructive" className="bg-red-500/20 text-red-300 border-red-500/30">
+                                                            Rejected
+                                                        </Badge>
+                                                    )}
+                                                    <Badge className="bg-amber-500 text-slate-900 font-bold">Booked</Badge>
+                                                </div>
                                             </div>
                                         ))
                                     )}
@@ -394,15 +412,16 @@ const RoomDetails = () => {
                                     </Select>
                                 </div>
 
+                                {/* Participant Selector */}
                                 {room.capacity > 1 && (
                                     <div className="space-y-2">
-                                        <Label className="text-slate-200">
-                                            Additional Participants (Optional)
-                                        </Label>
-                                        <p className="text-xs text-slate-400">
-                                            Room capacity: {room.capacity} people
-                                        </p>
-                                        {/* Note: In a real app, you'd fetch and display a list of users here */}
+                                        <ParticipantSelector
+                                            selectedParticipants={selectedParticipants}
+                                            onParticipantsChange={setSelectedParticipants}
+                                            maxParticipants={room.capacity - 1} // -1 for the organizer
+                                            currentUserId={user?.id}
+                                            disabled={submitting}
+                                        />
                                     </div>
                                 )}
 

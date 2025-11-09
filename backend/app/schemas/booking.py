@@ -53,6 +53,10 @@ class BookingInDB(BookingBase):
     id: int
     user_id: int
     status: str
+    approval_status: str
+    approved_by_id: Optional[int] = None
+    approved_at: Optional[datetime] = None
+    rejection_reason: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     

@@ -1,7 +1,7 @@
 """
 Booking model for database.
 """
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Table, Time, Date
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Table, Time, Date, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
@@ -32,7 +32,13 @@ class Booking(Base):
     start_time = Column(Time, nullable=False)
     end_time = Column(Time, nullable=False)
     
-    # Status: 'upcoming', 'completed', 'cancelled'
+    # Approval status: 'pending', 'approved', 'rejected'
+    approval_status = Column(String(20), default='pending', nullable=False, index=True)
+    approved_by_id = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'), nullable=True, index=True)
+    approved_at = Column(DateTime(timezone=True), nullable=True)
+    rejection_reason = Column(String(500), nullable=True)
+    
+    # Booking status: 'upcoming', 'completed', 'cancelled'
     status = Column(String(20), default='upcoming', nullable=False, index=True)
     
     # Timestamps
@@ -42,6 +48,7 @@ class Booking(Base):
     # Relationships
     room = relationship("Room", back_populates="bookings")
     user = relationship("User", back_populates="bookings", foreign_keys=[user_id])
+    approved_by = relationship("User", foreign_keys=[approved_by_id])
     participants = relationship(
         "User",
         secondary=booking_participants,
