@@ -144,7 +144,7 @@ const Profile = () => {
                     <div>
                       <h3 className="font-semibold text-lg text-white">{user.username}</h3>
                       <p className="text-sm text-slate-300">{user.email}</p>
-                      {user.is_superuser && (
+                      {user.is_manager && (
                         <Badge variant="secondary" className="mt-1 bg-amber-500 text-slate-900">Admin</Badge>
                       )}
                     </div>
@@ -202,7 +202,7 @@ const Profile = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center">
                       <div className="text-3xl font-bold text-amber-400 mb-1">
-                        {user.is_superuser ? "Admin" : "User"}
+                        {user.is_manager ? "Admin" : "User"}
                       </div>
                       <div className="text-sm text-slate-300">Account Type</div>
                     </div>
