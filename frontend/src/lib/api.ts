@@ -314,8 +314,8 @@ export const bookingAPI = {
     start_date?: string;
     end_date?: string;
     status?: string;
-  }): Promise<BookingResponse[]> => {
-    const response = await apiClient.get<BookingResponse[]>('/bookings/my-bookings', {
+  }): Promise<BookingWithDetails[]> => {
+    const response = await apiClient.get<BookingWithDetails[]>('/bookings/my-bookings', {
       params,
     });
     return response.data;

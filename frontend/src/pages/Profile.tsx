@@ -12,7 +12,7 @@ import { mockBookings } from "@/data/mockData";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import api, { BookingResponse } from "@/lib/api";
+import api, { BookingResponse, BookingWithDetails } from "@/lib/api";
 
 const Profile = () => {
   const { user, logout, refreshUser } = useAuth();
@@ -20,7 +20,7 @@ const Profile = () => {
   const [name, setName] = useState(user?.full_name || "");
   const [email, setEmail] = useState(user?.email || "");
   const [loading, setLoading] = useState(false);
-  const [bookings, setBookings] = useState<BookingResponse[]>([]);
+  const [bookings, setBookings] = useState<BookingWithDetails[]>([]);
   const [loadingBookings, setLoadingBookings] = useState(false);
 
   // Load bookings on component mount
@@ -236,7 +236,9 @@ const Profile = () => {
                     <CardContent className="pt-6">
                       <div className="flex items-center justify-between mb-4">
                         <div>
-                          <h3 className="font-semibold text-lg text-white">Room #{booking.room_id}</h3>
+                          <h3 className="font-semibold text-lg text-white">
+                            {booking.room_name || `Room #${booking.room_id}`}
+                          </h3>
                           <p className="text-sm text-slate-300">{formatDate(booking.booking_date)}</p>
                         </div>
                         <Badge
