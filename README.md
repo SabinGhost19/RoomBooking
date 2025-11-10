@@ -17,6 +17,9 @@ RoomBooking este o platforma avansata de management si rezervare spatii, dezvolt
 **Problema rezolvata:** Optimizarea utilizarii spatiilor de lucru prin rezervari inteligente, colaborare facilitata intre echipe si planificare automata a evenimentelor.
 
 ---
+# [GO_SEE_SCREEN_SHOTS_HERE](Screens.md)
+
+
 
 ## Arhitectura Sistemului
 

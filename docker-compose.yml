@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
@@ -22,7 +22,7 @@ services:
     restart: unless-stopped
 
   backend:
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: roombooking_backend
@@ -43,7 +43,7 @@ services:
       FIRST_SUPERUSER_PASSWORD: Admin123!
       FIRST_SUPERUSER_USERNAME: admin
       BACKEND_CORS_ORIGINS: '["http://localhost:5173","http://localhost:3000","http://frontend:5173"]'
-      OPENAI_API_KEY: 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
+      OPENAI_API_KEY:
     depends_on:
       postgres:
         condition: service_healthy
