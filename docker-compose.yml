@@ -43,7 +43,7 @@ services:
       FIRST_SUPERUSER_PASSWORD: Admin123!
       FIRST_SUPERUSER_USERNAME: admin
       BACKEND_CORS_ORIGINS: '["http://localhost:5173","http://localhost:3000","http://frontend:5173"]'
-      OPENAI_API_KEY:
+      OPENAI_API_KEY: fake_fake_fake_fake_fakefake_fake_fake_fake_fakefake_fake_fake_fake_fakefake_fake_fake_fake_fakefake_fake_fake_fake_fakefake_fake_fake_fake_fakefake_fake_fake_fake_fakefake_fake_fake_fake_fakefake_fake_fake_fake_fakefake_fake_fake_fake_fake
     depends_on:
       postgres:
         condition: service_healthy
